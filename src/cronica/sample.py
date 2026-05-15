@@ -7,7 +7,7 @@ from pathlib import Path
 import jax
 import jax.numpy as jnp
 
-from cronica.model import forward
+from cronica.model import decode_step, prefill
 from cronica.tokenizer import load_tokenizer
 from cronica.train import load_ckpt
 
@@ -71,30 +71,35 @@ def generate_cronica(
 
     stats_ids = tokenizer.encode(stats_block).ids
     prompt = [bos_id, stats_open, *stats_ids, stats_close, style_tok, cron_open]
-    tokens = jnp.asarray(prompt, dtype=jnp.int32)[None, :]
+    prompt_tokens = jnp.asarray(prompt, dtype=jnp.int32)[None, :]   # (1, T_prompt)
     key = jax.random.PRNGKey(seed)
 
-    for _ in range(max_new_tokens):
-        ctx = tokens[:, -cfg.max_seq_len:]
-        logits = forward(params, ctx, cfg)
+    # ---- Prefill: process the whole prompt once, populate KV cache ----
+    logits, cache = prefill(params, prompt_tokens, cfg)
+    next_logits = logits[:, -1, :]
+    key, subkey = jax.random.split(key)
+    next_id = sample_next(next_logits, subkey, temperature, top_k, top_p)
+    generated = [int(next_id[0])]
+    pos = prompt_tokens.shape[1]   # absolute index of the next token to emit
+
+    # ---- Decode loop: one token at a time, O(1) per step ----
+    for _ in range(max_new_tokens - 1):
+        nid_int = int(next_id[0])
+        if nid_int == cron_close or nid_int == eos_id:
+            break
+        logits, cache = decode_step(
+            params, next_id[:, None], cfg, cache, pos
+        )
         next_logits = logits[:, -1, :]
         key, subkey = jax.random.split(key)
         next_id = sample_next(next_logits, subkey, temperature, top_k, top_p)
-        tokens = jnp.concatenate([tokens, next_id[:, None]], axis=1)
-        nid = int(next_id[0])
-        if nid == cron_close or nid == eos_id:
-            break
+        generated.append(int(next_id[0]))
+        pos += 1
 
-    full = [int(x) for x in tokens[0].tolist()]
-    # Slice out only the cronica content (between cron_open and cron_close)
-    try:
-        start = full.index(cron_open) + 1
-    except ValueError:
-        start = len(prompt)
-    end = len(full)
-    if cron_close in full[start:]:
-        end = full.index(cron_close, start)
-    return tokenizer.decode(full[start:end])
+    # Drop trailing </cronica> or <eos> if present
+    if generated and generated[-1] in (cron_close, eos_id):
+        generated = generated[:-1]
+    return tokenizer.decode(generated)
 
 
 def main() -> None:

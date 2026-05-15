@@ -305,3 +305,114 @@ def test_data_load_pairs():
     p = pairs[0]
     assert "stats_block" in p and "cronica" in p and "style_token" in p
     assert p["style_token"].startswith("<style:")
+
+
+# ============== KV CACHE CORRECTNESS ==============
+
+
+def test_kv_cache_matches_full_forward(model):
+    """The cached decode path must produce identical token sequences vs the
+    naive 'rerun the full forward every step' path. Any divergence here means
+    the KV cache is buggy."""
+    import jax
+    import jax.numpy as jnp
+    from tokenizers import Tokenizer
+    from cronica.model import forward, prefill, decode_step
+    from cronica.sample import sample_next
+
+    params, cfg, _ = model
+    tok = Tokenizer.from_file(str(TOKENIZER_PATH))
+    vocab = tok.get_vocab()
+
+    prompt_ids = [
+        vocab["<bos>"], vocab["<stats>"],
+        *tok.encode("liga: La Liga\nlocal: A\nvisitante: B\nresultado: 1-0").ids,
+        vocab["</stats>"],
+        vocab["<style:rioplatense_apasionado>"],
+        vocab["<cronica>"],
+    ]
+    tokens0 = jnp.asarray(prompt_ids, dtype=jnp.int32)[None, :]
+
+    # Path 1: no cache, re-run forward each step
+    key = jax.random.PRNGKey(123)
+    t = tokens0
+    out_uncached = []
+    for _ in range(10):
+        logits = forward(params, t, cfg)
+        key, sk = jax.random.split(key)
+        nid = sample_next(logits[:, -1, :], sk, 0.8, 50, 0.9)
+        t = jnp.concatenate([t, nid[:, None]], axis=1)
+        out_uncached.append(int(nid[0]))
+
+    # Path 2: prefill + decode_step with cache
+    key = jax.random.PRNGKey(123)
+    logits, cache = prefill(params, tokens0, cfg)
+    key, sk = jax.random.split(key)
+    nid = sample_next(logits[:, -1, :], sk, 0.8, 50, 0.9)
+    out_cached = [int(nid[0])]
+    pos = tokens0.shape[1]
+    for _ in range(9):
+        logits, cache = decode_step(params, nid[:, None], cfg, cache, pos)
+        key, sk = jax.random.split(key)
+        nid = sample_next(logits[:, -1, :], sk, 0.8, 50, 0.9)
+        out_cached.append(int(nid[0]))
+        pos += 1
+
+    assert out_cached == out_uncached, (
+        f"FAIL: KV cache divergence.\n"
+        f"  uncached: {out_uncached}\n"
+        f"  cached  : {out_cached}"
+    )
+
+
+def test_kv_cache_is_faster_than_uncached(model):
+    """KV cache must produce a speedup vs re-running forward each step.
+    We require at least a 1.3x wallclock improvement to lock in the win."""
+    import time
+    import jax
+    import jax.numpy as jnp
+    from tokenizers import Tokenizer
+    from cronica.model import forward, prefill, decode_step
+    from cronica.sample import sample_next
+
+    params, cfg, _ = model
+    tok = Tokenizer.from_file(str(TOKENIZER_PATH))
+    vocab = tok.get_vocab()
+    prompt = jnp.asarray(
+        [vocab["<bos>"], vocab["<stats>"]] + tok.encode("local: A\nvisitante: B").ids
+        + [vocab["</stats>"], vocab["<style:rioplatense_apasionado>"], vocab["<cronica>"]],
+        dtype=jnp.int32,
+    )[None, :]
+
+    # warmup both paths
+    forward(params, prompt, cfg).block_until_ready()
+    _, c = prefill(params, prompt, cfg)
+    c[0]["k"].block_until_ready()
+
+    # uncached: 20 forward passes over a growing sequence
+    t = prompt
+    t0 = time.time()
+    for _ in range(20):
+        logits = forward(params, t, cfg)
+        logits.block_until_ready()
+        nid = jnp.argmax(logits[:, -1, :], axis=-1)
+        t = jnp.concatenate([t, nid[:, None]], axis=1)
+    t_uncached = time.time() - t0
+
+    # cached: 1 prefill + 20 decode_steps
+    logits, cache = prefill(params, prompt, cfg)
+    nid = jnp.argmax(logits[:, -1, :], axis=-1)
+    pos = prompt.shape[1]
+    t0 = time.time()
+    for _ in range(20):
+        logits, cache = decode_step(params, nid[:, None], cfg, cache, pos)
+        logits.block_until_ready()
+        nid = jnp.argmax(logits[:, -1, :], axis=-1)
+        pos += 1
+    t_cached = time.time() - t0
+
+    speedup = t_uncached / t_cached
+    assert speedup >= 1.3, (
+        f"FAIL: KV cache should be >= 1.3x faster. "
+        f"uncached={t_uncached:.2f}s cached={t_cached:.2f}s speedup={speedup:.2f}x"
+    )

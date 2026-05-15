@@ -108,7 +108,7 @@ def _rope_freqs(d_head: int, seq_len: int, base: float, dtype=jnp.float32):
 
 
 def apply_rope(x, cos, sin):
-    """Apply RoPE to (B, H, T, d_head) tensor."""
+    """Apply RoPE to (B, H, T, d_head) tensor. cos/sin shape (T, d_head)."""
     x1 = x[..., 0::2]
     x2 = x[..., 1::2]
     # interleave (-x2, x1)
@@ -123,7 +123,10 @@ def swiglu(x_gate, x_up):
 
 
 def causal_attention(x, layer, cfg: Config, cos, sin):
-    """Multi-head causal self-attention with RoPE."""
+    """Multi-head causal self-attention with RoPE. No cache (training/prefill).
+
+    cos/sin shape: (T, d_head).
+    """
     B, T, D = x.shape
     H, dh = cfg.n_heads, cfg.d_head
 
@@ -146,6 +149,38 @@ def causal_attention(x, layer, cfg: Config, cos, sin):
     return out @ layer["wo"]
 
 
+def attention_step(x, layer, cfg: Config, cos, sin, k_cache, v_cache):
+    """Single-token attention using KV cache.
+
+    x:        (B, 1, D)               — only the new token
+    cos/sin:  (1, d_head)              — rotary at the new position only
+    k_cache:  (B, H, prev_len, dh)
+    v_cache:  (B, H, prev_len, dh)
+    Returns:  (out (B,1,D), new_k (B,H,prev_len+1,dh), new_v same)
+    """
+    B = x.shape[0]
+    H, dh = cfg.n_heads, cfg.d_head
+
+    q = (x @ layer["wq"]).reshape(B, 1, H, dh).transpose(0, 2, 1, 3)  # (B,H,1,dh)
+    k_new = (x @ layer["wk"]).reshape(B, 1, H, dh).transpose(0, 2, 1, 3)
+    v_new = (x @ layer["wv"]).reshape(B, 1, H, dh).transpose(0, 2, 1, 3)
+
+    q = apply_rope(q, cos, sin)
+    k_new = apply_rope(k_new, cos, sin)
+
+    k_all = jnp.concatenate([k_cache, k_new], axis=2)        # (B,H,L+1,dh)
+    v_all = jnp.concatenate([v_cache, v_new], axis=2)
+
+    scale = 1.0 / jnp.sqrt(jnp.float32(dh))
+    scores = jnp.einsum("bhqd,bhkd->bhqk", q, k_all) * scale  # (B,H,1,L+1)
+    # All keys are <= current position, so no extra mask needed.
+
+    attn = jax.nn.softmax(scores.astype(jnp.float32), axis=-1).astype(x.dtype)
+    out = jnp.einsum("bhqk,bhkd->bhqd", attn, v_all)         # (B,H,1,dh)
+    out = out.transpose(0, 2, 1, 3).reshape(B, 1, H * dh)
+    return out @ layer["wo"], k_all, v_all
+
+
 def block(x, layer, cfg: Config, cos, sin):
     h = rms_norm(x, layer["attn_norm"])
     x = x + causal_attention(h, layer, cfg, cos, sin)
@@ -157,10 +192,23 @@ def block(x, layer, cfg: Config, cos, sin):
     return x + ff
 
 
-def forward(params, tokens, cfg: Config):
-    """Forward pass: tokens (B, T) int32 -> logits (B, T, vocab_size).
+def block_step(x, layer, cfg: Config, cos, sin, k_cache, v_cache):
+    """Single-token block step using cache."""
+    h = rms_norm(x, layer["attn_norm"])
+    attn_out, k_new, v_new = attention_step(h, layer, cfg, cos, sin, k_cache, v_cache)
+    x = x + attn_out
 
-    Tied embeddings: lm_head = tok_embed.T.
+    h = rms_norm(x, layer["mlp_norm"])
+    gate = h @ layer["w_gate"]
+    up = h @ layer["w_up"]
+    ff = swiglu(gate, up) @ layer["w_down"]
+    return x + ff, k_new, v_new
+
+
+def forward(params, tokens, cfg: Config):
+    """Forward pass over a full sequence (training / prefill).
+
+    tokens (B, T) int32 -> logits (B, T, vocab_size).
     """
     x = params["tok_embed"][tokens]  # (B, T, D)
     cos, sin = _rope_freqs(cfg.d_head, tokens.shape[1], cfg.rope_base, dtype=x.dtype)
@@ -169,6 +217,91 @@ def forward(params, tokens, cfg: Config):
     x = rms_norm(x, params["final_norm"])
     logits = x @ params["tok_embed"].T  # tied
     return logits
+
+
+def init_kv_cache(params, batch_size: int, cfg: Config, dtype=jnp.float32):
+    """Empty per-layer KV cache (length 0)."""
+    H, dh = cfg.n_heads, cfg.d_head
+    return [
+        {
+            "k": jnp.zeros((batch_size, H, 0, dh), dtype=dtype),
+            "v": jnp.zeros((batch_size, H, 0, dh), dtype=dtype),
+        }
+        for _ in range(cfg.n_layers)
+    ]
+
+
+def prefill(params, tokens, cfg: Config):
+    """Run the model over the prompt and return (logits, populated cache).
+
+    tokens: (B, T_prompt) int32
+    Returns:
+      logits  (B, T_prompt, V) — logits for every prompt position
+      cache:  list of per-layer {"k": (B,H,T_prompt,dh), "v": same}
+    """
+    B, T = tokens.shape
+    H, dh = cfg.n_heads, cfg.d_head
+
+    x = params["tok_embed"][tokens]
+    cos, sin = _rope_freqs(cfg.d_head, T, cfg.rope_base, dtype=x.dtype)
+
+    cache = []
+    for layer in params["layers"]:
+        # Same as causal_attention, but also return K and V for cache.
+        h = rms_norm(x, layer["attn_norm"])
+        q = (h @ layer["wq"]).reshape(B, T, H, dh).transpose(0, 2, 1, 3)
+        k = (h @ layer["wk"]).reshape(B, T, H, dh).transpose(0, 2, 1, 3)
+        v = (h @ layer["wv"]).reshape(B, T, H, dh).transpose(0, 2, 1, 3)
+        q = apply_rope(q, cos, sin)
+        k = apply_rope(k, cos, sin)
+        scale = 1.0 / jnp.sqrt(jnp.float32(dh))
+        scores = jnp.einsum("bhtd,bhsd->bhts", q, k) * scale
+        mask = jnp.tril(jnp.ones((T, T), dtype=jnp.bool_))
+        scores = jnp.where(mask[None, None, :, :], scores, -1e9)
+        attn = jax.nn.softmax(scores.astype(jnp.float32), axis=-1).astype(x.dtype)
+        out = jnp.einsum("bhts,bhsd->bhtd", attn, v)
+        out = out.transpose(0, 2, 1, 3).reshape(B, T, H * dh) @ layer["wo"]
+        x = x + out
+
+        # MLP
+        h = rms_norm(x, layer["mlp_norm"])
+        gate = h @ layer["w_gate"]
+        up = h @ layer["w_up"]
+        ff = swiglu(gate, up) @ layer["w_down"]
+        x = x + ff
+
+        cache.append({"k": k, "v": v})
+
+    x = rms_norm(x, params["final_norm"])
+    logits = x @ params["tok_embed"].T
+    return logits, cache
+
+
+def decode_step(params, token, cfg: Config, cache, pos: int):
+    """Decode one new token given the KV cache up to `pos` (exclusive).
+
+    token: (B, 1) int32 — the newest token
+    cache: list of per-layer {"k": (B,H,pos,dh), "v": same}
+    pos:   integer, the absolute position of `token` in the sequence
+    Returns:
+      logits      (B, 1, V) — logits for the new token
+      new_cache:  list of per-layer with k/v lengthened by 1
+    """
+    x = params["tok_embed"][token]  # (B, 1, D)
+    # RoPE at the single absolute position `pos`.
+    cos_full, sin_full = _rope_freqs(cfg.d_head, pos + 1, cfg.rope_base, dtype=x.dtype)
+    cos = cos_full[pos:pos + 1]   # (1, d_head)
+    sin = sin_full[pos:pos + 1]
+
+    new_cache = []
+    for layer, layer_cache in zip(params["layers"], cache):
+        x, k_new, v_new = block_step(x, layer, cfg, cos, sin,
+                                     layer_cache["k"], layer_cache["v"])
+        new_cache.append({"k": k_new, "v": v_new})
+
+    x = rms_norm(x, params["final_norm"])
+    logits = x @ params["tok_embed"].T
+    return logits, new_cache
 
 
 # ---------- utility ----------
