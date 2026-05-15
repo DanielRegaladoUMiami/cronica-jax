@@ -90,6 +90,7 @@ def main() -> None:
         for i, rec in enumerate(heldout, 1):
             f.write(f"## Match {i} — id={rec['match_id']}\n\n")
             f.write("**Stats**\n\n```\n" + rec["stats_block"] + "\n```\n\n")
+            f.flush()
             for style in args.styles:
                 logger.info("Match %d/%d  style=%s", i, len(heldout), style)
                 text = generate_cronica(
@@ -101,7 +102,9 @@ def main() -> None:
                     seed=args.seed + i,
                 )
                 f.write(f"### Style: `{style}`\n\n{text}\n\n")
+                f.flush()  # incremental persistence so partial runs survive
             f.write("---\n\n")
+            f.flush()
     logger.info("Wrote %s", args.out)
 
 
