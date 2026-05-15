@@ -1,7 +1,7 @@
-jax==0.4.30
-jaxlib==0.4.30
-optax>=0.2.0
+jax==0.10.0
+jaxlib==0.10.0
+optax==0.2.8
 numpy>=1.26
-tokenizers>=0.20
+tokenizers==0.22.1
 huggingface-hub>=0.25
-gradio>=4.44
+gradio==4.44.0
