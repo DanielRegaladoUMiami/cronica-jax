@@ -42,11 +42,9 @@ def filter_rich_matches(src_dir: Path, max_matches: int | None = None) -> pd.Dat
     games = pd.read_csv(src_dir / "games.csv")
     events = pd.read_csv(src_dir / "game_events.csv")
     comps = pd.read_csv(src_dir / "competitions.csv")
-    clubs = pd.read_csv(src_dir / "clubs.csv")[["club_id", "name"]]
-    clubs = clubs.rename(columns={"club_id": "id", "name": "club_name"})
 
-    logger.info("Loaded: %d games, %d events, %d competitions, %d clubs",
-                len(games), len(events), len(comps), len(clubs))
+    logger.info("Loaded: %d games, %d events, %d competitions",
+                len(games), len(events), len(comps))
 
     # Only keep events with type=Goals
     goals = events[events["type"] == "Goals"].copy()
@@ -57,23 +55,13 @@ def filter_rich_matches(src_dir: Path, max_matches: int | None = None) -> pd.Dat
     games = games[games["game_id"].isin(games_with_goals)].copy()
     logger.info("Games with at least one goal: %d", len(games))
 
-    # Join competition name
+    # Join competition name (games.csv already has home_club_name/away_club_name)
     games = games.merge(
         comps[["competition_id", "name", "country_name"]],
         on="competition_id", how="left",
     ).rename(columns={"name": "competition_name"})
 
-    # Join club names
-    games = games.merge(
-        clubs.rename(columns={"id": "home_club_id", "club_name": "home_club_name"}),
-        on="home_club_id", how="left",
-    )
-    games = games.merge(
-        clubs.rename(columns={"id": "away_club_id", "club_name": "away_club_name"}),
-        on="away_club_id", how="left",
-    )
-
-    # Aggregate events per game
+    # Aggregate goal events per game
     def event_to_dict(row):
         return {
             "minute": int(row["minute"]) if pd.notna(row.get("minute")) else None,
