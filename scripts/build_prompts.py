@@ -24,38 +24,66 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-# Map common Transfermarkt competition names (English) to Spanish.
-# Anything not in the map is kept verbatim — Spanish-speakers know "Premier League".
+# Transfermarkt competition slugs that the LLM and a Spanish-speaking audience
+# both know well. Each entry maps slug -> human-readable Spanish league name.
+# Anything NOT in this map is filtered out (noisy lower-tier leagues, leagues
+# the LLM has limited Spanish-language coverage of, etc).
 COMP_ES = {
-    "Premier League": "Premier League",
-    "LaLiga": "La Liga",
-    "Bundesliga": "Bundesliga",
-    "Serie A": "Serie A",
-    "Ligue 1": "Ligue 1",
-    "Liga Portugal": "Liga Portugal",
-    "Eredivisie": "Eredivisie",
-    "Belgian Pro League": "Pro League de Bélgica",
-    "Scottish Premiership": "Scottish Premiership",
-    "Liga MX Apertura": "Liga MX Apertura",
-    "Liga MX Clausura": "Liga MX Clausura",
-    "Liga Profesional de Fútbol": "Liga Profesional Argentina",
-    "Primera División": "Primera División",
-    "UEFA Champions League": "Champions League",
-    "UEFA Europa League": "Europa League",
-    "UEFA Europa Conference League": "Conference League",
-    "Copa Libertadores": "Copa Libertadores",
-    "Copa Sudamericana": "Copa Sudamericana",
-    "FA Cup": "FA Cup",
-    "Copa del Rey": "Copa del Rey",
-    "DFB-Pokal": "DFB-Pokal",
-    "Coppa Italia": "Copa Italia",
+    # Spain
+    "laliga": "La Liga",
+    "laliga2": "La Liga 2 (Segunda División)",
+    "copa-del-rey": "Copa del Rey",
+    "supercopa": "Supercopa de España",
+    # Argentina
+    "liga-profesional-de-futbol": "Liga Profesional Argentina",
+    "torneo-apertura": "Torneo Apertura (Argentina)",
+    "torneo-clausura": "Torneo Clausura (Argentina)",
+    "torneo-final": "Torneo Final (Argentina)",
+    "copa-argentina": "Copa Argentina",
+    # Mexico
+    "liga-mx-apertura": "Liga MX Apertura",
+    "liga-mx-clausura": "Liga MX Clausura",
+    "copa-mx": "Copa MX",
+    # Brazil
+    "campeonato-brasileiro-serie-a": "Brasileirao Serie A",
+    "copa-do-brasil": "Copa de Brasil",
+    # Colombia, Chile, Uruguay, Peru, Ecuador
+    "liga-betplay-dimayor": "Liga BetPlay (Colombia)",
+    "primera-division-de-chile": "Primera División de Chile",
+    "primera-division-uruguay": "Primera División de Uruguay",
+    "liga-1-peru": "Liga 1 (Perú)",
+    "serie-a-de-ecuador": "Serie A (Ecuador)",
+    # CONMEBOL international
+    "copa-libertadores": "Copa Libertadores",
+    "copa-sudamericana": "Copa Sudamericana",
+    "copa-america": "Copa América",
+    # Big European leagues — LLM and audience both know them
+    "premier-league": "Premier League",
+    "bundesliga": "Bundesliga",
+    "serie-a": "Serie A (Italia)",
+    "ligue-1": "Ligue 1",
+    "liga-portugal-bwin": "Primeira Liga (Portugal)",
+    "eredivisie": "Eredivisie",
+    "uefa-champions-league": "Champions League",
+    "uefa-europa-league": "Europa League",
+    "uefa-conference-league": "Conference League",
+    "fa-cup": "FA Cup",
+    "dfb-pokal": "DFB-Pokal",
+    "coppa-italia": "Copa Italia",
+    "supercoppa-italiana": "Supercopa de Italia",
+    "trophee-des-champions": "Trofeo de Campeones (Francia)",
+    # Major worldwide
+    "fifa-world-cup": "Copa del Mundo",
+    "uefa-euro": "Eurocopa",
+    "uefa-nations-league": "UEFA Nations League",
 }
 
 
-def _es_comp(name: str | None) -> str:
+def _es_comp(name: str | None) -> str | None:
+    """Returns Spanish league name, or None if this competition is filtered out."""
     if not name or pd.isna(name):
-        return "competición no especificada"
-    return COMP_ES.get(name, name)
+        return None
+    return COMP_ES.get(str(name).strip().lower())
 
 
 def _format_date(s: str | None) -> str:
@@ -89,8 +117,11 @@ def _parse_goals(blob: str | None, home_id: int, away_id: int,
     return [f"  - {m}' {p} ({t})" for m, p, t in parsed]
 
 
-def build_stats_block(row, player_lookup: dict[int, str]) -> str:
+def build_stats_block(row, player_lookup: dict[int, str]) -> str | None:
+    """Returns the <STATS> block, or None if the match should be filtered out."""
     comp = _es_comp(row.get("competition_name"))
+    if comp is None:
+        return None
     date = _format_date(row.get("date"))
     local = row.get("home_club_name") or "?"
     visit = row.get("away_club_name") or "?"
@@ -142,10 +173,25 @@ def main() -> None:
     df = pd.read_parquet(args.inp)
     logger.info("Loaded %d matches", len(df))
 
-    # Build player_id -> name map (kagglehub stores raw csvs in cache; allow override)
+    # Filter to leagues we map to Spanish names.
+    pre = len(df)
+    df = df[df["competition_name"].str.lower().isin(COMP_ES.keys())].copy()
+    logger.info("Filtered to known leagues: %d -> %d", pre, len(df))
+    if len(df) == 0:
+        logger.error("No matches survived league filter; check COMP_ES.")
+        return
+
+    # Build player_id -> name map. Look in our data dir first, then fall back
+    # to the kagglehub cache where the original CSV actually lives.
+    import os
+    cache_root = Path(os.path.expanduser("~/.cache/kagglehub/datasets/davidcariboo/player-scores"))
+    cache_candidates = sorted(cache_root.glob("versions/*/players.csv"), reverse=True)
     players_csv = None
-    for candidate in [args.players / "players.csv",
-                      args.inp.parent / "raw" / "players.csv"]:
+    for candidate in [
+        args.players / "players.csv",
+        args.inp.parent / "raw" / "players.csv",
+        *cache_candidates,
+    ]:
         if candidate.exists():
             players_csv = candidate
             break
@@ -167,17 +213,28 @@ def main() -> None:
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     n = 0
+    skipped = 0
+    by_liga: dict[str, int] = {}
     with args.out.open("w", encoding="utf-8") as f:
         for _, row in df.iterrows():
             block = build_stats_block(row, player_lookup)
+            if block is None:
+                skipped += 1
+                continue
+            liga = COMP_ES[str(row["competition_name"]).strip().lower()]
+            by_liga[liga] = by_liga.get(liga, 0) + 1
             rec = {
                 "match_id": int(row["game_id"]),
                 "stats_block": block,
                 "competition_name": row.get("competition_name") or "",
+                "liga": liga,
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
             n += 1
-    logger.info("Wrote %d prompts to %s", n, args.out)
+    logger.info("Wrote %d prompts to %s (skipped %d)", n, args.out, skipped)
+    logger.info("Coverage by liga (top 15):")
+    for liga, c in sorted(by_liga.items(), key=lambda x: -x[1])[:15]:
+        logger.info("  %4d  %s", c, liga)
 
 
 if __name__ == "__main__":
