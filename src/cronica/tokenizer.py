@@ -23,19 +23,46 @@ from tokenizers.decoders import ByteLevel as ByteLevelDec
 from tokenizers.processors import ByteLevel as ByteLevelProc
 from tokenizers.trainers import BpeTrainer
 
-SPECIAL_TOKENS = ["<pad>", "<bos>", "<eos>", "<unk>"]
+SPECIAL_TOKENS = [
+    "<pad>", "<bos>", "<eos>", "<unk>",
+    # Section delimiters for the data-to-text template
+    "<stats>", "</stats>",
+    "<cronica>", "</cronica>",
+    # Style conditioning tokens (one per public commentator label)
+    "<style:rioplatense_apasionado>",
+    "<style:rioplatense_tecnico>",
+    "<style:rioplatense_literario>",
+    "<style:mexicano_irreverente>",
+    "<style:mexicano_clasico>",
+    "<style:centroamericano_espn>",
+    "<style:espanol_radiofonico>",
+    "<style:comentario_tecnico>",
+]
 
 
 def _iter_texts_from_jsonl(path: Path) -> Iterable[str]:
+    """Yield text strings for tokenizer training.
+
+    For the data-to-text pivot, we yield the FULL training example
+    `<stats>STATS</stats> <style> <cronica>CRONICA</cronica>` so the BPE
+    learns subwords that occur in both the prompt and the target.
+    """
     with path.open(encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
                 continue
             rec = json.loads(line)
-            txt = rec.get("cronica", "")
-            if txt:
-                yield txt
+            cronica = rec.get("cronica", "")
+            stats = rec.get("stats_block", "")
+            style = rec.get("style_token", "")
+            if cronica and stats:
+                # Render exactly as training format
+                yield (
+                    f"<stats>{stats}</stats>\n{style}\n<cronica>{cronica}</cronica>"
+                )
+            elif cronica:
+                yield cronica
 
 
 def train_tokenizer(
