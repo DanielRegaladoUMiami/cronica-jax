@@ -5,4 +5,3 @@ numpy>=1.26
 tokenizers==0.22.1
 huggingface-hub>=0.25
 gradio==5.7.1
-audioop-lts
