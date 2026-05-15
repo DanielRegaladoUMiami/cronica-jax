@@ -28,13 +28,18 @@ from jax import lax
 
 @dataclass(frozen=True)
 class Config:
-    vocab_size: int = 16000
-    d_model: int = 512
-    n_layers: int = 6
-    n_heads: int = 8
+    """Default targets ~5M params, matched to ~100k-token corpus.
+
+    Use larger sizes (d_model=512, n_layers=6) only if scaling up the data.
+    """
+
+    vocab_size: int = 8000
+    d_model: int = 256
+    n_layers: int = 4
+    n_heads: int = 4
     d_head: int = 64       # d_model // n_heads
-    d_ff: int = 1408       # ~= 8/3 * d_model rounded to multiple of 64
-    max_seq_len: int = 1024
+    d_ff: int = 704        # ~= 8/3 * d_model rounded to multiple of 64
+    max_seq_len: int = 512
     rope_base: float = 10000.0
 
     @property

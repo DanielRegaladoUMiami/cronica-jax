@@ -111,11 +111,11 @@ def main() -> None:
     parser.add_argument("--warmup-steps", type=int, default=200)
     parser.add_argument("--weight-decay", type=float, default=0.1)
 
-    parser.add_argument("--vocab-size", type=int, default=16000)
-    parser.add_argument("--d-model", type=int, default=512)
-    parser.add_argument("--n-layers", type=int, default=6)
-    parser.add_argument("--n-heads", type=int, default=8)
-    parser.add_argument("--d-ff", type=int, default=1408)
+    parser.add_argument("--vocab-size", type=int, default=8000)
+    parser.add_argument("--d-model", type=int, default=256)
+    parser.add_argument("--n-layers", type=int, default=4)
+    parser.add_argument("--n-heads", type=int, default=4)
+    parser.add_argument("--d-ff", type=int, default=704)
 
     parser.add_argument("--log-every", type=int, default=50)
     parser.add_argument("--ckpt-every", type=int, default=500)
