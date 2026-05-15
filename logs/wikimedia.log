@@ -1,0 +1,10 @@
+2026-05-15 10:17:20,503 INFO Wikinews category: Categoría:Fútbol
+2026-05-15 10:20:05,063 WARNING Error GET https://es.wikinews.org/w/api.php (attempt 1): HTTPSConnectionPool(host='es.wikinews.org', port=443): Read timed out. (read timeout=30)
+2026-05-15 10:22:46,382 WARNING Error GET https://es.wikinews.org/w/api.php (attempt 1): HTTPSConnectionPool(host='es.wikinews.org', port=443): Read timed out. (read timeout=30)
+2026-05-15 10:26:00,944 INFO Wikinews category: Categoría:Fútbol_de_Argentina
+2026-05-15 10:26:02,035 INFO Wikinews category: Categoría:Fútbol_de_México
+2026-05-15 10:26:03,168 INFO Wikinews category: Categoría:Fútbol_de_Colombia
+2026-05-15 10:26:04,461 INFO Wikinews category: Categoría:Fútbol_de_Uruguay
+2026-05-15 10:26:05,662 INFO Wikinews category: Categoría:Fútbol_de_Chile
+2026-05-15 10:26:06,788 INFO Wikinews category: Categoría:Fútbol_de_Perú
+2026-05-15 10:27:45,590 INFO Wrote 207 records to data/raw/wikimedia.jsonl

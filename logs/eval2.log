@@ -1,0 +1,5 @@
+2026-05-15 13:32:23,882 INFO Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: dlopen(libtpu.so, 0x0001): tried: 'libtpu.so' (no such file), '/System/Volumes/Preboot/Cryptexes/OSlibtpu.so' (no such file), '/usr/lib/libtpu.so' (no such file, not in dyld cache), 'libtpu.so' (no such file)
+2026-05-15 13:32:23,917 INFO Selected 8 held-out matches (from data/prompts/prompts_heldout.jsonl)
+2026-05-15 13:32:23,917 INFO Match 1/8  style=rioplatense_apasionado
+2026-05-15 13:34:59,991 INFO Match 1/8  style=rioplatense_literario
+2026-05-15 13:37:46,098 INFO Match 1/8  style=mexicano_irreverente

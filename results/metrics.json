@@ -1,0 +1,66 @@
+{
+  "grounding": {
+    "n": 12,
+    "home_team_pct": 16.666666666666668,
+    "away_team_pct": 25.0,
+    "score_pct": 0.0,
+    "scorers_recall_pct": 0.0,
+    "scorers_total": 39,
+    "scorers_matched": 0
+  },
+  "style": {
+    "rioplatense_apasionado": {
+      "n": 4,
+      "activation_pct": 100.0,
+      "markers": [
+        "gooool",
+        "goool",
+        "\u00a1goool",
+        "\u00a1qu\u00e9 partido",
+        "qu\u00e9 espect\u00e1culo"
+      ]
+    },
+    "rioplatense_tecnico": {
+      "n": 0,
+      "activation_pct": null
+    },
+    "rioplatense_literario": {
+      "n": 4,
+      "activation_pct": 100.0,
+      "markers": [
+        "barrilete",
+        "alma",
+        "magia",
+        "sinfon\u00eda",
+        "poema"
+      ]
+    },
+    "mexicano_irreverente": {
+      "n": 0,
+      "activation_pct": null
+    },
+    "mexicano_clasico": {
+      "n": 0,
+      "activation_pct": null
+    },
+    "centroamericano_espn": {
+      "n": 0,
+      "activation_pct": null
+    },
+    "espanol_radiofonico": {
+      "n": 0,
+      "activation_pct": null
+    },
+    "comentario_tecnico": {
+      "n": 4,
+      "activation_pct": 50.0,
+      "markers": [
+        "transiciones",
+        "sistema",
+        "estructura",
+        "presi\u00f3n alta",
+        "bloque"
+      ]
+    }
+  }
+}
