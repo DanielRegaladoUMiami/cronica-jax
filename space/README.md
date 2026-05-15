@@ -9,6 +9,7 @@ python_version: "3.12"
 app_file: app.py
 pinned: false
 license: apache-2.0
+hardware: cpu-basic
 short_description: 5M-param JAX mini-LLM. Stats → Spanish crónica.
 ---
 
