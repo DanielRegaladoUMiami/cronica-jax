@@ -1,4 +1,5 @@
-/* CFB Picks: a static site that reads data/picks.json and data/backtest.json.
+/* Picks site for two sports. The URL picks the sport and the section
+   (#cfb/picks, #soccer/record ...) and the page reads that sport's JSON from data/.
    No dependencies. Any text that comes from the data goes in through textContent. */
 (function () {
   'use strict';
@@ -39,7 +40,6 @@
   }
   const edgeFmt = (e) => (e == null ? '–' : signed(e * 100, 1, '%'));
   const oddsFmt = (o) => (o == null ? 'no price' : (o > 0 ? '+' : MINUS) + Math.abs(o));
-  const lineFmt = (x) => (x === 0 ? 'PK' : (x > 0 ? '+' : MINUS) + trim(Math.abs(x)));
   const toDecimal = (o) => (o > 0 ? 1 + o / 100 : 1 + 100 / Math.abs(o));
   function decimalToAmerican(dec) {
     if (!(dec > 1)) return null;
@@ -54,11 +54,12 @@
   const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many || one + 's');
   const cap = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
-  let dfDay = null, dfTime = null, dfStamp = null;
+  let dfDay = null, dfTime = null, dfStamp = null, dfShort = null;
   try {
     dfDay = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     dfTime = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
     dfStamp = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    dfShort = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
   } catch (err) { /* no Intl: fall back to ISO strings */ }
   const dayKey = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const timeFmt = (iso) => (dfTime ? dfTime.format(new Date(iso)) : iso);
@@ -84,17 +85,36 @@
     },
   };
 
+  // ------------------------------------------------------------------ sports
+  const SPORTS = {
+    cfb: {
+      title: 'CFB Picks', name: 'College football', game: 'game', games: 'games',
+      files: ['data/picks.json', 'data/backtest.json'], command: 'python -m src.picks',
+      market: { ml: 'Moneyline', spread: 'Spread', total: 'Total' },
+      short: { ml: 'ML', spread: 'Spread', total: 'Total' },
+    },
+    soccer: {
+      title: 'Soccer Picks', name: 'Soccer', game: 'match', games: 'matches',
+      files: ['data/soccer_picks.json', 'data/soccer_backtest.json'], command: 'python -m src.soccer.picks',
+      market: { ml: 'Match result', spread: 'Handicap', total: 'Total goals' },
+      short: { ml: 'Result', spread: 'Handicap', total: 'Total' },
+    },
+  };
+  const DATA = {};   // sport -> { picks, backtest } or { error }
+
   // ------------------------------------------------------------------- state
   const state = {
+    sport: 'cfb',
     picks: null,
     backtest: null,
     error: null,
     scope: store.get('scope', 'mine'),
+    league: store.get('league', 'all'),
     market: store.get('market', 'all'),
     playsOnly: store.get('playsOnly', false),
     bankroll: store.get('bankroll', 1000),
     stake: store.get('stake', 10),
-    legs: store.get('legs', {}),
+    legs: {},
     query: '',
     showAllPlays: false,
     parlayMarket: 'ml',
@@ -105,6 +125,17 @@
   const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   let refocus = null;
 
+  const S = () => SPORTS[state.sport];
+  const isSoccer = () => state.sport === 'soccer';
+  const legsKey = () => (state.sport === 'cfb' ? 'legs' : 'legs:' + state.sport);
+  const seasonName = (obj) => String(obj.season_label || obj.season);
+  const soccerSeason = (year) => year + '-' + String((year + 1) % 100).padStart(2, '0');
+  function seasonList(years) {   // "2022, 2023" for football, "2022-23 to 2026-27" for soccer
+    if (!isSoccer()) return years.join(', ');
+    return years.length > 1 ? soccerSeason(years[0]) + ' to ' + soccerSeason(years[years.length - 1]) : years.map(soccerSeason).join('');
+  }
+  const gamesWord = (n) => plural(n, S().game, S().games);
+
   function setState(key, value, focusId) {
     state[key] = value;
     if (key !== 'showAllPlays') store.set(key, value);
@@ -113,20 +144,27 @@
   }
 
   // ------------------------------------------------------------- data access
-  const MARKET_NAME = { ml: 'Moneyline', spread: 'Spread', total: 'Total' };
-  const MARKET_SHORT = { ml: 'ML', spread: 'Spread', total: 'Total' };
   const allGames = () => state.picks.games.filter((g) => !g.no_data);
   const mineCount = () => allGames().filter((g) => g.on_my_list).length;
-  const useMine = () => state.scope === 'mine' && mineCount() > 0;
-  const scopedGames = () => (useMine() ? allGames().filter((g) => g.on_my_list) : allGames());
+  const useMine = () => !isSoccer() && state.scope === 'mine' && mineCount() > 0;
+  // A remembered league only counts while it has matches on the board; otherwise show them all.
+  const leaguesOnBoard = () => (state.picks.leagues || []).filter((lg) => lg.games > 0);
+  const currentLeague = () => (leaguesOnBoard().some((lg) => lg.code === state.league) ? state.league : 'all');
+  const inScope = (g) => (isSoccer() ? currentLeague() === 'all' || g.league === currentLeague() : !useMine() || g.on_my_list);
+  const scopedGames = () => allGames().filter(inScope);
   const visibleMarkets = () => (state.market === 'all' ? ['ml', 'spread', 'total'] : [state.market]);
-  const sideKeys = (market) => (market === 'total' ? ['over', 'under'] : ['away', 'home']);
-  const matchup = (g) => g.away.abbr + ' @ ' + g.home.abbr;
+  const mlKeys = () => (isSoccer() ? ['home', 'draw', 'away'] : ['away', 'home']);
+  const sideKeys = (market) => (market === 'total' ? ['over', 'under'] : market === 'ml' ? mlKeys() : isSoccer() ? ['home', 'away'] : ['away', 'home']);
+  // Soccer lists the home team first; American football writes "away @ home".
+  const matchup = (g) => (isSoccer() ? g.home.abbr + ' v ' + g.away.abbr : g.away.abbr + ' @ ' + g.home.abbr);
+  const fixture = (g) => (isSoccer() ? g.home.name + ' v ' + g.away.name : g.away.name + ' @ ' + g.home.name);
+  const lineFmt = (x) => (x === 0 ? (isSoccer() ? '0' : 'PK') : (x > 0 ? '+' : MINUS) + trim(Math.abs(x)));
 
   function sideLabel(g, market, key, withMl) {
     if (market === 'total') return (key === 'over' ? 'Over ' : 'Under ') + trim(g.total.line);
+    if (key === 'draw') return 'Draw';
     const team = g[key].name;
-    if (market === 'ml') return team + (withMl ? ' ML' : '');
+    if (market === 'ml') return team + (withMl ? (isSoccer() ? ' to win' : ' ML') : '');
     const line = key === 'home' ? g.spread.home_line : -g.spread.home_line;
     return team + ' ' + lineFmt(line);
   }
@@ -175,10 +213,14 @@
   function seg(name, options, value, onPick) {
     const box = h('div', { class: 'seg', role: 'group', 'aria-label': name });
     for (const [val, text] of options) {
-      const id = 'seg-' + name.replace(/\W+/g, '') + '-' + val;
+      const id = 'seg-' + name.replace(/\W+/g, '') + '-' + String(val).replace(/\W+/g, '');
       box.append(h('button', { type: 'button', id, 'aria-pressed': String(val === value), onclick: () => onPick(val, id) }, text));
     }
     return box;
+  }
+  function leagueSeg() {
+    const options = [['all', 'All leagues']].concat(leaguesOnBoard().map((lg) => [lg.code, lg.name]));
+    return seg('League', options, currentLeague(), (v, id) => setState('league', v, id));
   }
   function showTip(target, nodes, point) {
     tip.replaceChildren(...nodes);
@@ -196,7 +238,10 @@
   const isLeg = (id, market, key) => { const cur = state.legs[id]; return !!cur && cur.market === market && cur.key === key; };
   function legOf(g, market, key) {
     const side = g[market] && g[market][key];
-    return side ? { g, market, key, side, label: sideLabel(g, market, key, true) } : null;
+    if (!side) return null;
+    // A total or a draw says nothing about which game it is, so the ticket adds the matchup.
+    const bare = market === 'total' || key === 'draw';
+    return { g, market, key, side, label: sideLabel(g, market, key, true) + (bare ? ' (' + matchup(g) + ')' : '') };
   }
   function selectedLegs() {
     const byId = new Map(allGames().map((g) => [g.id, g]));
@@ -214,12 +259,15 @@
     el.hidden = n === 0;
     el.textContent = String(n);
   }
+  function saveLegs(legs) {
+    state.legs = legs;
+    store.set(legsKey(), legs);
+  }
   function setLeg(g, market, key) {
     const legs = Object.assign({}, state.legs);
     if (isLeg(g.id, market, key)) delete legs[g.id];
     else legs[g.id] = { market, key };   // one leg per game: two legs from the same game are not independent
-    state.legs = legs;
-    store.set('legs', legs);
+    saveLegs(legs);
     updateParlayCount();
   }
 
@@ -228,7 +276,7 @@
     const P = state.picks;
     const out = [realityCheck()];
     if (P.warnings && P.warnings.length) {
-      out.push(h('section', { class: 'callout' }, h('b', { class: 't' }, 'Data warnings'),
+      out.push(h('section', { class: 'callout' }, h('b', { class: 't' }, isSoccer() ? 'Heads up' : 'Data warnings'),
         h('ul', { class: 'alerts' }, P.warnings.map((w) => h('li', null, w)))));
     }
     out.push(topPlays());
@@ -240,40 +288,43 @@
   }
 
   function realityCheck() {
-    const P = state.picks, m = P.model;
+    const P = state.picks, m = P.model, soccer = isSoccer();
     const play = P.evidence && P.evidence.all && P.evidence.all.PLAY;
     const box = h('section', { class: 'callout', 'aria-label': 'Reality check' }, h('b', { class: 't' }, 'Reality check'));
     if (!m.n_backtest) {
-      box.append(h('p', null, 'No ' + P.season + ' games have been played yet, so these projections lean on last season’s ratings and are less reliable.'));
+      box.append(h('p', null, 'No ' + seasonName(P) + ' ' + S().games + ' have been played yet, so these projections lean on last season’s ratings and are less reliable.'));
       return box;
     }
-    const line = h('p', null, 'The model has picked ', b(rate(m.accuracy, 0) + ' of winners'), ' this season');
+    const line = soccer
+      ? h('p', null, 'The model has called ', b(rate(m.accuracy, 0) + ' of results'), ' right this season (home win, draw or away win)')
+      : h('p', null, 'The model has picked ', b(rate(m.accuracy, 0) + ' of winners'), ' this season');
     if (play && play.n) {
       line.append(', but it has ', b('not beaten the betting market'), '. Past plays like the ones below went ' + play.won + '–' + play.lost +
-        ' against closing lines (ROI ' + signed(play.roi * 100, 1, '%') + '). Read a PLAY as “my number disagrees with the market,” not as a sure thing. ');
+        ' against closing ' + (soccer ? 'odds' : 'lines') + ' (ROI ' + signed(play.roi * 100, 1, '%') + '). Read a PLAY as “my number disagrees with the market,” not as a sure thing. ');
     } else {
       line.append('. ');
     }
-    line.append(h('a', { href: '#record' }, 'See the track record'));
+    line.append(h('a', { href: '#' + state.sport + '/record' }, 'See the track record'));
     box.append(line);
     return box;
   }
 
   function topPlays() {
+    const soccer = isSoccer();
     const games = scopedGames();
     const picks = collectPicks(games);
     const plays = picks.filter((p) => p.side.label === 'PLAY');
     const avoid = picks.filter((p) => p.side.label === 'AVOID');
     const box = h('section', { class: 'panel' });
-    box.append(h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, 'Best plays this week'),
+    box.append(h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, soccer ? 'Best plays, next 7 days' : 'Best plays this week'),
       h('label', { class: 'field-input', for: 'bankroll' }, 'Bankroll $',
         h('input', { id: 'bankroll', type: 'number', min: '0', step: '50', inputmode: 'decimal', value: String(state.bankroll),
           onchange: (e) => setState('bankroll', Math.max(0, Number(e.target.value) || 0), 'bankroll') }))));
-    const where = useMine() ? 'your ' + plural(games.length, 'tracked game') : plural(games.length, 'game');
+    const where = useMine() ? 'your ' + plural(games.length, 'tracked game') : gamesWord(games.length);
     if (!plays.length) {
-      box.append(h('p', { class: 'empty' }, 'No play clears the 5% edge bar in ' + where + '.'));
+      box.append(h('p', { class: 'empty' }, 'No play clears the ' + (state.picks.rules.edge_min * 100).toFixed(0) + '% edge bar in ' + where + '.'));
     } else {
-      box.append(h('p', { class: 'sub' }, plural(plays.length, 'play') + ' in ' + where + ', ranked by edge: the model’s chance minus the market’s. Tap one to see the game.'));
+      box.append(h('p', { class: 'sub' }, plural(plays.length, 'play') + ' in ' + where + ', ranked by edge: the model’s chance minus the market’s. Tap one to see the ' + S().game + '.'));
       const shown = state.showAllPlays ? plays : plays.slice(0, 5);
       box.append(h('div', { class: 'plays' }, shown.map((p, i) => playRow(p, i + 1))));
       if (plays.length > 5) {
@@ -283,13 +334,16 @@
       const exposure = plays.reduce((acc, p) => acc + p.side.stake, 0);
       if (plays.length > 3) {
         box.append(h('p', { class: 'small' }, 'Betting every play at the suggested stake would put ' + (exposure * 100).toFixed(0) + '% of your bankroll' +
-          (state.bankroll > 0 ? ' (' + money(exposure * state.bankroll) + ')' : '') + ' at risk in one week. A moneyline and a spread on the same team are nearly the same bet, so pick one.'));
+          (state.bankroll > 0 ? ' (' + money(exposure * state.bankroll) + ')' : '') + ' at risk in one week. ' +
+          (soccer ? 'A result and a handicap on the same team are nearly the same bet, so pick one.' : 'A moneyline and a spread on the same team are nearly the same bet, so pick one.')));
       }
     }
     if (avoid.length) {
       box.append(h('details', null,
         h('summary', { class: 'h3' }, plural(avoid.length, 'pick') + ' to avoid'),
-        h('p', { class: 'small', style: 'margin-top:8px' }, 'These have an edge on paper, but the pick is unstable or the line moved against it. Picks like these did worst in the backtest.'),
+        h('p', { class: 'small', style: 'margin-top:8px' }, soccer
+          ? 'These have an edge on paper, but a red flag is up: the edge is too big to be real, it is a result bet on an outsider, or the pick is unstable. Picks like these did worst in the backtest.'
+          : 'These have an edge on paper, but the pick is unstable or the line moved against it. Picks like these did worst in the backtest.'),
         h('div', { class: 'plays' }, avoid.map((p) => playRow(p, null)))));
     }
     return box;
@@ -298,7 +352,7 @@
   function playRow(p, rank) {
     const { g, market, key, side } = p;
     const stake = stakeText(side);
-    let ctx = MARKET_NAME[market] + ' · ' + matchup(g) + ' · ' + kickFmt(g.date);
+    let ctx = S().market[market] + ' · ' + matchup(g) + (g.league_name ? ' · ' + g.league_name : '') + ' · ' + kickFmt(g.date);
     if (rank && stake) ctx += ' · stake ' + stake;
     if (!rank && side.reasons.length) ctx += ' · ' + side.reasons[0];
     return h('button', { type: 'button', class: 'playrow', onclick: () => goToGame(g.id, market) },
@@ -324,18 +378,25 @@
     setTimeout(() => card.classList.remove('flash'), 1800);
   }
 
+  function betTypeSeg(name, withAll, value, onPick) {
+    const names = S().short;
+    const options = [['ml', isSoccer() ? names.ml : 'Moneyline'], ['spread', names.spread], ['total', names.total]];
+    return seg(name, withAll ? [['all', 'All bets']].concat(options) : options, value, onPick);
+  }
+
   function controls() {
-    const box = h('section', { class: 'controls', 'aria-label': 'Filter games' });
+    const box = h('section', { class: 'controls', 'aria-label': 'Filter ' + S().games });
     const mine = mineCount(), total = allGames().length;
     box.append(h('div', { class: 'controls-row' },
       h('div', { class: 'search' },
         h('input', { id: 'q', type: 'search', placeholder: 'Find a team', autocomplete: 'off', value: state.query, 'aria-label': 'Find a team',
           oninput: (e) => { state.query = e.target.value; fillGames(document.getElementById('games-list')); } }))));
+    if (isSoccer()) box.append(h('div', { class: 'controls-row' }, leagueSeg()));
     const row = h('div', { class: 'controls-row' });
-    if (mine) {
+    if (!isSoccer() && mine) {
       row.append(seg('Games', [['mine', 'My games (' + mine + ')'], ['all', 'All games (' + total + ')']], useMine() ? 'mine' : 'all', (v, id) => setState('scope', v, id)));
     }
-    row.append(seg('Bet type', [['all', 'All bets'], ['ml', 'Moneyline'], ['spread', 'Spread'], ['total', 'Total']], state.market, (v, id) => setState('market', v, id)));
+    row.append(betTypeSeg('Bet type', true, state.market, (v, id) => setState('market', v, id)));
     row.append(h('label', { class: 'toggle', for: 'plays-only' },
       h('input', { id: 'plays-only', type: 'checkbox', checked: state.playsOnly, onchange: (e) => setState('playsOnly', e.target.checked, 'plays-only') }), 'Plays only'));
     box.append(row);
@@ -345,7 +406,7 @@
   function filteredGames() {
     const q = state.query.trim().toLowerCase();
     let list = q ? allGames() : scopedGames();   // a search looks through every game
-    if (q) list = list.filter((g) => [g.home.name, g.away.name, g.home.abbr, g.away.abbr].some((x) => String(x).toLowerCase().includes(q)));
+    if (q) list = list.filter((g) => [g.home.name, g.away.name, g.home.abbr, g.away.abbr, g.home.full_name, g.away.full_name].some((x) => x && String(x).toLowerCase().includes(q)));
     if (state.playsOnly) list = list.filter((g) => visibleMarkets().some((m) => { const p = pickOf(g, m); return p && p.side.label === 'PLAY'; }));
     return list.slice().sort((x, y) => x.date.localeCompare(y.date));
   }
@@ -355,7 +416,8 @@
     const games = filteredGames();
     const out = [];
     if (!games.length) {
-      out.push(h('p', { class: 'empty' }, state.query ? 'No team matches “' + state.query + '”.' : state.playsOnly ? 'No game has a PLAY with these filters.' : 'No pending games with a projection this week.'));
+      out.push(h('p', { class: 'empty' }, state.query ? 'No team matches “' + state.query + '”.' : state.playsOnly ? 'No ' + S().game + ' has a PLAY with these filters.'
+        : 'No pending ' + S().games + ' with a projection ' + (isSoccer() ? 'in the next 7 days.' : 'this week.')));
     }
     let current = null, grid = null;
     for (const g of games) {
@@ -363,18 +425,50 @@
       if (key !== current) {
         current = key;
         const count = games.filter((x) => dayKey(new Date(x.date)) === key).length;
-        out.push(h('div', { class: 'day' }, h('h2', { class: 'h2' }, dayLabel(g.date)), h('span', { class: 'small' }, plural(count, 'game'))));
+        out.push(h('div', { class: 'day' }, h('h2', { class: 'h2' }, dayLabel(g.date)), h('span', { class: 'small' }, gamesWord(count))));
         grid = h('div', { class: 'cards' });
         out.push(grid);
       }
-      grid.append(gameCard(g));
+      grid.append(isSoccer() ? soccerCard(g) : gameCard(g));
     }
-    const missing = state.picks.games.filter((g) => g.no_data && (!useMine() || g.on_my_list));
+    const missing = state.picks.games.filter((g) => g.no_data && inScope(g));
     if (missing.length && !state.query) {
       out.push(h('section', { class: 'panel' }, h('h2', { class: 'h3' }, 'No projection'),
-        h('ul', { class: 'alerts' }, missing.map((g) => h('li', { class: 'cmp' }, g.away.name + ' @ ' + g.home.name + ': ' + (g.no_data_reason || 'no data'))))));
+        h('ul', { class: 'alerts' }, missing.map((g) => h('li', { class: 'cmp' }, fixture(g) + ': ' + (g.no_data_reason || 'no data'))))));
     }
     container.replaceChildren(...out);
+  }
+
+  // Shared bottom half of a card: the markets, the notes and the parlay chips.
+  function cardBody(card, g) {
+    const markets = h('div', { class: 'markets' });
+    for (const market of visibleMarkets()) {
+      const row = marketRow(g, market);
+      if (row) markets.append(row);
+    }
+    if (markets.children.length) card.append(markets);
+
+    const notes = [...(g.alerts || []).map((a) => h('li', null, cap(a))), ...(g.price_notes || []).map((c) => h('li', { class: 'cmp' }, c))];
+    if (notes.length) card.append(h('ul', { class: 'alerts' }, notes));
+    if (g.notes) card.append(h('p', { class: 'note' }, b('Note: '), g.notes));
+
+    const add = h('div', { class: 'addrow' }, h('span', { class: 'small' }, 'Add to parlay'));
+    for (const key of mlKeys()) {
+      const side = g.ml[key];
+      if (!side) continue;
+      const name = key === 'draw' ? 'Draw' : g[key].abbr;
+      add.append(h('button', { type: 'button', class: 'addchip', id: 'add-' + g.id + '-' + key, 'aria-pressed': String(isLeg(g.id, 'ml', key)),
+        'aria-label': (key === 'draw' ? 'Draw' : g[key].name + (isSoccer() ? ' to win' : ' moneyline')) + ' in the parlay',
+        onclick: () => {
+          setLeg(g, 'ml', key);
+          for (const k of mlKeys()) {
+            const chip = document.getElementById('add-' + g.id + '-' + k);
+            if (chip) chip.setAttribute('aria-pressed', String(isLeg(g.id, 'ml', k)));
+          }
+        } }, name + ' ' + oddsFmt(side.odds)));
+    }
+    if (add.children.length > 1) card.append(add);
+    return card;
   }
 
   function gameCard(g) {
@@ -422,42 +516,61 @@
       lines.append(h('dt', null, 'Manual'), h('dd', null, signed(pr.home_margin_adj, 1) + ' pts to the home margin, ' + signed(pr.total_adj, 1) + ' to the total'));
     }
     card.append(lines);
+    return cardBody(card, g);
+  }
 
-    const markets = h('div', { class: 'markets' });
-    for (const market of visibleMarkets()) {
-      const row = marketRow(g, market);
-      if (row) markets.append(row);
+  // Soccer has three results, so the card shows home, draw and away with expected goals.
+  function soccerCard(g) {
+    const pr = g.projection, model = state.picks.model, mk = g.market, espn = mk.espn;
+    const card = h('article', { class: 'panel game', id: 'g-' + g.id });
+    card.append(h('div', { class: 'game-top' }, h('span', { class: 'kick' }, kickFmt(g.date)),
+      h('div', { class: 'tags' }, h('span', { class: 'tag' }, g.league_name))));
+
+    const chance = { home: pr.p_home, draw: pr.p_draw, away: pr.p_away };
+    const teams = h('div', { class: 'teams' });
+    for (const key of ['home', 'draw', 'away']) {
+      if (key === 'draw') {
+        teams.append(h('div', { class: 'team draw' + (pr.winner === 'draw' ? ' fav' : '') }, h('span', { class: 'badge plain', 'aria-hidden': 'true' }, 'X'),
+          h('div', { class: 'team-name' }, h('b', null, 'Draw'))), h('div', { class: 'proj' }), h('div', { class: 'wp' }, pct(pr.p_draw)));
+        continue;
+      }
+      const t = g[key];
+      const wdl = /^\d+-\d+-\d+$/.test(t.record || '') ? t.record.split('-').map((n, i) => 'WDL'[i] + n).join(' ') : null;
+      const meta = [wdl, t.rating_rank ? 'model #' + t.rating_rank : null, key].filter(Boolean).join(' · ');
+      teams.append(
+        h('div', { class: 'team' + (pr.winner === key ? ' fav' : '') }, badge(t), h('div', { class: 'team-name' }, h('b', null, t.name), h('span', null, meta))),
+        h('div', { class: 'proj' }, pr[key] == null ? '–' : pr[key].toFixed(1)),
+        h('div', { class: 'wp' }, pct(chance[key])));
     }
-    if (markets.children.length) card.append(markets);
+    card.append(teams);
+    card.append(h('div', { class: 'wpbar', role: 'img',
+      'aria-label': 'Chance of each result: ' + g.home.name + ' ' + pct(pr.p_home) + ', draw ' + pct(pr.p_draw) + ', ' + g.away.name + ' ' + pct(pr.p_away) },
+      ['home', 'draw', 'away'].map((key) => h('i', { class: [key === 'draw' ? 'draw' : null, pr.winner === key ? 'fav' : null].filter(Boolean).join(' ') || null, style: 'flex:' + Math.max(chance[key], 0.02) }))));
+    card.append(h('div', { class: 'cap' }, h('span', null, 'Expected goals and chances'),
+      model.mae_margin != null ? h('span', null, 'typical miss ±' + model.mae_margin.toFixed(1) + ' goals') : null));
 
-    const notes = [...(g.alerts || []).map((a) => h('li', null, cap(a))), ...(g.price_notes || []).map((c) => h('li', { class: 'cmp' }, c))];
-    if (notes.length) card.append(h('ul', { class: 'alerts' }, notes));
-    if (g.notes) card.append(h('p', { class: 'note' }, b('Note: '), g.notes));
-
-    const add = h('div', { class: 'addrow' }, h('span', { class: 'small' }, 'Add to parlay'));
-    for (const key of ['away', 'home']) {
-      const side = g.ml[key];
-      if (!side) continue;
-      add.append(h('button', { type: 'button', class: 'addchip', id: 'add-' + g.id + '-' + key, 'aria-pressed': String(isLeg(g.id, 'ml', key)),
-        'aria-label': g[key].name + ' moneyline in the parlay',
-        onclick: () => {
-          setLeg(g, 'ml', key);
-          for (const k of ['away', 'home']) {
-            const chip = document.getElementById('add-' + g.id + '-' + k);
-            if (chip) chip.setAttribute('aria-pressed', String(isLeg(g.id, 'ml', k)));
-          }
-        } }, g[key].abbr + ' ' + oddsFmt(side.odds)));
+    const lines = h('dl', { class: 'lines' });
+    const score = pr.likely_score || [];
+    lines.append(h('dt', null, 'Model'), h('dd', null, (score.length === 2 ? 'Most likely score ' + g.home.abbr + ' ' + score[0] + '–' + score[1] + ' ' + g.away.abbr + ' · ' : '') +
+      'total ' + pr.total.toFixed(1) + ' goals'));
+    if (mk.p_home != null) {
+      let text = g.home.abbr + ' ' + pct(mk.p_home) + ' · Draw ' + pct(mk.p_draw) + ' · ' + g.away.abbr + ' ' + pct(mk.p_away);
+      if (espn && espn.total != null) text += ' · goals line ' + trim(espn.total);
+      lines.append(h('dt', null, 'Market'), h('dd', null, text));
     }
-    if (add.children.length > 1) card.append(add);
-    return card;
+    if (pr.home_goals_adj || pr.away_goals_adj) {
+      lines.append(h('dt', null, 'Manual'), h('dd', null, signed(pr.home_goals_adj, 1) + ' goals for ' + g.home.name + ', ' + signed(pr.away_goals_adj, 1) + ' for ' + g.away.name));
+    }
+    card.append(lines);
+    return cardBody(card, g);
   }
 
   function marketRow(g, market) {
     const p = pickOf(g, market);
     if (!p) return null;
-    const side = p.side, block = g[market];
+    const side = p.side, block = g[market], soccer = isSoccer();
     const summary = h('summary', null,
-      h('span', { class: 'mkt-type' }, MARKET_NAME[market]),
+      h('span', { class: 'mkt-type' }, S().market[market]),
       h('span', { class: 'mkt-pick' }, sideLabel(g, market, p.key), ' ', h('span', { class: 'price' }, '(' + oddsFmt(side.odds) + ')')),
       pill(side.label));
     const sub = h('span', { class: 'mkt-sub' }, h('span', null, 'model ', b(pct(side.p_model))));
@@ -478,17 +591,29 @@
     if (fair != null) facts.push('The model’s fair price would be ' + oddsFmt(fair) + '.');
     if (side.ev != null) facts.push('Expected value at this price: ' + signed(side.ev * 100, 1, '%') + ' per unit staked.');
     const dv = block.devig;
+    if (dv && dv.method === 'three_way') facts.push('Market chance comes from the three ' + sourceName(g, dv.source) + ' prices (home, draw, away), with the bookmaker’s cut removed.');
     if (dv && dv.method === 'two_sided') facts.push('Market chance comes from both sides of the ' + sourceName(g, dv.source) + ' price, with the bookmaker’s cut removed.');
     if (dv && dv.method === 'one_sided') facts.push('Only one side was priced at ' + sourceName(g, dv.source) + ', so a typical 4.5% bookmaker cut was removed.');
     if (dv && dv.method === 'assumed') facts.push('With no price captured, the market chance assumes standard ' + MINUS + '110 on both sides.');
     const pr = g.projection;
-    if (market !== 'total' && pr.margin_without_last2 != null) {
-      const now = (pr.margin >= 0 ? g.home : g.away).name + ' by ' + trim(Math.abs(pr.margin));
-      const alt = (pr.margin_without_last2 >= 0 ? g.home : g.away).name + ' by ' + trim(Math.abs(pr.margin_without_last2));
-      facts.push('Without each team’s last 2 games the projection would be ' + alt + ' (now ' + now + ').');
-    }
-    if (market === 'total' && pr.total_without_last2 != null) {
-      facts.push('Without each team’s last 2 games the projected total would be ' + trim(pr.total_without_last2) + ' (now ' + trim(pr.total) + ').');
+    if (soccer) {
+      const line = market === 'total' ? block.line : market === 'spread' ? block.home_line : null;
+      if (line != null && Number.isInteger(line)) facts.push('On a whole-number line an exact tie is a push and the stake comes back; the chances shown leave pushes out.');
+      if (market !== 'total' && pr.p_home_without_last2 != null) {
+        facts.push('Without each team’s last 2 matches the model would give ' + g.home.name + ' ' + pct(pr.p_home_without_last2) + ' to win (now ' + pct(pr.p_home) + ').');
+      }
+      if (market === 'total' && pr.total_without_last2 != null) {
+        facts.push('Without each team’s last 2 matches the expected total would be ' + pr.total_without_last2.toFixed(1) + ' goals (now ' + pr.total.toFixed(1) + ').');
+      }
+    } else {
+      if (market !== 'total' && pr.margin_without_last2 != null) {
+        const now = (pr.margin >= 0 ? g.home : g.away).name + ' by ' + trim(Math.abs(pr.margin));
+        const alt = (pr.margin_without_last2 >= 0 ? g.home : g.away).name + ' by ' + trim(Math.abs(pr.margin_without_last2));
+        facts.push('Without each team’s last 2 games the projection would be ' + alt + ' (now ' + now + ').');
+      }
+      if (market === 'total' && pr.total_without_last2 != null) {
+        facts.push('Without each team’s last 2 games the projected total would be ' + trim(pr.total_without_last2) + ' (now ' + trim(pr.total) + ').');
+      }
     }
     body.append(h('ul', null, facts.map((f) => h('li', null, f))));
 
@@ -507,24 +632,33 @@
   }
 
   function explain(g, market, key, side) {
-    const what = sideLabel(g, market, key);
-    const verb = market === 'ml' ? 'to win' : market === 'spread' ? 'to cover' : 'to hit';
+    const soccer = isSoccer();
+    const what = key === 'draw' ? 'a draw' : sideLabel(g, market, key);
+    const verb = key === 'draw' ? '' : market === 'ml' ? ' to win' : market === 'spread' ? ' to cover' : ' to hit';
     if (side.p_market == null || side.edge == null) {
-      return h('p', { class: 'why' }, 'No line is available for this market, so only the model’s number is shown: ', b(pct(side.p_model)), ' for ' + what + ' ' + verb + '.');
+      return h('p', { class: 'why' }, 'No line is available for this market, so only the model’s number is shown: ', b(pct(side.p_model)), ' for ' + what + verb + '.');
     }
     if (side.label === 'PLAY') {
       const stake = stakeText(side);
       return h('div', { class: 'why play' },
-        h('p', null, 'The model gives ', b(what), ' a ', b(pct(side.p_model)), ' chance ' + verb + '. The market price implies ', b(pct(side.p_market)),
+        h('p', null, 'The model gives ', b(what), ' a ', b(pct(side.p_model)), ' chance' + verb + '. The market price implies ', b(pct(side.p_market)),
           ' once the bookmaker’s cut is removed. That gap of ', b(edgeFmt(side.edge)), ' is the edge.'),
-        h('p', { style: 'margin-top:6px' }, 'The pick holds up without each team’s last two games, and the line has not moved against it.' +
+        h('p', { style: 'margin-top:6px' }, (soccer
+          ? 'The pick holds up without each team’s last two matches, and none of the red flags is up.'
+          : 'The pick holds up without each team’s last two games, and the line has not moved against it.') +
           (stake ? ' Suggested stake: ' + stake + ', a quarter of the Kelly amount and never more than 2%.' : '')));
     }
     if (side.label === 'AVOID') {
+      const ev = state.picks.evidence && state.picks.evidence.all;
+      let closing = 'The model does not see injuries, weather or news. When the market disagrees this much, it usually knows something.';
+      if (soccer) {
+        closing = 'The model does not see injuries, suspensions or rotation.' + (ev && ev.AVOID && ev.AVOID.n && ev.PLAY && ev.PLAY.n
+          ? ' In the backtest, flagged picks returned ' + signed(ev.AVOID.roi * 100, 1, '%') + ' against ' + signed(ev.PLAY.roi * 100, 1, '%') + ' for the plays.' : '');
+      }
       return h('div', { class: 'why avoid' },
         h('p', null, 'On paper there is an edge of ', b(edgeFmt(side.edge)), ' (model ' + pct(side.p_model) + ', market ' + pct(side.p_market) + '), but there is a red flag:'),
         h('ul', { style: 'margin-top:6px' }, side.reasons.map((r) => h('li', null, cap(r)))),
-        h('p', { style: 'margin-top:6px' }, 'The model does not see injuries, weather or news. When the market disagrees this much, it usually knows something.'));
+        h('p', { style: 'margin-top:6px' }, closing));
     }
     return h('p', { class: 'why' }, 'Not enough edge. The model says ', b(pct(side.p_model)), ' and the market ', b(pct(side.p_market)),
       ', a gap of ' + edgeFmt(side.edge) + '. A PLAY needs at least ' + (state.picks.rules.edge_min * 100).toFixed(0) + '%.');
@@ -545,16 +679,18 @@
     for (const saved of state.picks.parlays || []) out.push(savedParlay(saved));
 
     const builder = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Build a parlay'),
-      h('p', { class: 'sub' }, 'Tap a side to add it to your ticket. One leg per game: the math multiplies each leg’s chance, which only works when the legs are independent.'));
+      h('p', { class: 'sub' }, 'Tap a side to add it to your ticket. One leg per ' + S().game + ': the math multiplies each leg’s chance, which only works when the legs are independent.'));
+    if (isSoccer()) builder.append(h('div', { class: 'controls-row' }, leagueSeg()));
     const row = h('div', { class: 'controls-row' });
-    if (mineCount()) row.append(seg('Games', [['mine', 'My games'], ['all', 'All games']], useMine() ? 'mine' : 'all', (v, id) => setState('scope', v, id)));
-    row.append(seg('Market', [['ml', 'Moneyline'], ['spread', 'Spread'], ['total', 'Total']], state.parlayMarket, (v, id) => { state.parlayMarket = v; refocus = id; render(); }));
+    if (!isSoccer() && mineCount()) row.append(seg('Games', [['mine', 'My games'], ['all', 'All games']], useMine() ? 'mine' : 'all', (v, id) => setState('scope', v, id)));
+    row.append(betTypeSeg('Market', false, state.parlayMarket, (v, id) => { state.parlayMarket = v; refocus = id; render(); }));
     builder.append(row);
     const list = h('div');
     const market = state.parlayMarket;
     for (const g of scopedGames().slice().sort((x, y) => x.date.localeCompare(y.date))) {
-      const opts = h('div', { class: 'legopts' });
-      for (const key of sideKeys(market)) {
+      const keys = sideKeys(market);
+      const opts = h('div', { class: 'legopts' + (keys.length === 3 ? ' three' : '') });
+      for (const key of keys) {
         const leg = legOf(g, market, key);
         if (!leg) continue;
         const id = 'leg-' + g.id + '-' + market + '-' + key;
@@ -565,7 +701,7 @@
       }
       if (opts.children.length) list.append(h('div', { class: 'legrow' }, h('span', { class: 'when' }, matchup(g) + ' · ' + kickFmt(g.date)), opts));
     }
-    builder.append(list.children.length ? list : h('p', { class: 'empty' }, 'No lines for this market in the selected games.'));
+    builder.append(list.children.length ? list : h('p', { class: 'empty' }, 'No lines for this market in the selected ' + S().games + '.'));
     out.push(builder);
     out.push(slip());
     return out;
@@ -606,7 +742,7 @@
         g ? badge(g[leg.side], true) : h('span'),
         h('div', { class: 'legname' }, h('b', null, leg.team), weak ? h('span', { class: 'flag' }, 'Weakest leg') : null,
           h('small', null, (leg.venue === 'home' ? 'vs ' : 'at ') + leg.opponent)),
-        h('div', { class: 'fig' }, pct(leg.p_model), h('small', null, (leg.p_market != null ? 'market ' + pct(leg.p_market) + ' \u00b7 ' : '') + oddsFmt(leg.odds))),
+        h('div', { class: 'fig' }, pct(leg.p_model), h('small', null, (leg.p_market != null ? 'market ' + pct(leg.p_market) + ' · ' : '') + oddsFmt(leg.odds))),
         h('div', { class: 'bar' + (weak ? ' weak' : ''), role: 'img', 'aria-label': 'Model chance ' + pct(leg.p_model) }, h('i', { style: 'width:' + clamp(leg.p_model * 100, 2, 100).toFixed(0) + '%' }))));
     }
     box.append(grid);
@@ -614,8 +750,7 @@
     box.append(h('div', null, h('button', { type: 'button', class: 'btn', onclick: () => {
       const next = {};
       for (const leg of legs) next[leg.game_id] = { market: 'ml', key: leg.side };
-      state.legs = next;
-      store.set('legs', next);
+      saveLegs(next);
       state.parlayMarket = 'ml';
       state.slipOpen = true;
       refocus = 'slip';
@@ -658,33 +793,48 @@
     body.append(h('p', { class: 'small' }, 'Weakest leg: ' + weakest.label + ' (' + pct(weakest.side.p_model) + '). Tap a leg to remove it.'));
     body.append(h('div', { class: 'slip-legs' }, legs.map((l) => h('button', { type: 'button', 'aria-label': 'Remove ' + l.label,
       onclick: () => { setLeg(l.g, l.market, l.key); refocus = 'slip'; render(); } }, l.label + ' ' + oddsFmt(l.side.odds) + ' ×'))));
-    body.append(h('div', null, h('button', { type: 'button', class: 'btn ghost', onclick: () => { state.legs = {}; store.set('legs', {}); refocus = 'slip'; render(); } }, 'Clear ticket')));
+    body.append(h('div', null, h('button', { type: 'button', class: 'btn ghost', onclick: () => { saveLegs({}); refocus = 'slip'; render(); } }, 'Clear ticket')));
     return box;
   }
 
   // ============================================================ TRACK RECORD
+  const kpiBox = (k, v, sub) => h('div', null, h('div', { class: 'k' }, k), h('div', { class: 'v' }, v), h('div', { class: 's' }, sub || ''));
+  const weekName = (w) => (isSoccer() ? (dfShort ? dfShort.format(new Date(w.week + 'T00:00:00Z')) : String(w.week)) : 'Wk ' + w.week);
+  const weekLong = (w) => (isSoccer() ? 'Week of ' + weekName(w) : 'Week ' + w.week);
+
   function renderRecord() {
-    const B = state.backtest, out = [];
+    const B = state.backtest;
     const sel = B.comparison.find((c) => c.selected) || B.comparison[0];
-    const cur = sel.current, mkt = B.market;
+    const cur = sel.current;
     if (!cur || !cur.n) {
       return [h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Track record'),
-        h('p', { class: 'empty' }, 'No ' + B.season + ' games have been played yet. The track record appears after the first week.'))];
+        h('p', { class: 'empty' }, 'No ' + seasonName(B) + ' ' + S().games + ' have been played yet. The track record appears after the first week.'))];
     }
+    return isSoccer() ? soccerRecord(B, sel) : footballRecord(B, sel);
+  }
+
+  function footballRecord(B, sel) {
+    const cur = sel.current, mkt = B.market;
     const kpi = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'How the model has done in ' + B.season),
       h('p', { class: 'sub' }, 'Every week was predicted using only the games played before it, across ' + cur.n + ' games between top-division teams. Nothing here was fitted after the fact.'));
-    const kv = h('div', { class: 'kv' });
-    kv.append(h('div', null, h('div', { class: 'k' }, 'Picked the winner'), h('div', { class: 'v' }, rate(cur.accuracy)), h('div', { class: 's' }, mkt ? 'the market: ' + rate(mkt.accuracy) : '')));
-    kv.append(h('div', null, h('div', { class: 'k' }, 'When favored by 14+'), h('div', { class: 'v' }, rate(cur.accuracy_14)), h('div', { class: 's' }, plural(cur.n_14, 'game'))));
-    kv.append(h('div', null, h('div', { class: 'k' }, 'Typical miss, margin'), h('div', { class: 'v' }, cur.mae_margin.toFixed(1) + ' pts'), h('div', { class: 's' }, mkt ? 'the market: ' + mkt.mae_margin.toFixed(1) : '')));
-    kv.append(h('div', null, h('div', { class: 'k' }, 'Typical miss, total'), h('div', { class: 'v' }, cur.mae_total.toFixed(1) + ' pts'), h('div', { class: 's' }, mkt ? 'the market: ' + mkt.mae_total.toFixed(1) : '')));
-    kpi.append(kv);
-    out.push(kpi);
-    out.push(bettingPanel(B));
-    out.push(comparisonPanel(B, sel));
-    out.push(weeksPanel(B));
-    out.push(calibrationPanel(B));
-    return out;
+    kpi.append(h('div', { class: 'kv' },
+      kpiBox('Picked the winner', rate(cur.accuracy), mkt ? 'the market: ' + rate(mkt.accuracy) : ''),
+      kpiBox('When favored by 14+', rate(cur.accuracy_14), plural(cur.n_14, 'game')),
+      kpiBox('Typical miss, margin', cur.mae_margin.toFixed(1) + ' pts', mkt ? 'the market: ' + mkt.mae_margin.toFixed(1) : ''),
+      kpiBox('Typical miss, total', cur.mae_total.toFixed(1) + ' pts', mkt ? 'the market: ' + mkt.mae_total.toFixed(1) : '')));
+    return [kpi, bettingPanel(B), comparisonPanel(B, sel), weeksPanel(B), calibrationPanel(B)];
+  }
+
+  function soccerRecord(B, sel) {
+    const cur = sel.current, mkt = B.market;
+    const kpi = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'How the model has done in ' + seasonName(B)),
+      h('p', { class: 'sub' }, 'Every week was predicted using only the matches played before it, across ' + cur.n + ' matches in the five leagues. Nothing here was fitted after the fact.'));
+    kpi.append(h('div', { class: 'kv' },
+      kpiBox('Called the result', rate(cur.accuracy), mkt ? 'the odds’ favorite: ' + rate(mkt.accuracy) : 'home win, draw or away win'),
+      kpiBox('Forecast error (RPS)', cur.rps.toFixed(3), (mkt ? 'the market: ' + mkt.rps.toFixed(3) + ' · ' : '') + 'lower is better'),
+      kpiBox('Typical miss, total goals', cur.mae_total.toFixed(2), 'goal difference: ' + cur.mae_margin.toFixed(2)),
+      kpiBox('Matches drawn', rate(cur.draw_observed, 0), 'the model expected ' + rate(cur.draw_predicted, 0))));
+    return [kpi, bettingPanel(B), soccerComparison(B), leaguePanel(B), soccerWeeks(B), calibrationPanel(B)];
   }
 
   function recordTable(block) {
@@ -696,9 +846,9 @@
         const r = block[market] && block[market][label];
         if (!r || !r.n) continue;
         body.append(h('tr', { class: market === 'all' ? 'hl' : null },
-          h('td', null, (market === 'all' ? 'All' : MARKET_SHORT[market]) + ' · ' + label.toLowerCase()),
+          h('td', null, (market === 'all' ? 'All' : S().short[market]) + ' · ' + label.toLowerCase()),
           h('td', null, r.won + '–' + r.lost), h('td', { class: 'opt' }, rate(r.win_pct, 0)),
-          h('td', { class: r.roi >= 0 ? 'pos' : 'neg' }, signed(r.roi * 100, 1, '%'), h('span', { class: 'pm' }, ' ±' + trim(r.roi_error * 100, 0))),
+          h('td', { class: r.roi >= 0 ? 'pos' : 'neg' }, signed(r.roi * 100, 1, '%'), r.roi_error == null ? null : h('span', { class: 'pm' }, ' ±' + trim(r.roi_error * 100, 0))),
           h('td', { class: r.units >= 0 ? 'pos' : 'neg' }, signed(r.units, 0, 'u'))));
       }
     }
@@ -707,6 +857,7 @@
   }
 
   function bettingPanel(B) {
+    const soccer = isSoccer(), season = seasonName(B);
     const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Would the plays have made money?'));
     const cur = (B.bets.current || {}).all, hist = (B.bets.history || {}).all;
     if (!cur || !cur.PLAY) {
@@ -714,43 +865,52 @@
       return box;
     }
     const j = cur.PLAY, hp = hist && hist.PLAY;
-    const verdict = h('p', { class: 'verdict' }, b(j.roi >= 0 ? 'So far, yes.' : 'Not so far.'), ' Betting one unit on every PLAY in ' + B.season + ' at the closing line went ' + j.won + '–' + j.lost +
-      ' for ', b(signed(j.units, 1, ' units')), ' (ROI ' + signed(j.roi * 100, 1, '%') + ').');
+    const verdict = !j.n
+      ? h('p', { class: 'verdict' }, 'No PLAY has been settled yet in ' + season + '.')
+      : h('p', { class: 'verdict' }, b(j.roi >= 0 ? 'So far, yes.' : 'Not so far.'), ' Betting one unit on every PLAY in ' + season + ' at the closing ' + (soccer ? 'odds' : 'line') + ' went ' + j.won + '–' + j.lost +
+        ' for ', b(signed(j.units, 1, ' units')), ' (ROI ' + signed(j.roi * 100, 1, '%') + ').');
     if (hp && hp.n) {
-      verdict.append(' Across every season with lines (' + B.bets.seasons_with_lines.join(', ') + ') the ROI is ', b(signed(hp.roi * 100, 1, '%')), ' on ' + hp.n + ' bets' +
+      verdict.append(' Across every season with lines (' + seasonList(B.bets.seasons_with_lines) + ') the ROI is ', b(signed(hp.roi * 100, 1, '%')), ' on ' + hp.n + ' bets' +
         (hp.roi < 0 && hp.roi > -0.08 ? ', roughly the bookmaker’s cut.' : '.'));
     }
     box.append(verdict);
-    const sp = B.bets.history && B.bets.history.spread;
-    if (sp && sp.AVOID.n && sp.PLAY.n && sp.AVOID.roi < sp.PLAY.roi) {
-      box.append(h('p', { class: 'sub' }, 'The AVOID flag earns its keep: spread picks it flagged returned ' + signed(sp.AVOID.roi * 100, 1, '%') + ', against ' + signed(sp.PLAY.roi * 100, 1, '%') + ' for the plays.'));
+    const flagged = B.bets.history && B.bets.history[soccer ? 'all' : 'spread'];
+    if (flagged && flagged.AVOID.n && flagged.PLAY.n && flagged.AVOID.roi < flagged.PLAY.roi) {
+      box.append(h('p', { class: 'sub' }, 'The AVOID flag earns its keep: ' + (soccer ? 'the' : 'spread') + ' picks it flagged returned ' + signed(flagged.AVOID.roi * 100, 1, '%') +
+        ', against ' + signed(flagged.PLAY.roi * 100, 1, '%') + ' for the plays.'));
     }
     const chart = h('div', { class: 'chart', id: 'chart-units' });
-    box.append(h('h3', { class: 'h3' }, 'Running total in units, ' + B.season), chart);
+    box.append(h('h3', { class: 'h3' }, 'Running total in units, ' + season), chart);
     const weeks = B.weeks.filter((w) => w.plays > 0);
     queueChart(() => drawUnits(chart, weeks));
     const two = h('div', { class: 'two' });
-    two.append(h('div', null, h('h3', { class: 'h3' }, B.season + ' by bet type'), h('div', { class: 'scroll' }, recordTable(B.bets.current))));
-    two.append(h('div', null, h('h3', { class: 'h3' }, 'Seasons ' + B.bets.seasons_with_lines.join(', ')), h('div', { class: 'scroll' }, recordTable(B.bets.history))));
+    two.append(h('div', null, h('h3', { class: 'h3' }, season + ' by bet type'), h('div', { class: 'scroll' }, recordTable(B.bets.current))));
+    two.append(h('div', null, h('h3', { class: 'h3' }, 'Seasons ' + seasonList(B.bets.seasons_with_lines)), h('div', { class: 'scroll' }, recordTable(B.bets.history))));
     box.append(two);
-    box.append(h('p', { class: 'small' }, 'ROI is profit per unit staked; ± is one standard error. The closing line is the last price before kickoff, the hardest one to beat.'));
+    box.append(h('p', { class: 'small' }, 'ROI is profit per unit staked; ± is one standard error. The closing ' + (soccer ? 'odds are' : 'line is') + ' the last price before kickoff, the hardest one to beat.' +
+      (soccer && B.tuned_on ? ' The red flags behind AVOID were chosen on ' + B.tuned_on + '; ' + season + ' is the first season they were not fitted to.' : '')));
     return box;
   }
 
-  function comparisonPanel(B, sel) {
-    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Models compared'),
-      h('p', { class: 'sub' }, 'Average miss on the final margin in ' + B.season + ', in points. Lower is better. The lowest-error model is the one in use; the market’s closing line is there for reference.'));
-    const rows = B.comparison.map((c) => ({ name: c.label.replace(/\s*\(.*\)$/, ''), value: c.current.mae_margin, hl: c.selected }));
-    if (B.market) rows.push({ name: 'Market closing line', value: B.market.mae_margin, hl: false });
-    rows.sort((x, y) => y.value - x.value);
+  function barRows(rows, digits) {
     const max = Math.max(...rows.map((r) => r.value));
     const bars = h('div', { class: 'bars' });
     for (const r of rows) {
       bars.append(h('span', { class: 'name' + (r.hl ? ' hl' : '') }, r.name + (r.hl ? ' (in use)' : '')),
         h('span', null, h('span', { class: 'bar' + (r.hl ? ' hl' : ''), style: 'width:' + ((r.value / max) * 100).toFixed(1) + '%' })),
-        h('span', { class: 'num' }, r.value.toFixed(2)));
+        h('span', { class: 'num' }, r.value.toFixed(digits)));
     }
-    box.append(bars);
+    return bars;
+  }
+  const shortLabel = (label) => label.replace(/\s*\(.*\)$/, '');
+
+  function comparisonPanel(B, sel) {
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Models compared'),
+      h('p', { class: 'sub' }, 'Average miss on the final margin in ' + B.season + ', in points. Lower is better. The lowest-error model is the one in use; the market’s closing line is there for reference.'));
+    const rows = B.comparison.map((c) => ({ name: shortLabel(c.label), value: c.current.mae_margin, hl: c.selected }));
+    if (B.market) rows.push({ name: 'Market closing line', value: B.market.mae_margin, hl: false });
+    rows.sort((x, y) => y.value - x.value);
+    box.append(barRows(rows, 2));
     const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null,
       ['Model', 'Winner', '14+ pts', 'Margin miss', 'Total miss', B.tuned_on + ' miss'].map((t) => h('th', null, t)))));
     const body = h('tbody');
@@ -767,6 +927,47 @@
     box.append(h('details', null, h('summary', { class: 'small' }, 'See the full table'), h('div', { class: 'scroll', style: 'margin-top:8px' }, table),
       h('p', { class: 'small', style: 'margin-top:8px' }, 'Counting games against lower-division (FCS) teams, as the prototype did, the model in use picks ' + rate(sel.current_with_fcs.accuracy) +
         ' of winners and ' + rate(sel.current_with_fcs.accuracy_14) + ' when favored by 14 or more.')));
+    return box;
+  }
+
+  function soccerComparison(B) {
+    const season = seasonName(B), ref = B.reference;
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Models compared'),
+      h('p', { class: 'sub' }, 'Forecast error in ' + season + ' (RPS): how far the three percentages landed from what happened. 0 would be perfect and lower is better. ' +
+        'The betting market is the bar to clear; quoting league averages for every match is the floor.'));
+    const rows = B.comparison.map((c) => ({ name: shortLabel(c.label), value: c.current.rps, hl: c.selected }));
+    if (B.market) rows.push({ name: 'Market closing odds', value: B.market.rps, hl: false });
+    if (ref && ref.current) rows.push({ name: 'League averages', value: ref.current.rps, hl: false });
+    rows.sort((x, y) => y.value - x.value);
+    box.append(barRows(rows, 3));
+    box.append(h('p', { class: 'small' }, 'The Poisson model is the one in use because it is the only one that gives a chance for every scoreline, which totals and handicaps need.'));
+    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null,
+      ['Model', 'Result', 'RPS', 'Log loss', 'Total miss', (B.tuned_on || 'Past') + ' RPS'].map((t) => h('th', null, t)))));
+    const body = h('tbody');
+    const line = (label, a, hist, hl) => body.append(h('tr', { class: hl ? 'hl' : null },
+      h('td', { class: 'wrapcell' }, label), h('td', null, rate(a.accuracy)), h('td', null, a.rps.toFixed(4)), h('td', null, a.log_loss.toFixed(4)),
+      h('td', null, a.mae_total == null ? '–' : a.mae_total.toFixed(2)), h('td', null, hist && hist.rps != null ? hist.rps.toFixed(4) : '–')));
+    for (const c of B.comparison) line(c.label, c.current, c.history, c.selected);
+    if (B.market) line('Market closing odds', B.market, B.market_history, false);
+    if (ref && ref.current) line(ref.label, ref.current, ref.history, false);
+    table.append(body);
+    box.append(h('details', null, h('summary', { class: 'small' }, 'See the full table'), h('div', { class: 'scroll', style: 'margin-top:8px' }, table),
+      h('p', { class: 'small', style: 'margin-top:8px' }, 'Result is the share of matches where the most likely outcome happened. Log loss is a second measure of the same thing as RPS, harsher on confident misses.')));
+    return box;
+  }
+
+  function leaguePanel(B) {
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'League by league'),
+      h('p', { class: 'sub' }, 'The same model, scored separately for each league in ' + seasonName(B) + '.'));
+    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null, ['League', 'Result', 'RPS', 'Total miss'].map((t) => h('th', null, t)))));
+    const body = h('tbody');
+    for (const lg of B.by_league || []) {
+      body.append(h('tr', null, h('td', { class: 'cell2' }, lg.name, h('small', null, plural(lg.n, 'match', 'matches'))),
+        h('td', null, h('span', { class: 'meter', 'aria-hidden': 'true' }, h('i', { style: 'width:' + (lg.accuracy * 100).toFixed(0) + '%' })), rate(lg.accuracy, 0)),
+        h('td', null, lg.rps.toFixed(3)), h('td', null, lg.mae_total.toFixed(2))));
+    }
+    table.append(body);
+    box.append(h('div', { class: 'scroll' }, table));
     return box;
   }
 
@@ -789,29 +990,53 @@
     return box;
   }
 
+  function soccerWeeks(B) {
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Week by week'),
+      h('p', { class: 'sub' }, 'Results is the share of matches where the model’s most likely outcome happened. Plays is the record of that week’s PLAY picks against the closing odds.'));
+    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null,
+      ['Week of', 'Results', 'RPS', 'Total miss', 'Plays', 'Units'].map((t) => h('th', { class: t === 'RPS' || t === 'Total miss' ? 'opt' : null }, t)))));
+    const body = h('tbody');
+    for (const w of B.weeks) {
+      body.append(h('tr', null, h('td', null, weekName(w)),
+        h('td', null, h('span', { class: 'meter', 'aria-hidden': 'true' }, h('i', { style: 'width:' + (w.accuracy * 100).toFixed(0) + '%' })), rate(w.accuracy, 0), h('span', { class: 'pm opt' }, ' of ' + w.n)),
+        h('td', { class: 'opt' }, w.rps == null ? '–' : w.rps.toFixed(3)), h('td', { class: 'opt' }, w.mae_total == null ? '–' : w.mae_total.toFixed(2)),
+        h('td', null, w.plays ? w.won + '–' + w.lost : '–'),
+        h('td', { class: w.plays ? (w.units >= 0 ? 'pos' : 'neg') : null }, w.plays ? signed(w.units, 1, 'u') : '–')));
+    }
+    table.append(body);
+    box.append(h('div', { class: 'scroll' }, table));
+    return box;
+  }
+
   function calibrationPanel(B) {
-    const cal = B.calibration;
+    const cal = B.calibration, soccer = isSoccer(), season = seasonName(B);
+    const off = cal.mean_error == null ? '–' : trim(cal.mean_error * 100, 1) + ' points';
     const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Can you trust the percentages?'),
-      h('p', { class: 'sub' }, 'When the model gives its favorite a 70% chance, that team should win about 70% of the time. Dots on the diagonal mean the percentages are honest. In past seasons they were off by ' +
-        (cal.mean_error == null ? '–' : trim(cal.mean_error * 100, 1) + ' points') + ' on average.'));
+      h('p', { class: 'sub' }, soccer
+        ? 'Every home-win, draw and away-win percentage the model gave is pooled here. Outcomes it called 30% likely should happen about 30% of the time. Dots on the diagonal mean the percentages are honest. In past seasons they were off by ' + off + ' on average.'
+        : 'When the model gives its favorite a 70% chance, that team should win about 70% of the time. Dots on the diagonal mean the percentages are honest. In past seasons they were off by ' + off + ' on average.'));
     const hist = B.history_seasons || [];
-    const histName = hist.length ? hist[0] + '–' + hist[hist.length - 1] : 'Past seasons';
+    const histName = !hist.length ? 'Past seasons' : soccer ? seasonList(hist) : hist[0] + '–' + hist[hist.length - 1];
     box.append(h('div', { class: 'legend' },
-      h('span', null, h('i', { class: 'dot', style: 'background:var(--series-1)' }), String(B.season)),
+      h('span', null, h('i', { class: 'dot', style: 'background:var(--series-1)' }), season),
       h('span', null, h('i', { class: 'dot', style: 'background:var(--series-2)' }), histName),
       h('span', null, h('i', { style: 'background:var(--track);height:1px' }), 'Perfect calibration')));
     const chart = h('div', { class: 'chart', id: 'chart-cal' });
     box.append(chart);
-    queueChart(() => drawCalibration(chart, cal.current, cal.history, String(B.season), histName));
-    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null,
-      ['Model said', B.season + ' won', 'Games', histName + ' won', 'Games'].map((t) => h('th', null, t)))));
+    const words = soccer
+      ? { xMin: 0, x: 'Chance the model gave', y: 'How often it happened', did: 'Happened', unit: 'cases', aria: 'Calibration: the chance the model gave an outcome against how often it happened' }
+      : { xMin: 0.5, x: 'Chance the model gave its favorite', y: 'How often it won', did: 'Won', unit: 'games', aria: 'Calibration: the chance the model gave its favorite against how often that team won' };
+    queueChart(() => drawCalibration(chart, cal.current, cal.history, season, histName, words));
+    const head = soccer ? ['Model said', season + ' happened', 'Cases', histName + ' happened', 'Cases'] : ['Model said', season + ' won', 'Games', histName + ' won', 'Games'];
+    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null, head.map((t) => h('th', null, t)))));
     const body = h('tbody');
     const histBy = new Map(cal.history.map((x) => [x.from, x]));
     const curBy = new Map(cal.current.map((x) => [x.from, x]));
     const bins = Array.from(new Set([...curBy.keys(), ...histBy.keys()])).sort((x, y) => x - y);
     for (const lo of bins) {
       const c = curBy.get(lo), hb = histBy.get(lo);
-      body.append(h('tr', null, h('td', null, Math.round(lo * 100) + '–' + Math.round((lo + 0.05) * 100) + '%'),
+      const hi = (c || hb).to;
+      body.append(h('tr', null, h('td', null, Math.round(lo * 100) + '–' + Math.round((hi == null ? lo + 0.05 : hi) * 100) + '%'),
         h('td', null, c ? rate(c.observed, 0) : '–'), h('td', null, c ? String(c.n) : '–'),
         h('td', null, hb ? rate(hb.observed, 0) : '–'), h('td', null, hb ? String(hb.n) : '–')));
     }
@@ -851,9 +1076,9 @@
       svg.append(s('line', { class: Math.abs(v) < 1e-9 ? 'axis' : 'grid', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }),
         s('text', { x: m.l - 6, y: y(v) + 4, 'text-anchor': 'end' }, signed(v, 0)));
     }
-    const every = Math.ceil(weeks.length / Math.max(Math.floor(iw / 40), 1));
+    const every = Math.ceil(weeks.length / Math.max(Math.floor(iw / (isSoccer() ? 52 : 40)), 1));
     weeks.forEach((w, i) => {
-      if (i % every === 0 || i === weeks.length - 1) svg.append(s('text', { x: x(i), y: H - 10, 'text-anchor': 'middle' }, 'Wk ' + w.week));
+      if (i % every === 0 || i === weeks.length - 1) svg.append(s('text', { x: x(i), y: H - 10, 'text-anchor': 'middle' }, weekName(w)));
     });
     const pts = weeks.map((w, i) => [x(i), y(w.cumulative)]);
     const path = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
@@ -868,12 +1093,12 @@
     const band = weeks.length > 1 ? iw / (weeks.length - 1) : iw;
     weeks.forEach((w, i) => {
       const hit = s('rect', { x: x(i) - band / 2, y: m.t, width: band, height: ih, fill: 'transparent', tabindex: 0,
-        'aria-label': 'Week ' + w.week + ': running total ' + signed(w.cumulative, 1) + ' units' });
+        'aria-label': weekLong(w) + ': running total ' + signed(w.cumulative, 1) + ' units' });
       const on = (evt) => {
         cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
         dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(w.cumulative)); dot.setAttribute('visibility', 'visible');
         const box = svg.getBoundingClientRect();
-        showTip(hit, [h('b', null, signed(w.cumulative, 1, 'u') + ' so far'), h('span', null, 'Week ' + w.week + ': ' + w.won + '–' + w.lost + ', ' + signed(w.units, 1, 'u'))],
+        showTip(hit, [h('b', null, signed(w.cumulative, 1, 'u') + ' so far'), h('span', null, weekLong(w) + ': ' + w.won + '–' + w.lost + ', ' + signed(w.units, 1, 'u'))],
           { x: box.left + (x(i) / W) * box.width, y: evt && evt.clientY ? evt.clientY : box.top + (y(w.cumulative) / H) * box.height });
       };
       const off = () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); hideTip(); };
@@ -887,22 +1112,24 @@
     el.append(svg);
   }
 
-  function drawCalibration(el, cur, hist, curName, histName) {
+  function drawCalibration(el, cur, hist, curName, histName, words) {
     el.replaceChildren();
-    const W = Math.max(el.clientWidth, 260), H = Math.round(clamp(W * 0.72, 230, 360)), m = { l: 44, r: 14, t: 10, b: 42 };
+    const W = Math.max(el.clientWidth, 260), H = Math.round(clamp(W * 0.72, 230, 360)), m = { l: 58, r: 14, t: 10, b: 42 };
     const iw = W - m.l - m.r, ih = H - m.t - m.b;
-    const observed = [...cur, ...hist].map((x) => x.observed);
-    const yMin = Math.min(0.5, Math.floor(Math.min(...observed, 0.5) * 10) / 10);
-    const x = (p) => m.l + ((p - 0.5) / 0.5) * iw;
+    const xMin = words.xMin;
+    const observed = [...cur, ...hist].map((bin) => bin.observed);
+    const yMin = Math.min(xMin, Math.floor(Math.min(...observed, xMin) * 10) / 10);
+    const x = (p) => m.l + ((p - xMin) / (1 - xMin)) * iw;
     const y = (p) => m.t + (1 - (p - yMin) / (1 - yMin)) * ih;
-    const svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': 'Calibration: the chance the model gave its favorite against how often that team won' });
-    for (let v = yMin; v <= 1 + 1e-9; v += 0.1) {
+    const tick = xMin === 0 ? 0.2 : 0.1;
+    const svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': words.aria });
+    for (let v = yMin; v <= 1 + 1e-9; v += tick) {
       svg.append(s('line', { class: 'grid', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }), s('text', { x: m.l - 6, y: y(v) + 4, 'text-anchor': 'end' }, Math.round(v * 100) + '%'));
     }
-    for (let v = 0.5; v <= 1 + 1e-9; v += 0.1) svg.append(s('text', { x: x(v), y: H - m.b + 16, 'text-anchor': 'middle' }, Math.round(v * 100) + '%'));
-    svg.append(s('text', { x: m.l + iw / 2, y: H - 6, 'text-anchor': 'middle' }, 'Chance the model gave its favorite'));
-    svg.append(s('text', { x: 12, y: m.t + ih / 2, 'text-anchor': 'middle', transform: 'rotate(-90 12 ' + (m.t + ih / 2) + ')' }, 'How often it won'));
-    svg.append(s('line', { class: 'axis', x1: x(0.5), y1: y(0.5), x2: x(1), y2: y(1) }));
+    for (let v = xMin; v <= 1 + 1e-9; v += tick) svg.append(s('text', { x: x(v), y: H - m.b + 16, 'text-anchor': 'middle' }, Math.round(v * 100) + '%'));
+    svg.append(s('text', { x: m.l + iw / 2, y: H - 6, 'text-anchor': 'middle' }, words.x));
+    svg.append(s('text', { x: 11, y: m.t + ih / 2, 'text-anchor': 'middle', transform: 'rotate(-90 11 ' + (m.t + ih / 2) + ')' }, words.y));
+    svg.append(s('line', { class: 'axis', x1: x(Math.max(xMin, yMin)), y1: y(Math.max(xMin, yMin)), x2: x(1), y2: y(1) }));
     const series = [[hist, 'var(--series-2)', histName], [cur, 'var(--series-1)', curName]];
     for (const [bins, color] of series) {
       if (!bins.length) continue;
@@ -914,8 +1141,8 @@
         const cx = x(bin.predicted), cy = y(bin.observed);
         svg.append(s('circle', { cx, cy, r: 4.5, fill: color, stroke: 'var(--surface)', 'stroke-width': 2 }));
         const hit = s('circle', { cx, cy, r: 13, fill: 'transparent', tabindex: 0,
-          'aria-label': name + ': the model said ' + rate(bin.predicted, 0) + ' and the favorite won ' + rate(bin.observed, 0) + ' of ' + bin.n + ' games' });
-        const on = () => showTip(hit, [h('b', null, 'Won ' + rate(bin.observed, 0)), h('span', null, name + ' · model said ' + rate(bin.predicted, 0) + ' · ' + bin.n + ' games (±' + trim(bin.std_error * 100, 0) + ')')]);
+          'aria-label': name + ': the model said ' + rate(bin.predicted, 0) + ' and it ' + words.did.toLowerCase() + ' ' + rate(bin.observed, 0) + ' of ' + bin.n + ' ' + words.unit });
+        const on = () => showTip(hit, [h('b', null, words.did + ' ' + rate(bin.observed, 0)), h('span', null, name + ' · model said ' + rate(bin.predicted, 0) + ' · ' + bin.n + ' ' + words.unit + ' (±' + trim(bin.std_error * 100, 0) + ')')]);
         hit.addEventListener('pointerenter', on);
         hit.addEventListener('focus', on);
         hit.addEventListener('pointerleave', hideTip);
@@ -927,16 +1154,22 @@
   }
 
   // ============================================================ HOW IT WORKS
-  function renderHow() {
+  const sec = (title, ...kids) => h('section', { class: 'panel' }, h('h2', { class: 'h2' }, title), kids);
+  const para = (...kids) => h('p', null, kids);
+  function glossary(terms) {
+    const gloss = h('dl', { class: 'gloss' });
+    for (const [term, text] of terms) gloss.append(h('div', null, h('dt', null, term), h('dd', null, text)));
+    return gloss;
+  }
+  const renderHow = () => (isSoccer() ? soccerHow() : footballHow());
+
+  function footballHow() {
     const P = state.picks, B = state.backtest, r = P.rules, m = P.model;
-    const sec = (title, ...kids) => h('section', { class: 'panel' }, h('h2', { class: 'h2' }, title), kids);
-    const p = (...kids) => h('p', null, kids);
     const key = h('div', { class: 'key' },
       pill('PLAY'), h('div', null, 'The model’s chance beats the market’s by ' + (r.edge_min * 100).toFixed(0) + '% or more, the bet has positive expected value at the real price, and there are no red flags.'),
       pill('AVOID'), h('div', null, 'There is an edge on paper, but the pick flips when each team’s last 2 games are removed, the model is ' + trim(r.gap_margin) + '+ points away from the market spread (' +
         trim(r.gap_total) + '+ on a total), or the line moved ' + trim(r.move_spread) + '+ points against it since it opened (' + trim(r.move_total) + '+ on a total).'),
       pill('PASS'), h('div', null, 'The model and the market roughly agree. Nothing to do.'));
-    const gloss = h('dl', { class: 'gloss' });
     const terms = [
       ['Moneyline', 'A bet on who wins. −300 means you risk $300 to win $100; +240 means you risk $100 to win $240.'],
       ['Spread', 'A bet on the margin. Indiana −7.5 wins if Indiana wins by 8 or more; the other side wins otherwise.'],
@@ -947,16 +1180,15 @@
       ['Stake', 'A quarter of the Kelly amount, which sizes a bet by its edge, and never more than ' + (r.stake_cap * 100).toFixed(0) + '% of your bankroll.'],
       ['Closing line', 'The last price before kickoff. It reflects everything known about the game, which makes it very hard to beat.'],
     ];
-    for (const [term, text] of terms) gloss.append(h('div', null, h('dt', null, term), h('dd', null, text)));
     return [
       sec('The model in plain words', h('div', { class: 'prose' },
-        p('Each team gets a rating: its average scoring margin, adjusted for how good its opponents were. A team’s rating depends on its opponents’ ratings and theirs on it, so all of them are solved together from the ' +
+        para('Each team gets a rating: its average scoring margin, adjusted for how good its opponents were. A team’s rating depends on its opponents’ ratings and theirs on it, so all of them are solved together from the ' +
           m.training_games + ' games played this season.'),
-        p('A projection is the difference between two ratings plus home-field advantage. A second set of ratings, built the same way on combined scores, gives the projected total and from it the score.'),
-        p('Early in the season a rating leans on last year’s, and blowouts are capped so one 63–0 does not count for too much.'))),
+        para('A projection is the difference between two ratings plus home-field advantage. A second set of ratings, built the same way on combined scores, gives the projected total and from it the score.'),
+        para('Early in the season a rating leans on last year’s, and blowouts are capped so one 63–0 does not count for too much.'))),
       sec('From a projection to a percentage', h('div', { class: 'prose' },
-        p('In testing, real margins landed about ' + trim(m.sigma_margin) + ' points away from the projection on a typical day (' + trim(m.sigma_total) + ' for totals). That spread turns a projected margin into a chance of winning, covering a spread or going over a total.'),
-        p('No percentage is ever shown as 100%, and the typical miss sits next to every projection for the same reason.'))),
+        para('In testing, real margins landed about ' + trim(m.sigma_margin) + ' points away from the projection on a typical day (' + trim(m.sigma_total) + ' for totals). That spread turns a projected margin into a chance of winning, covering a spread or going over a total.'),
+        para('No percentage is ever shown as 100%, and the typical miss sits next to every projection for the same reason.'))),
       sec('What the labels mean', key),
       sec('What the model does not know', h('div', { class: 'prose' },
         h('ul', null,
@@ -964,33 +1196,115 @@
           h('li', null, 'Weather. A total that drops 10 points during the week is almost always wind or rain.'),
           h('li', null, 'Motivation, rest, travel and look-ahead spots.'),
           h('li', null, 'Anything the market has already priced in, which is why the closing line misses by less than the model does.')),
-        p('Notes and manual point adjustments can be added per game in ', h('code', null, 'data/notes.csv'), '.'))),
+        para('Notes and manual point adjustments can be added per game in ', h('code', null, 'data/notes.csv'), '.'))),
       sec('How the track record is built', h('div', { class: 'prose' },
-        p('For week N the model only sees games played before week N. Its settings were tuned on ' + (B.tuned_on || 'past seasons') + ', and ' + B.season +
+        para('For week N the model only sees games played before week N. Its settings were tuned on ' + (B.tuned_on || 'past seasons') + ', and ' + B.season +
           ' was scored without touching them. The betting record stakes one unit on every PLAY at the closing line.'))),
-      sec('Glossary', gloss),
+      sec('Glossary', glossary(terms)),
+    ];
+  }
+
+  function soccerHow() {
+    const P = state.picks, B = state.backtest, r = P.rules, m = P.model, cfg = m.settings || {};
+    const months = cfg.half_life ? Math.round(cfg.half_life / 30.4) : null;
+    const key = h('div', { class: 'key' },
+      pill('PLAY'), h('div', null, 'The model’s chance beats the market’s by ' + (r.edge_min * 100).toFixed(0) + '% or more, the bet has positive expected value at the real price, and no red flag is up.'),
+      pill('AVOID'), h('div', null, 'There is an edge on paper, but a red flag is up: the edge is ' + (r.gap_edge * 100).toFixed(0) + '+ points, which means the market strongly disagrees; it is a result bet on a side the market gives under ' +
+        (r.ml_min_market * 100).toFixed(0) + '%; the pick flips when each team’s last 2 matches are removed; or a team has fewer than ' + r.min_games + ' league matches on record.'),
+      pill('PASS'), h('div', null, 'The model and the market roughly agree. Nothing to do.'));
+    const terms = [
+      ['Match result', 'A bet on home win, draw or away win after 90 minutes plus stoppage time. −255 means you risk $255 to win $100; +425 means you risk $100 to win $425.'],
+      ['Handicap', 'Goals added to a team before the bet is settled. Fulham +1.5 wins if Fulham wins, draws or loses by one. On a whole-number handicap an exact tie is a push and the stake comes back.'],
+      ['Total goals', 'A bet on both teams’ goals combined going over or under a number.'],
+      ['Expected goals', 'How many goals the model expects a team to score in this match, on average. 1.6 does not mean a 1.6 scoreline; it is the center of a range.'],
+      ['Vig', 'The bookmaker’s cut, built into the prices. The three result prices add up to about 106%, not 100%.'],
+      ['Market chance', 'The chance the prices imply once the vig is removed. It is the fairest read of what the market believes.'],
+      ['Edge', 'The model’s chance minus the market chance. A positive edge means the model thinks the price is too generous.'],
+      ['Stake', 'A quarter of the Kelly amount, which sizes a bet by its edge, and never more than ' + (r.stake_cap * 100).toFixed(0) + '% of your bankroll.'],
+      ['RPS', 'Ranked probability score: the gap between the three percentages and what happened. 0 is perfect, and quoting league averages for every match scores about 0.23.'],
+    ];
+    const season = seasonName(B);
+    return [
+      sec('The model in plain words', h('div', { class: 'prose' },
+        para('Every team gets two ratings: an attack rating for the goals it scores and a defense rating for the goals it keeps out. A team’s expected goals in a match come from its attack against the opponent’s defense, plus a home edge.'),
+        para('All the ratings in a league are solved together from about three seasons of matches (' + m.training_games + ' across the five leagues). Recent matches count more' +
+          (months ? ': a match’s weight halves every ' + months + ' months' : '') + '.'),
+        para('Ratings are pulled toward the league average with the weight of ' + trim(cfg.k == null ? 5 : cfg.k) + ' matches, so a short hot streak does not produce an extreme rating. A newly promoted team starts below average until its results say otherwise.'))),
+      sec('From expected goals to percentages', h('div', { class: 'prose' },
+        para('Two expected-goal numbers give a probability for every scoreline from 0–0 up, with a small correction because real matches end 0–0 and 1–1 more often than the plain formula says. Adding up scorelines gives the chance of a home win, a draw and an away win, of going over a total and of covering a handicap.'),
+        para('No percentage is ever shown as 100%. In testing the percentages were off by ' + (m.calibration_error == null ? 'about a point' : trim(m.calibration_error * 100, 1) + ' points') +
+          ' on average, and the goal difference of a match lands ' + (m.mae_margin == null ? 'more than a goal' : m.mae_margin.toFixed(1) + ' goals') + ' away from the projection on a typical day.'))),
+      sec('What the labels mean', key,
+        h('p', { class: 'small' }, 'The red flags come from the ' + (B.tuned_on || 'past seasons') + ' backtest: picks carrying any of them lost far more than the bookmaker’s cut. A line that moved since it opened is shown on the card but is not a flag, because it did not separate good picks from bad ones.')),
+      sec('What the model does not know', h('div', { class: 'prose' },
+        h('ul', null,
+          h('li', null, 'Injuries and suspensions. A missing striker or goalkeeper is invisible to it.'),
+          h('li', null, 'Rotation around European nights and cup ties.'),
+          h('li', null, 'A new coach, or what is at stake late in the season.'),
+          h('li', null, 'Anything the market has already priced in, which is why the closing odds forecast better than the model does.')),
+        para('Notes and manual goal adjustments can be added per match in ', h('code', null, 'data/soccer_notes.csv'), '.'))),
+      sec('How the track record is built', h('div', { class: 'prose' },
+        para('For each week the model only sees matches played before that week began. Its settings were tuned on ' + (B.tuned_on || 'past seasons') + ', and ' + season +
+          ' was scored without touching them. The betting record stakes one unit on every PLAY at the closing odds ESPN published.'),
+        para('One season of archived goal lines (2023-24) is left out of the betting record: that feed kept updating during matches, so it was not a price anyone could have bet before kickoff.'))),
+      sec('Glossary', glossary(terms)),
     ];
   }
 
   // -------------------------------------------------------------------- boot
   const VIEWS = { picks: renderPicks, parlay: renderParlay, record: renderRecord, how: renderHow };
-  function currentView() {
-    const name = (location.hash || '').replace(/^#/, '');
-    return VIEWS[name] ? name : 'picks';
+  function route() {
+    const parts = (location.hash || '').replace(/^#/, '').split('/');
+    const named = SPORTS[parts[0]] ? parts[0] : null;
+    const name = named ? parts[1] : parts[0];
+    const saved = store.get('sport', 'cfb');
+    return { sport: named || (SPORTS[saved] ? saved : 'cfb'), view: VIEWS[name] ? name : 'picks' };
   }
-  function render() {
-    hideTip();
-    const name = currentView();
+
+  // Header, sport switch and tabs follow the sport and section in the URL.
+  function chrome(name) {
+    const sp = S(), P = state.picks;
+    document.title = sp.title;
+    document.getElementById('field').dataset.sport = state.sport;
+    document.getElementById('hdr-title').textContent = sp.title;
+    document.querySelectorAll('.sports a').forEach((a) => {
+      a.setAttribute('href', '#' + a.dataset.sport + '/' + name);
+      if (a.dataset.sport === state.sport) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
     document.querySelectorAll('.tabs a').forEach((a) => {
+      a.setAttribute('href', '#' + state.sport + '/' + a.dataset.view);
       if (a.dataset.view === name) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
-    if (state.error) {
-      view.replaceChildren(h('section', { class: 'callout' }, h('b', { class: 't' }, 'The picks could not be loaded'),
-        h('p', null, state.error), h('p', null, 'Generate the data with python -m src.picks and open the site through a web server (python -m http.server -d site), not as a local file.')));
+    const week = document.getElementById('hdr-week'), meta = document.getElementById('hdr-meta'), foot = document.getElementById('foot-gen');
+    if (!P) {
+      week.textContent = sp.name;
+      meta.textContent = state.error ? 'No data' : 'Loading…';
+      foot.textContent = '';
       return;
     }
-    if (!state.picks) return;
+    week.textContent = isSoccer() ? 'Top 5 leagues · ' + seasonName(P) : P.week_label + ' · ' + P.season;
+    const mine = mineCount();
+    meta.textContent = 'Updated ' + stamp(P.generated) + ' · ' + gamesWord(allGames().length) + (mine ? ', ' + mine + ' tracked' : '');
+    foot.textContent = 'Scores and lines: ESPN’s public API. Model: ' + P.model.label + '.';
+  }
+
+  function render() {
+    hideTip();
+    const name = route().view;
+    chrome(name);
+    if (state.error) {
+      view.replaceChildren(h('section', { class: 'callout' }, h('b', { class: 't' }, 'The picks could not be loaded'),
+        h('p', null, state.error), h('p', null, 'Generate the data with ' + S().command + ' and open the site through a web server (python -m http.server -d site), not as a local file.')));
+      updateParlayCount();
+      return;
+    }
+    if (!state.picks) {
+      view.replaceChildren(h('p', { class: 'loading' }, 'Loading the ' + S().name.toLowerCase() + ' picks…'));
+      updateParlayCount();
+      return;
+    }
     pendingCharts = [];
     view.replaceChildren(...VIEWS[name]());
     flushCharts();
@@ -1002,40 +1316,63 @@
     }
   }
 
-  async function load() {
+  // Point the page at one sport: its data (if already loaded) and its own parlay ticket.
+  function activate(sport) {
+    const changed = sport !== state.sport;
+    state.sport = sport;
+    const data = DATA[sport] || {};
+    state.picks = data.picks || null;
+    state.backtest = data.backtest || null;
+    state.error = data.error || null;
+    state.legs = store.get(legsKey(), {});
+    if (state.picks) {   // a ticket only keeps legs whose game is still on the board
+      const ids = new Set(allGames().map((g) => g.id));
+      const kept = Object.fromEntries(Object.entries(state.legs || {}).filter(([id]) => ids.has(id)));
+      if (Object.keys(kept).length !== Object.keys(state.legs || {}).length) saveLegs(kept);
+    }
+    if (changed) {
+      state.query = '';
+      state.showAllPlays = false;
+      state.parlayMarket = 'ml';
+      state.slipOpen = false;
+    }
+  }
+
+  async function loadSport(sport) {
+    if (DATA[sport]) return;
     try {
-      const [picks, backtest] = await Promise.all(['data/picks.json', 'data/backtest.json'].map(async (url) => {
+      const [picks, backtest] = await Promise.all(SPORTS[sport].files.map(async (url) => {
         const resp = await fetch(url, { cache: 'no-store' });
         if (!resp.ok) throw new Error(url + ' answered HTTP ' + resp.status);
         return resp.json();
       }));
-      state.picks = picks;
-      state.backtest = backtest;
-      const weekKey = picks.season + '-' + picks.week;
-      if (store.get('legsWeek', null) !== weekKey) {   // last week's ticket does not carry over
-        state.legs = {};
-        store.set('legs', {});
-        store.set('legsWeek', weekKey);
-      }
-      document.getElementById('hdr-week').textContent = picks.week_label + ' · ' + picks.season;
-      const n = allGames().length, mine = mineCount();
-      document.getElementById('hdr-meta').textContent = 'Updated ' + stamp(picks.generated) + ' · ' + plural(n, 'game') + (mine ? ', ' + mine + ' tracked' : '');
-      document.getElementById('foot-gen').textContent = 'Scores and lines: ESPN’s public API. Model: ' + picks.model.label + '.';
+      DATA[sport] = { picks, backtest };
     } catch (err) {
-      state.error = String((err && err.message) || err);
-      document.getElementById('hdr-meta').textContent = 'No data';
+      DATA[sport] = { error: String((err && err.message) || err) };
     }
-    render();
   }
 
-  window.addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); view.focus({ preventScroll: true }); });
+  async function go() {
+    const sport = route().sport;
+    store.set('sport', sport);
+    activate(sport);
+    render();
+    if (!DATA[sport]) {
+      await loadSport(sport);
+      if (route().sport !== sport) return;   // the visitor moved on while this was loading
+      activate(sport);
+      render();
+    }
+  }
+
+  window.addEventListener('hashchange', () => { go(); window.scrollTo(0, 0); view.focus({ preventScroll: true }); });
   let resizeTimer = null, lastWidth = window.innerWidth;
   window.addEventListener('resize', () => {
     if (window.innerWidth === lastWidth) return;
     lastWidth = window.innerWidth;
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { if (currentView() === 'record') render(); }, 150);
+    resizeTimer = setTimeout(() => { if (route().view === 'record') render(); }, 150);
   });
   window.addEventListener('scroll', hideTip, { passive: true });
-  load();
+  go();
 })();
