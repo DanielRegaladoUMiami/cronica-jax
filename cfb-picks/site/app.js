@@ -1,5 +1,5 @@
 /* Picks site for two sports. The URL picks the sport and the section
-   (#cfb/picks, #soccer/record ...) and the page reads that sport's JSON from data/.
+   (#cfb-picks, #soccer-record ...) and the page reads that sport's JSON from data/.
    No dependencies. Any text that comes from the data goes in through textContent. */
 (function () {
   'use strict';
@@ -304,7 +304,7 @@
     } else {
       line.append('. ');
     }
-    line.append(h('a', { href: '#' + state.sport + '/record' }, 'See the track record'));
+    line.append(h('a', { href: '#' + state.sport + '-record' }, 'See the track record'));
     box.append(line);
     return box;
   }
@@ -1253,10 +1253,12 @@
 
   // -------------------------------------------------------------------- boot
   const VIEWS = { picks: renderPicks, parlay: renderParlay, record: renderRecord, how: renderHow };
+  // "#soccer-record" names the sport and the section; a bare "#record" keeps the last sport used.
   function route() {
-    const parts = (location.hash || '').replace(/^#/, '').split('/');
-    const named = SPORTS[parts[0]] ? parts[0] : null;
-    const name = named ? parts[1] : parts[0];
+    const raw = (location.hash || '').replace(/^#/, '');
+    const [head, ...rest] = raw.split('-');
+    const named = SPORTS[head] ? head : null;
+    const name = named ? rest.join('-') : raw;
     const saved = store.get('sport', 'cfb');
     return { sport: named || (SPORTS[saved] ? saved : 'cfb'), view: VIEWS[name] ? name : 'picks' };
   }
@@ -1268,12 +1270,12 @@
     document.getElementById('field').dataset.sport = state.sport;
     document.getElementById('hdr-title').textContent = sp.title;
     document.querySelectorAll('.sports a').forEach((a) => {
-      a.setAttribute('href', '#' + a.dataset.sport + '/' + name);
+      a.setAttribute('href', '#' + a.dataset.sport + '-' + name);
       if (a.dataset.sport === state.sport) a.setAttribute('aria-current', 'true');
       else a.removeAttribute('aria-current');
     });
     document.querySelectorAll('.tabs a').forEach((a) => {
-      a.setAttribute('href', '#' + state.sport + '/' + a.dataset.view);
+      a.setAttribute('href', '#' + state.sport + '-' + a.dataset.view);
       if (a.dataset.view === name) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });

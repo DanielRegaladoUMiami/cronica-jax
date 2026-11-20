@@ -9,7 +9,7 @@ publishes the picks as a static site.
   for the next 7 days. See [Soccer](#soccer).
 
 **Live site:** https://danielregaladoumiami.github.io/cronica-jax/ (the switch
-at the top changes sport; `#soccer/picks` links straight to soccer).
+at the top changes sport; `#soccer-picks` links straight to soccer).
 
 ## College football: how good it is, and how good it is not
 
