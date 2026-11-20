@@ -55,8 +55,9 @@ def _side(
     quote: dict | None,
     rules: Rules,
     alerts: list[str],
+    unstable: str = "unstable: the pick flips without each team's last 2 games",
 ) -> dict:
-    """Evaluate one side of a market."""
+    """Evaluate one side of a market. `rules` only needs edge_min, kelly_fraction and stake_cap."""
     out = {
         "p_model": p_model,
         "p_market": p_market,
@@ -82,7 +83,7 @@ def _side(
         return out
     reasons = list(alerts)
     if out["stable"] is False:
-        reasons.insert(0, "unstable: the pick flips without each team's last 2 games")
+        reasons.insert(0, unstable)
     if quote["source"] == "assumed":
         reasons.append("assumed price (-110): confirm the real odds")
     blocking = [r for r in reasons if not r.startswith("assumed price")]

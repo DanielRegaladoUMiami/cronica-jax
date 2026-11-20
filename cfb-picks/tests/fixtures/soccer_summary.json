@@ -1,0 +1,170 @@
+{
+ "new": {
+  "pickcenter": [
+   {
+    "provider": {
+     "id": "100",
+     "name": "DraftKings"
+    },
+    "overUnder": 3.5,
+    "spread": -0.5,
+    "overOdds": -105.0,
+    "underOdds": -120.0,
+    "awayTeamOdds": {
+     "moneyLine": 300,
+     "spreadOdds": 100.0
+    },
+    "homeTeamOdds": {
+     "moneyLine": -125,
+     "spreadOdds": -135.0
+    },
+    "drawOdds": {
+     "moneyLine": 320.0
+    },
+    "moneyline": {
+     "home": {
+      "close": {
+       "odds": "-125"
+      },
+      "open": {
+       "odds": "-145"
+      }
+     },
+     "away": {
+      "close": {
+       "odds": "+300"
+      },
+      "open": {
+       "odds": "+340"
+      }
+     },
+     "draw": {
+      "close": {
+       "odds": "+320"
+      },
+      "open": {
+       "odds": "+320"
+      }
+     }
+    },
+    "pointSpread": {
+     "home": {
+      "close": {
+       "line": "-0.5",
+       "odds": "-135"
+      },
+      "open": {
+       "line": "-0.5",
+       "odds": "-160"
+      }
+     },
+     "away": {
+      "close": {
+       "line": "+0.5",
+       "odds": "+100"
+      },
+      "open": {
+       "line": "+0.5",
+       "odds": "+110"
+      }
+     }
+    },
+    "total": {
+     "over": {
+      "close": {
+       "line": "o3.5",
+       "odds": "-105"
+      },
+      "open": {
+       "line": "o3.5",
+       "odds": "+120"
+      }
+     },
+     "under": {
+      "close": {
+       "line": "u3.5",
+       "odds": "-120"
+      },
+      "open": {
+       "line": "u3.5",
+       "odds": "-160"
+      }
+     }
+    }
+   }
+  ],
+  "odds": []
+ },
+ "old": {
+  "pickcenter": [],
+  "odds": [
+   {
+    "provider": {
+     "id": "2000",
+     "name": "Bet 365"
+    },
+    "awayTeamOdds": {
+     "odds": {
+      "summary": "150/1",
+      "value": 151.0,
+      "handicap": 0.0
+     }
+    },
+    "homeTeamOdds": {
+     "odds": {
+      "summary": "1/16",
+      "value": 1.06,
+      "handicap": 0.0
+     }
+    },
+    "drawOdds": {
+     "summary": "9/1",
+     "value": 10.0,
+     "handicap": 0.0
+    }
+   },
+   {
+    "provider": {
+     "id": "1001",
+     "name": "Bet365"
+    },
+    "overUnder": 2.5,
+    "spread": -0.25,
+    "overOdds": -110.0,
+    "underOdds": -110.0,
+    "awayTeamOdds": {
+     "moneyLine": 200,
+     "spreadOdds": -119.0
+    },
+    "homeTeamOdds": {
+     "moneyLine": 138,
+     "spreadOdds": 109.0
+    },
+    "drawOdds": {
+     "moneyLine": 230.0
+    }
+   },
+   {
+    "provider": {
+     "id": "40",
+     "name": "DraftKings (old)"
+    },
+    "overUnder": 2.5,
+    "spread": 0.25,
+    "overOdds": -110.0,
+    "underOdds": -120.0,
+    "awayTeamOdds": {
+     "moneyLine": 200,
+     "spreadOdds": 155.0
+    },
+    "homeTeamOdds": {
+     "moneyLine": 140,
+     "spreadOdds": -185.0
+    },
+    "drawOdds": {
+     "moneyLine": 235.0
+    }
+   }
+  ]
+ }
+}

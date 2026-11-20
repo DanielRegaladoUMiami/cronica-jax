@@ -1,0 +1,47 @@
+{
+  "tuned_on": "2022-2025",
+  "poisson": {
+    "half_life": 365.0,
+    "k": 5.0,
+    "promoted": -0.2,
+    "rho": -0.09,
+    "window": 1100.0,
+    "new_after": 300.0,
+    "home_edge0": 0.2,
+    "home_edge_k": 20.0
+  },
+  "elo": {
+    "k": 18.0,
+    "home": 60.0,
+    "carry": 0.9,
+    "newcomer": 1400.0,
+    "draw_width": 0.6,
+    "scale": 180.0,
+    "goals_per_100": 0.5217472580412705
+  },
+  "history": {
+    "poisson": {
+      "n": 7077,
+      "accuracy": 0.5253638547407093,
+      "rps": 0.20115835723386158,
+      "log_loss": 0.9882984716880524,
+      "mae_total": 1.3063395410868843
+    },
+    "elo": {
+      "n": 7077,
+      "accuracy": 0.5252225519287834,
+      "rps": 0.2006509016110103,
+      "log_loss": 0.9872752431168293,
+      "mae_total": 1.3251806240773127
+    },
+    "averages": {
+      "n": 7077,
+      "accuracy": 0.5201356506994489,
+      "rps": 0.2044986312911979,
+      "log_loss": 1.000673598229891,
+      "mae_total": 1.3229520517943503
+    }
+  },
+  "selected": "poisson",
+  "selected_by": "the only candidate with a full scoreline grid, which totals and handicaps need"
+}
