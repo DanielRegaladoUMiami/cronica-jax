@@ -648,7 +648,7 @@ def print_summary(picks: dict) -> None:
             print(
                 f"  {market:6s} {what} ({side['odds']:+d}) · model {side['p_model']:.0%}"
                 f" vs market {side['p_market']:.0%} · edge {edge:+.1%}"
-                f" · {g['away']['abbr']} @ {g['home']['abbr']}{why}"
+                f" · {g['home']['abbr']} v {g['away']['abbr']}{why}"
             )
     out_dir = base.SITE_DATA_DIR.relative_to(base.ROOT)
     print(f"\nExported: {out_dir}/soccer_picks.json and {out_dir}/soccer_backtest.json")
