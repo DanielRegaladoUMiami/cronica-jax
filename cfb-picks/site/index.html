@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- head:start -->
+<title>CFB Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<!-- head:end -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- body:start -->
+<header class="field">
+  <div class="wrap field-inner">
+    <div>
+      <p class="eyebrow" id="hdr-week">College football</p>
+      <h1>CFB Picks</h1>
+    </div>
+    <p class="field-meta" id="hdr-meta">Cargando…</p>
+  </div>
+  <div class="hashmarks" aria-hidden="true"></div>
+</header>
+
+<nav class="tabs" aria-label="Secciones">
+  <div class="wrap tabs-inner">
+    <a href="#picks" data-view="picks">Picks</a>
+    <a href="#parlay" data-view="parlay">Parlay</a>
+    <a href="#record" data-view="record">Track record</a>
+    <a href="#como" data-view="como">Cómo funciona</a>
+  </div>
+</nav>
+
+<main class="wrap" id="view" tabindex="-1">
+  <p class="loading">Cargando los picks…</p>
+</main>
+
+<footer class="wrap foot">
+  <p id="foot-gen"></p>
+  <p>Proyecciones estadísticas con error. Ninguna jugada es segura: el modelo no sabe de lesiones, clima ni motivación.</p>
+</footer>
+
+<div class="tooltip" id="tooltip" role="status" hidden></div>
+<!-- body:end -->
+<script src="app.js"></script>
+</body>
+</html>

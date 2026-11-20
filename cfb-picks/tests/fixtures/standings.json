@@ -1,0 +1,96 @@
+{
+ "name": "FBS",
+ "isConference": false,
+ "children": [
+  {
+   "name": "American Conference",
+   "abbreviation": "American",
+   "isConference": true,
+   "standings": {
+    "entries": [
+     {
+      "team": {
+       "id": "2636",
+       "displayName": "UTSA Roadrunners",
+       "abbreviation": "UTSA"
+      }
+     },
+     {
+      "team": {
+       "id": "235",
+       "displayName": "Memphis Tigers",
+       "abbreviation": "MEM"
+      }
+     },
+     {
+      "team": {
+       "id": "249",
+       "displayName": "North Texas Mean Green",
+       "abbreviation": "UNT"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "name": "Atlantic Coast Conference",
+   "abbreviation": "acc",
+   "isConference": true,
+   "standings": {
+    "entries": [
+     {
+      "team": {
+       "id": "2390",
+       "displayName": "Miami Hurricanes",
+       "abbreviation": "MIA"
+      }
+     },
+     {
+      "team": {
+       "id": "154",
+       "displayName": "Wake Forest Demon Deacons",
+       "abbreviation": "WAKE"
+      }
+     },
+     {
+      "team": {
+       "id": "97",
+       "displayName": "Louisville Cardinals",
+       "abbreviation": "LOU"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "name": "Big 12 Conference",
+   "abbreviation": "big12",
+   "isConference": true,
+   "standings": {
+    "entries": [
+     {
+      "team": {
+       "id": "254",
+       "displayName": "Utah Utes",
+       "abbreviation": "UTAH"
+      }
+     },
+     {
+      "team": {
+       "id": "2641",
+       "displayName": "Texas Tech Red Raiders",
+       "abbreviation": "TTU"
+      }
+     },
+     {
+      "team": {
+       "id": "252",
+       "displayName": "BYU Cougars",
+       "abbreviation": "BYU"
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

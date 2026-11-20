@@ -1,0 +1,55 @@
+{
+  "calibrado_con": "2022-2025",
+  "srs": {
+    "cap": 45.0,
+    "k": 3.0,
+    "k_total": 9.0,
+    "rho": 1.0,
+    "rho_total": 0.5,
+    "half_life": 0.0,
+    "hfa0": 2.5,
+    "hfa_k": 40.0,
+    "newcomer": -8.0,
+    "fcs0": -22.0,
+    "base_total0": 53.0,
+    "base_total_k": 10.0
+  },
+  "elo": {
+    "k": 40.0,
+    "hfa": 55.0,
+    "carry": 0.9,
+    "scale": 21.504371273144237,
+    "newcomer": 1350.0,
+    "fcs0": 1150.0,
+    "fcs_k": 0.1
+  },
+  "peso_srs_en_mezcla": 0.993888594847875,
+  "historia": {
+    "srs": {
+      "margen": 16.0034369642505,
+      "total": 16.113279896085636,
+      "n": 3174,
+      "acierto": 0.70825456836799,
+      "mae_margen": 12.669107956854202,
+      "mae_total": 12.880827806581873
+    },
+    "elo": {
+      "margen": 16.79718476380195,
+      "total": null,
+      "n": 3174,
+      "acierto": 0.6969124133585382,
+      "mae_margen": 13.271408277908588,
+      "mae_total": null
+    },
+    "blend": {
+      "margen": 16.0034062071829,
+      "total": 16.113279896085636,
+      "n": 3174,
+      "acierto": 0.70825456836799,
+      "mae_margen": 12.669171441921415,
+      "mae_total": 12.880827806581873
+    }
+  },
+  "seleccionado": "srs",
+  "seleccionado_por": "menor MAE de margen en el walk-forward de 2026 (FBS vs FBS)"
+}

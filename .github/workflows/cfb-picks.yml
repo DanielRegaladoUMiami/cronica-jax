@@ -1,0 +1,83 @@
+name: CFB Picks
+
+# Corre el pipeline y publica el sitio en GitHub Pages.
+# Los horarios (cron) solo se ejecutan desde la rama por defecto del repo.
+on:
+  schedule:
+    # Jueves y sábado a las 13:17 UTC (8:17 AM ET en invierno, 9:17 AM en verano), de agosto a enero.
+    - cron: "17 13 * 8-12,1 4,6"
+  workflow_dispatch:
+    inputs:
+      week:
+        description: "Semana a generar (vacío = la semana en curso)"
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - "cfb-picks/**"
+      - ".github/workflows/cfb-picks.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cfb-picks-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cfb-picks
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: cfb-picks/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      # Las semanas ya jugadas no cambian: se guardan entre corridas para no volver a pedirlas a ESPN.
+      - name: Caché de respuestas del API
+        uses: actions/cache@v4
+        with:
+          path: cfb-picks/data/cache
+          key: espn-cache-${{ github.run_id }}
+          restore-keys: espn-cache-
+
+      - name: Tests
+        run: python -m pytest -q
+
+      - name: Generar picks y backtest
+        env:
+          WEEK: ${{ inputs.week }}
+        run: |
+          if [ -n "$WEEK" ]; then
+            python -m src.picks --week "$WEEK"
+          else
+            python -m src.picks
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: cfb-picks/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

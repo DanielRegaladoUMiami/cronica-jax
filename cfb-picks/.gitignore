@@ -1,0 +1,7 @@
+# El .gitignore de la raíz ignora cualquier carpeta data/: aquí se re-incluye.
+!data/
+!site/data/
+# Respuestas crudas del API: se regeneran.
+data/cache/
+__pycache__/
+.pytest_cache/

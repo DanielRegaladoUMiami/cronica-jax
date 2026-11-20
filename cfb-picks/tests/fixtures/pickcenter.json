@@ -1,0 +1,104 @@
+{
+ "pickcenter": [
+  {
+   "provider": {
+    "id": "100",
+    "name": "DraftKings",
+    "priority": 1
+   },
+   "details": "TA&M -2.5",
+   "overUnder": 54.5,
+   "spread": 2.5,
+   "overOdds": -110.0,
+   "underOdds": -110.0,
+   "awayTeamOdds": {
+    "favorite": true,
+    "underdog": false,
+    "spreadOdds": -112.0,
+    "team": {
+     "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/college-football/seasons/2025/teams/245?lang=en&region=us"
+    },
+    "teamId": "245",
+    "favoriteAtOpen": true
+   },
+   "homeTeamOdds": {
+    "favorite": false,
+    "underdog": true,
+    "spreadOdds": -108.0,
+    "team": {
+     "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/college-football/seasons/2025/teams/251?lang=en&region=us"
+    },
+    "teamId": "251",
+    "favoriteAtOpen": false
+   },
+   "moneyline": {
+    "displayName": "Moneyline",
+    "shortDisplayName": "ML",
+    "home": {
+     "close": {
+      "odds": "OFF"
+     },
+     "open": {
+      "odds": "OFF"
+     }
+    },
+    "away": {
+     "close": {
+      "odds": "OFF"
+     },
+     "open": {
+      "odds": "OFF"
+     }
+    }
+   },
+   "pointSpread": {
+    "displayName": "Spread",
+    "shortDisplayName": "Spread",
+    "home": {
+     "close": {
+      "line": "+2.5",
+      "odds": "-108"
+     },
+     "open": {
+      "line": "+1.5",
+      "odds": "-105"
+     }
+    },
+    "away": {
+     "close": {
+      "line": "-2.5",
+      "odds": "-112"
+     },
+     "open": {
+      "line": "-1.5",
+      "odds": "-115"
+     }
+    }
+   },
+   "total": {
+    "displayName": "Total",
+    "shortDisplayName": "Total",
+    "over": {
+     "close": {
+      "line": "o54.5",
+      "odds": "-110"
+     },
+     "open": {
+      "line": "o52.5",
+      "odds": "-105"
+     }
+    },
+    "under": {
+     "close": {
+      "line": "u54.5",
+      "odds": "-110"
+     },
+     "open": {
+      "line": "u52.5",
+      "odds": "-115"
+     }
+    }
+   }
+  }
+ ]
+}
