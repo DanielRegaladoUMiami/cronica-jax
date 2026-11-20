@@ -4,6 +4,8 @@ A weekly college football prediction system. It downloads every FBS game from
 ESPN's public API, fits a ratings model, checks it with a walk-forward
 backtest, and publishes the picks as a static site.
 
+**Live site:** https://danielregaladoumiami.github.io/cronica-jax/
+
 ## How good it is, and how good it is not
 
 Walk-forward backtest of the 2026 season: 635 FBS vs FBS games the model never
