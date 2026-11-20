@@ -1,4 +1,4 @@
-"""Probabilidades implícitas, vig, normal, Kelly y parlays."""
+"""Implied probabilities, vig, normal, Kelly and parlays."""
 
 import math
 
@@ -58,7 +58,7 @@ def test_devig_two_way_removes_the_vig():
     fav, dog = devig_two_way(-300, 240)
     assert fav + dog == pytest.approx(1.0)
     assert fav == pytest.approx(0.75 / (0.75 + 100 / 340))
-    assert fav < american_to_prob(-300)  # sin vig, el favorito vale menos que su implícita cruda
+    assert fav < american_to_prob(-300)  # without vig, the favorite is below its raw implied prob
     assert overround(-110, -110) == pytest.approx(1.047619)
 
 
@@ -87,11 +87,11 @@ def test_model_probabilities():
     sigma = 16.0
     assert p_home_win(0, sigma) == pytest.approx(0.5)
     assert p_home_win(16, sigma) == pytest.approx(norm_cdf(1.0))
-    # Local favorito por 10 según el modelo: cubre -7.5 más de la mitad de las veces, -10 justo la mitad.
+    # Home team favored by 10 per the model: covers -7.5 more than half the time, -10 exactly half.
     assert p_cover(10, -7.5, sigma) > 0.5
     assert p_cover(10, -10, sigma) == pytest.approx(0.5)
     assert p_cover(10, -14, sigma) < 0.5
-    # El visitante +7.5 es el complemento del local -7.5.
+    # The away team at +7.5 is the complement of the home team at -7.5.
     assert 1 - p_cover(10, -7.5, sigma) == pytest.approx(norm_cdf((7.5 - 10) / sigma))
     assert p_over(50, 45.5, sigma) > 0.5 > p_over(40, 45.5, sigma)
 
@@ -102,14 +102,14 @@ def test_expected_value_and_kelly():
     assert expected_value(0.55, -110) == pytest.approx(0.05)
     b = 100 / 110
     assert kelly_fraction(0.55, -110) == pytest.approx((b * 0.55 - 0.45) / b)
-    assert kelly_fraction(0.50, -110) == 0.0  # sin ventaja no se apuesta
+    assert kelly_fraction(0.50, -110) == 0.0  # no edge, no bet
     assert kelly_fraction(0.40, 200) == pytest.approx((2 * 0.4 - 0.6) / 2)
 
 
 def test_stake_is_quarter_kelly_with_cap():
     full = kelly_fraction(0.55, -110)
     assert suggested_stake(0.55, -110) == pytest.approx(0.25 * full)
-    assert suggested_stake(0.70, -110) == 0.02  # tope de 2% del bankroll
+    assert suggested_stake(0.70, -110) == 0.02  # cap of 2% of the bankroll
     assert suggested_stake(0.50, -110) == 0.0
 
 
@@ -123,7 +123,7 @@ def test_parlay_multiplies_probabilities_and_prices():
     out = parlay([0.8, 0.5], [-400, 100])
     assert out["prob"] == pytest.approx(0.4)
     assert out["decimal"] == pytest.approx(1.25 * 2.0)
-    assert out["prob_casa"] == pytest.approx(1 / 2.5)
+    assert out["implied_prob"] == pytest.approx(1 / 2.5)
     assert out["ev"] == pytest.approx(0.4 * 2.5 - 1)
     missing = parlay([0.8, 0.5], [-400, None])
     assert (
@@ -137,5 +137,5 @@ def test_vig_compounds_in_parlays():
     legs = [-110] * 10
     out = parlay([0.5] * 10, legs)
     assert out["prob"] == pytest.approx(0.5**10)
-    assert out["prob_casa"] > out["prob"] * 1.5  # la casa paga como si fuera mucho más probable
-    assert math.isclose(out["prob_casa"], (110 / 210) ** 10)
+    assert out["implied_prob"] > out["prob"] * 1.5  # the book pays as if it were much more likely
+    assert math.isclose(out["implied_prob"], (110 / 210) ** 10)

@@ -1,8 +1,8 @@
-"""Mezcla de SRS y Elo: margen = w * SRS + (1 - w) * Elo. El total sale del SRS.
+"""Blend of SRS and Elo: margin = w * SRS + (1 - w) * Elo. The total comes from SRS.
 
-Los dos modelos se equivocan por razones distintas (SRS pesa igual toda la
-temporada; Elo reacciona a lo reciente y recuerda el año anterior), así que
-promediarlos suele reducir el error.
+The two models are wrong for different reasons (SRS weighs the whole season
+equally; Elo reacts to recent games and remembers the previous year), so
+averaging them usually reduces the error.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ class BlendState:
 
 class BlendModel:
     name = "blend"
-    label = "Mezcla SRS + Elo"
+    label = "SRS + Elo blend"
 
     def __init__(self, srs: SrsModel, elo: EloModel, weight: float = 0.5) -> None:
         self.srs, self.elo, self.weight = srs, elo, weight
@@ -56,8 +56,8 @@ class BlendModel:
 
     def describe(self) -> dict:
         return {
-            "modelo": self.name,
-            "peso_srs": self.weight,
+            "model": self.name,
+            "srs_weight": self.weight,
             "srs": self.srs.describe(),
             "elo": self.elo.describe(),
         }

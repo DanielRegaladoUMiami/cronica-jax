@@ -1,744 +1,744 @@
 {
- "generado": "2026-11-20T18:18:54+00:00",
- "temporada": 2026,
- "seleccionado": "srs",
- "seleccionado_label": "SRS (margen ajustado por calendario)",
- "calibrado_con": "2022-2025",
- "temporadas_historia": [
+ "generated": "2026-11-20T19:26:20+00:00",
+ "season": 2026,
+ "selected": "srs",
+ "selected_label": "SRS (schedule-adjusted margin)",
+ "tuned_on": "2022-2025",
+ "history_seasons": [
   2022,
   2023,
   2024,
   2025
  ],
- "comparacion": [
+ "comparison": [
   {
-   "modelo": "baseline",
-   "label": "Baseline (puntos vs % de victorias del rival)",
-   "seleccionado": false,
-   "actual": {
+   "model": "baseline",
+   "label": "Baseline (points vs opponent win %)",
+   "selected": false,
+   "current": {
     "n": 635,
-    "acierto": 0.6567,
-    "acierto_14": 0.7949,
+    "accuracy": 0.6567,
+    "accuracy_14": 0.7949,
     "n_14": 195,
-    "mae_margen": 14.7204,
-    "rmse_margen": 18.8303,
-    "sesgo_margen": 1.0093,
+    "mae_margin": 14.7204,
+    "rmse_margin": 18.8303,
+    "bias_margin": 1.0093,
     "mae_total": 13.0816,
     "rmse_total": 16.2288,
-    "sesgo_total": 1.2171,
+    "bias_total": 1.2171,
     "brier": 0.2235
    },
-   "actual_con_fcs": {
+   "current_with_fcs": {
     "n": 758,
-    "acierto": 0.7045,
-    "acierto_14": 0.8391,
+    "accuracy": 0.7045,
+    "accuracy_14": 0.8391,
     "n_14": 261,
-    "mae_margen": 16.5828,
-    "rmse_margen": 21.4815,
-    "sesgo_margen": -2.5002,
+    "mae_margin": 16.5828,
+    "rmse_margin": 21.4815,
+    "bias_margin": -2.5002,
     "mae_total": 12.9585,
     "rmse_total": 16.0497,
-    "sesgo_total": 0.5429,
+    "bias_total": 0.5429,
     "brier": 0.2075
    },
-   "historia": {
+   "history": {
     "n": 3174,
-    "acierto": 0.6871,
-    "acierto_14": 0.8346,
+    "accuracy": 0.6871,
+    "accuracy_14": 0.8346,
     "n_14": 895,
-    "mae_margen": 14.1194,
-    "rmse_margen": 18.0201,
-    "sesgo_margen": 0.0179,
+    "mae_margin": 14.1194,
+    "rmse_margin": 18.0201,
+    "bias_margin": 0.0179,
     "mae_total": 13.0395,
     "rmse_total": 16.3059,
-    "sesgo_total": 0.2964,
+    "bias_total": 0.2964,
     "brier": 0.2057
    }
   },
   {
-   "modelo": "srs",
-   "label": "SRS (margen ajustado por calendario)",
-   "seleccionado": true,
-   "actual": {
+   "model": "srs",
+   "label": "SRS (schedule-adjusted margin)",
+   "selected": true,
+   "current": {
     "n": 635,
-    "acierto": 0.7039,
-    "acierto_14": 0.9062,
+    "accuracy": 0.7039,
+    "accuracy_14": 0.9062,
     "n_14": 192,
-    "mae_margen": 12.8294,
-    "rmse_margen": 16.1643,
-    "sesgo_margen": 0.67,
+    "mae_margin": 12.8294,
+    "rmse_margin": 16.1643,
+    "bias_margin": 0.67,
     "mae_total": 13.0106,
     "rmse_total": 16.1762,
-    "sesgo_total": 0.2617,
+    "bias_total": 0.2617,
     "brier": 0.1888
    },
-   "actual_con_fcs": {
+   "current_with_fcs": {
     "n": 758,
-    "acierto": 0.7441,
-    "acierto_14": 0.9253,
+    "accuracy": 0.7441,
+    "accuracy_14": 0.9253,
     "n_14": 308,
-    "mae_margen": 13.3779,
-    "rmse_margen": 16.8446,
-    "sesgo_margen": -0.4721,
+    "mae_margin": 13.3779,
+    "rmse_margin": 16.8446,
+    "bias_margin": -0.4721,
     "mae_total": 12.8222,
     "rmse_total": 15.9346,
-    "sesgo_total": 0.0496,
+    "bias_total": 0.0496,
     "brier": 0.1652
    },
-   "historia": {
+   "history": {
     "n": 3174,
-    "acierto": 0.7083,
-    "acierto_14": 0.9003,
+    "accuracy": 0.7083,
+    "accuracy_14": 0.9003,
     "n_14": 863,
-    "mae_margen": 12.6691,
-    "rmse_margen": 16.0034,
-    "sesgo_margen": 0.0134,
+    "mae_margin": 12.6691,
+    "rmse_margin": 16.0034,
+    "bias_margin": 0.0134,
     "mae_total": 12.8808,
     "rmse_total": 16.1133,
-    "sesgo_total": -0.071,
+    "bias_total": -0.071,
     "brier": 0.1862
    }
   },
   {
-   "modelo": "elo",
-   "label": "Elo con margen de victoria",
-   "seleccionado": false,
-   "actual": {
+   "model": "elo",
+   "label": "Elo with margin of victory",
+   "selected": false,
+   "current": {
     "n": 635,
-    "acierto": 0.6866,
-    "acierto_14": 0.8333,
+    "accuracy": 0.6866,
+    "accuracy_14": 0.8333,
     "n_14": 174,
-    "mae_margen": 13.2861,
-    "rmse_margen": 16.7862,
-    "sesgo_margen": -1.1655,
+    "mae_margin": 13.2861,
+    "rmse_margin": 16.7862,
+    "bias_margin": -1.1655,
     "mae_total": null,
     "rmse_total": null,
-    "sesgo_total": null,
+    "bias_total": null,
     "brier": 0.1961
    },
-   "actual_con_fcs": {
+   "current_with_fcs": {
     "n": 758,
-    "acierto": 0.7296,
-    "acierto_14": 0.8846,
+    "accuracy": 0.7296,
+    "accuracy_14": 0.8846,
     "n_14": 286,
-    "mae_margen": 13.9184,
-    "rmse_margen": 17.5432,
-    "sesgo_margen": -2.6096,
+    "mae_margin": 13.9184,
+    "rmse_margin": 17.5432,
+    "bias_margin": -2.6096,
     "mae_total": null,
     "rmse_total": null,
-    "sesgo_total": null,
+    "bias_total": null,
     "brier": 0.1713
    },
-   "historia": {
+   "history": {
     "n": 3174,
-    "acierto": 0.6969,
-    "acierto_14": 0.8847,
+    "accuracy": 0.6969,
+    "accuracy_14": 0.8847,
     "n_14": 746,
-    "mae_margen": 13.2714,
-    "rmse_margen": 16.7972,
-    "sesgo_margen": -0.8628,
+    "mae_margin": 13.2714,
+    "rmse_margin": 16.7972,
+    "bias_margin": -0.8628,
     "mae_total": null,
     "rmse_total": null,
-    "sesgo_total": null,
+    "bias_total": null,
     "brier": 0.195
    }
   }
  ],
- "mercado": {
+ "market": {
   "n": 635,
-  "mae_margen": 11.722,
-  "acierto": 0.7465,
+  "mae_margin": 11.722,
+  "accuracy": 0.7465,
   "mae_total": 12.4165,
-  "modelo_mae_margen": 12.8294,
-  "modelo_mae_total": 13.0106
+  "model_mae_margin": 12.8294,
+  "model_mae_total": 13.0106
  },
- "semanas": [
+ "weeks": [
   {
-   "semana": 1,
+   "week": 1,
    "n": 51,
-   "acierto": 0.8039,
-   "mae_margen": 15.8358,
+   "accuracy": 0.8039,
+   "mae_margin": 15.8358,
    "mae_total": 12.1499,
-   "jugadas": 0,
-   "ganadas": 0,
-   "perdidas": 0,
-   "unidades": 0.0,
-   "acumulado": 0.0
+   "plays": 0,
+   "won": 0,
+   "lost": 0,
+   "units": 0.0,
+   "cumulative": 0.0
   },
   {
-   "semana": 2,
+   "week": 2,
    "n": 49,
-   "acierto": 0.7551,
-   "mae_margen": 12.9056,
+   "accuracy": 0.7551,
+   "mae_margin": 12.9056,
    "mae_total": 10.8039,
-   "jugadas": 0,
-   "ganadas": 0,
-   "perdidas": 0,
-   "unidades": 0.0,
-   "acumulado": 0.0
+   "plays": 0,
+   "won": 0,
+   "lost": 0,
+   "units": 0.0,
+   "cumulative": 0.0
   },
   {
-   "semana": 3,
+   "week": 3,
    "n": 57,
-   "acierto": 0.8246,
-   "mae_margen": 10.0514,
+   "accuracy": 0.8246,
+   "mae_margin": 10.0514,
    "mae_total": 13.9099,
-   "jugadas": 0,
-   "ganadas": 0,
-   "perdidas": 0,
-   "unidades": 0.0,
-   "acumulado": 0.0
+   "plays": 0,
+   "won": 0,
+   "lost": 0,
+   "units": 0.0,
+   "cumulative": 0.0
   },
   {
-   "semana": 4,
+   "week": 4,
    "n": 58,
-   "acierto": 0.7241,
-   "mae_margen": 13.0939,
+   "accuracy": 0.7241,
+   "mae_margin": 13.0939,
    "mae_total": 11.0787,
-   "jugadas": 44,
-   "ganadas": 18,
-   "perdidas": 26,
-   "unidades": -7.9436,
-   "acumulado": -7.9436
+   "plays": 44,
+   "won": 18,
+   "lost": 26,
+   "units": -7.9436,
+   "cumulative": -7.9436
   },
   {
-   "semana": 5,
+   "week": 5,
    "n": 56,
-   "acierto": 0.6964,
-   "mae_margen": 14.1548,
+   "accuracy": 0.6964,
+   "mae_margin": 14.1548,
    "mae_total": 13.1362,
-   "jugadas": 33,
-   "ganadas": 17,
-   "perdidas": 16,
-   "unidades": 1.0681,
-   "acumulado": -6.8755
+   "plays": 33,
+   "won": 17,
+   "lost": 16,
+   "units": 1.0681,
+   "cumulative": -6.8755
   },
   {
-   "semana": 6,
+   "week": 6,
    "n": 58,
-   "acierto": 0.6379,
-   "mae_margen": 12.2462,
+   "accuracy": 0.6379,
+   "mae_margin": 12.2462,
    "mae_total": 12.9143,
-   "jugadas": 53,
-   "ganadas": 27,
-   "perdidas": 26,
-   "unidades": -1.5892,
-   "acumulado": -8.4647
+   "plays": 53,
+   "won": 27,
+   "lost": 26,
+   "units": -1.5892,
+   "cumulative": -8.4647
   },
   {
-   "semana": 7,
+   "week": 7,
    "n": 59,
-   "acierto": 0.6271,
-   "mae_margen": 11.5551,
+   "accuracy": 0.6271,
+   "mae_margin": 11.5551,
    "mae_total": 13.0357,
-   "jugadas": 49,
-   "ganadas": 21,
-   "perdidas": 26,
-   "unidades": -4.7597,
-   "acumulado": -13.2244
+   "plays": 49,
+   "won": 21,
+   "lost": 26,
+   "units": -4.7597,
+   "cumulative": -13.2244
   },
   {
-   "semana": 8,
+   "week": 8,
    "n": 56,
-   "acierto": 0.5893,
-   "mae_margen": 12.016,
+   "accuracy": 0.5893,
+   "mae_margin": 12.016,
    "mae_total": 15.397,
-   "jugadas": 52,
-   "ganadas": 25,
-   "perdidas": 27,
-   "unidades": -0.5853,
-   "acumulado": -13.8097
+   "plays": 52,
+   "won": 25,
+   "lost": 27,
+   "units": -0.5853,
+   "cumulative": -13.8097
   },
   {
-   "semana": 9,
+   "week": 9,
    "n": 56,
-   "acierto": 0.7679,
-   "mae_margen": 13.1708,
+   "accuracy": 0.7679,
+   "mae_margin": 13.1708,
    "mae_total": 12.76,
-   "jugadas": 44,
-   "ganadas": 19,
-   "perdidas": 24,
-   "unidades": -2.0165,
-   "acumulado": -15.8263
+   "plays": 44,
+   "won": 19,
+   "lost": 24,
+   "units": -2.0165,
+   "cumulative": -15.8263
   },
   {
-   "semana": 10,
+   "week": 10,
    "n": 62,
-   "acierto": 0.6452,
-   "mae_margen": 13.3844,
+   "accuracy": 0.6452,
+   "mae_margin": 13.3844,
    "mae_total": 13.9632,
-   "jugadas": 50,
-   "ganadas": 26,
-   "perdidas": 24,
-   "unidades": 0.2581,
-   "acumulado": -15.5681
+   "plays": 50,
+   "won": 26,
+   "lost": 24,
+   "units": 0.2581,
+   "cumulative": -15.5681
   },
   {
-   "semana": 11,
+   "week": 11,
    "n": 67,
-   "acierto": 0.7015,
-   "mae_margen": 13.2204,
+   "accuracy": 0.7015,
+   "mae_margin": 13.2204,
    "mae_total": 13.2614,
-   "jugadas": 70,
-   "ganadas": 30,
-   "perdidas": 39,
-   "unidades": -10.5451,
-   "acumulado": -26.1133
+   "plays": 70,
+   "won": 30,
+   "lost": 39,
+   "units": -10.5451,
+   "cumulative": -26.1133
   },
   {
-   "semana": 12,
+   "week": 12,
    "n": 6,
-   "acierto": 0.6667,
-   "mae_margen": 10.5868,
+   "accuracy": 0.6667,
+   "mae_margin": 10.5868,
    "mae_total": 15.4077,
-   "jugadas": 6,
-   "ganadas": 1,
-   "perdidas": 5,
-   "unidades": -4.0909,
-   "acumulado": -30.2042
+   "plays": 6,
+   "won": 1,
+   "lost": 5,
+   "units": -4.0909,
+   "cumulative": -30.2042
   }
  ],
- "calibracion": {
-  "actual": [
+ "calibration": {
+  "current": [
    {
-    "desde": 0.5,
-    "hasta": 0.55,
+    "from": 0.5,
+    "to": 0.55,
     "n": 79,
-    "predicho": 0.5244,
-    "observado": 0.5316,
-    "error_est": 0.0561
+    "predicted": 0.5244,
+    "observed": 0.5316,
+    "std_error": 0.0561
    },
    {
-    "desde": 0.55,
-    "hasta": 0.6,
+    "from": 0.55,
+    "to": 0.6,
     "n": 72,
-    "predicho": 0.5743,
-    "observado": 0.5139,
-    "error_est": 0.0589
+    "predicted": 0.5743,
+    "observed": 0.5139,
+    "std_error": 0.0589
    },
    {
-    "desde": 0.6,
-    "hasta": 0.65,
+    "from": 0.6,
+    "to": 0.65,
     "n": 83,
-    "predicho": 0.623,
-    "observado": 0.6506,
-    "error_est": 0.0523
+    "predicted": 0.623,
+    "observed": 0.6506,
+    "std_error": 0.0523
    },
    {
-    "desde": 0.65,
-    "hasta": 0.7,
+    "from": 0.65,
+    "to": 0.7,
     "n": 71,
-    "predicho": 0.6727,
-    "observado": 0.6338,
-    "error_est": 0.0572
+    "predicted": 0.6727,
+    "observed": 0.6338,
+    "std_error": 0.0572
    },
    {
-    "desde": 0.7,
-    "hasta": 0.75,
+    "from": 0.7,
+    "to": 0.75,
     "n": 68,
-    "predicho": 0.7232,
-    "observado": 0.6912,
-    "error_est": 0.056
+    "predicted": 0.7232,
+    "observed": 0.6912,
+    "std_error": 0.056
    },
    {
-    "desde": 0.75,
-    "hasta": 0.8,
+    "from": 0.75,
+    "to": 0.8,
     "n": 55,
-    "predicho": 0.7772,
-    "observado": 0.6727,
-    "error_est": 0.0633
+    "predicted": 0.7772,
+    "observed": 0.6727,
+    "std_error": 0.0633
    },
    {
-    "desde": 0.8,
-    "hasta": 0.85,
+    "from": 0.8,
+    "to": 0.85,
     "n": 64,
-    "predicho": 0.8254,
-    "observado": 0.8281,
-    "error_est": 0.0472
+    "predicted": 0.8254,
+    "observed": 0.8281,
+    "std_error": 0.0472
    },
    {
-    "desde": 0.85,
-    "hasta": 0.9,
+    "from": 0.85,
+    "to": 0.9,
     "n": 57,
-    "predicho": 0.8753,
-    "observado": 0.9298,
-    "error_est": 0.0338
+    "predicted": 0.8753,
+    "observed": 0.9298,
+    "std_error": 0.0338
    },
    {
-    "desde": 0.9,
-    "hasta": 0.95,
+    "from": 0.9,
+    "to": 0.95,
     "n": 39,
-    "predicho": 0.9241,
-    "observado": 0.9231,
-    "error_est": 0.0427
+    "predicted": 0.9241,
+    "observed": 0.9231,
+    "std_error": 0.0427
    },
    {
-    "desde": 0.95,
-    "hasta": 1.0,
+    "from": 0.95,
+    "to": 1.0,
     "n": 47,
-    "predicho": 0.9746,
-    "observado": 0.9149,
-    "error_est": 0.0407
+    "predicted": 0.9746,
+    "observed": 0.9149,
+    "std_error": 0.0407
    }
   ],
-  "historia": [
+  "history": [
    {
-    "desde": 0.5,
-    "hasta": 0.55,
+    "from": 0.5,
+    "to": 0.55,
     "n": 380,
-    "predicho": 0.5239,
-    "observado": 0.5,
-    "error_est": 0.0256
+    "predicted": 0.5239,
+    "observed": 0.5,
+    "std_error": 0.0256
    },
    {
-    "desde": 0.55,
-    "hasta": 0.6,
+    "from": 0.55,
+    "to": 0.6,
     "n": 435,
-    "predicho": 0.5752,
-    "observado": 0.5402,
-    "error_est": 0.0239
+    "predicted": 0.5752,
+    "observed": 0.5402,
+    "std_error": 0.0239
    },
    {
-    "desde": 0.6,
-    "hasta": 0.65,
+    "from": 0.6,
+    "to": 0.65,
     "n": 376,
-    "predicho": 0.625,
-    "observado": 0.6117,
-    "error_est": 0.0251
+    "predicted": 0.625,
+    "observed": 0.6117,
+    "std_error": 0.0251
    },
    {
-    "desde": 0.65,
-    "hasta": 0.7,
+    "from": 0.65,
+    "to": 0.7,
     "n": 374,
-    "predicho": 0.6745,
-    "observado": 0.7032,
-    "error_est": 0.0236
+    "predicted": 0.6745,
+    "observed": 0.7032,
+    "std_error": 0.0236
    },
    {
-    "desde": 0.7,
-    "hasta": 0.75,
+    "from": 0.7,
+    "to": 0.75,
     "n": 358,
-    "predicho": 0.7254,
-    "observado": 0.7346,
-    "error_est": 0.0233
+    "predicted": 0.7254,
+    "observed": 0.7346,
+    "std_error": 0.0233
    },
    {
-    "desde": 0.75,
-    "hasta": 0.8,
+    "from": 0.75,
+    "to": 0.8,
     "n": 318,
-    "predicho": 0.7763,
-    "observado": 0.739,
-    "error_est": 0.0246
+    "predicted": 0.7763,
+    "observed": 0.739,
+    "std_error": 0.0246
    },
    {
-    "desde": 0.8,
-    "hasta": 0.85,
+    "from": 0.8,
+    "to": 0.85,
     "n": 262,
-    "predicho": 0.8252,
-    "observado": 0.8359,
-    "error_est": 0.0229
+    "predicted": 0.8252,
+    "observed": 0.8359,
+    "std_error": 0.0229
    },
    {
-    "desde": 0.85,
-    "hasta": 0.9,
+    "from": 0.85,
+    "to": 0.9,
     "n": 275,
-    "predicho": 0.8749,
-    "observado": 0.8764,
-    "error_est": 0.0198
+    "predicted": 0.8749,
+    "observed": 0.8764,
+    "std_error": 0.0198
    },
    {
-    "desde": 0.9,
-    "hasta": 0.95,
+    "from": 0.9,
+    "to": 0.95,
     "n": 216,
-    "predicho": 0.9233,
-    "observado": 0.9028,
-    "error_est": 0.0202
+    "predicted": 0.9233,
+    "observed": 0.9028,
+    "std_error": 0.0202
    },
    {
-    "desde": 0.95,
-    "hasta": 1.0,
+    "from": 0.95,
+    "to": 1.0,
     "n": 180,
-    "predicho": 0.9732,
-    "observado": 0.9833,
-    "error_est": 0.0095
+    "predicted": 0.9732,
+    "observed": 0.9833,
+    "std_error": 0.0095
    }
   ],
-  "error_medio": 0.0204
+  "mean_error": 0.0204
  },
  "sigma": {
-  "margen": 15.8207,
+  "margin": 15.8207,
   "total": 16.0591,
   "n": 3566
  },
- "apuestas": {
-  "actual": {
+ "bets": {
+  "current": {
    "ml": {
-    "JUGADA": {
+    "PLAY": {
      "n": 108,
-     "ganadas": 45,
-     "perdidas": 63,
+     "won": 45,
+     "lost": 63,
      "push": 0,
-     "pct": 0.4167,
-     "unidades": -8.058,
+     "win_pct": 0.4167,
+     "units": -8.058,
      "roi": -0.0746,
      "roi_error": 0.1179
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 227,
-     "ganadas": 89,
-     "perdidas": 138,
+     "won": 89,
+     "lost": 138,
      "push": 0,
-     "pct": 0.3921,
-     "unidades": -62.1065,
+     "win_pct": 0.3921,
+     "units": -62.1065,
      "roi": -0.2736,
      "roi_error": 0.0745
     },
-    "PASAR": {
+    "PASS": {
      "n": 285,
-     "ganadas": 155,
-     "perdidas": 130,
+     "won": 155,
+     "lost": 130,
      "push": 0,
-     "pct": 0.5439,
-     "unidades": -11.3363,
+     "win_pct": 0.5439,
+     "units": -11.3363,
      "roi": -0.0398,
      "roi_error": 0.074
     }
    },
    "spread": {
-    "JUGADA": {
+    "PLAY": {
      "n": 124,
-     "ganadas": 58,
-     "perdidas": 62,
+     "won": 58,
+     "lost": 62,
      "push": 4,
-     "pct": 0.4833,
-     "unidades": -8.6507,
+     "win_pct": 0.4833,
+     "units": -8.6507,
      "roi": -0.0698,
      "roi_error": 0.0852
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 299,
-     "ganadas": 125,
-     "perdidas": 170,
+     "won": 125,
+     "lost": 170,
      "push": 4,
-     "pct": 0.4237,
-     "unidades": -56.808,
+     "win_pct": 0.4237,
+     "units": -56.808,
      "roi": -0.19,
      "roi_error": 0.0542
     },
-    "PASAR": {
+    "PASS": {
      "n": 212,
-     "ganadas": 104,
-     "perdidas": 106,
+     "won": 104,
+     "lost": 106,
      "push": 2,
-     "pct": 0.4952,
-     "unidades": -11.6215,
+     "win_pct": 0.4952,
+     "units": -11.6215,
      "roi": -0.0548,
      "roi_error": 0.0654
     }
    },
    "total": {
-    "JUGADA": {
+    "PLAY": {
      "n": 169,
-     "ganadas": 81,
-     "perdidas": 88,
+     "won": 81,
+     "lost": 88,
      "push": 0,
-     "pct": 0.4793,
-     "unidades": -13.4954,
+     "win_pct": 0.4793,
+     "units": -13.4954,
      "roi": -0.0799,
      "roi_error": 0.0741
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 157,
-     "ganadas": 72,
-     "perdidas": 85,
+     "won": 72,
+     "lost": 85,
      "push": 0,
-     "pct": 0.4586,
-     "unidades": -19.2469,
+     "win_pct": 0.4586,
+     "units": -19.2469,
      "roi": -0.1226,
      "roi_error": 0.0763
     },
-    "PASAR": {
+    "PASS": {
      "n": 309,
-     "ganadas": 142,
-     "perdidas": 167,
+     "won": 142,
+     "lost": 167,
      "push": 0,
-     "pct": 0.4595,
-     "unidades": -37.4873,
+     "win_pct": 0.4595,
+     "units": -37.4873,
      "roi": -0.1213,
      "roi_error": 0.0543
     }
    },
-   "todas": {
-    "JUGADA": {
+   "all": {
+    "PLAY": {
      "n": 401,
-     "ganadas": 184,
-     "perdidas": 213,
+     "won": 184,
+     "lost": 213,
      "push": 4,
-     "pct": 0.4635,
-     "unidades": -30.2042,
+     "win_pct": 0.4635,
+     "units": -30.2042,
      "roi": -0.0753,
      "roi_error": 0.0516
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 683,
-     "ganadas": 286,
-     "perdidas": 393,
+     "won": 286,
+     "lost": 393,
      "push": 4,
-     "pct": 0.4212,
-     "unidades": -138.1614,
+     "win_pct": 0.4212,
+     "units": -138.1614,
      "roi": -0.2023,
      "roi_error": 0.0385
     },
-    "PASAR": {
+    "PASS": {
      "n": 806,
-     "ganadas": 401,
-     "perdidas": 403,
+     "won": 401,
+     "lost": 403,
      "push": 2,
-     "pct": 0.4988,
-     "unidades": -60.4451,
+     "win_pct": 0.4988,
+     "units": -60.4451,
      "roi": -0.075,
      "roi_error": 0.0376
     }
    }
   },
-  "historia": {
+  "history": {
    "ml": {
-    "JUGADA": {
+    "PLAY": {
      "n": 447,
-     "ganadas": 163,
-     "perdidas": 284,
+     "won": 163,
+     "lost": 284,
      "push": 0,
-     "pct": 0.3647,
-     "unidades": -23.091,
+     "win_pct": 0.3647,
+     "units": -23.091,
      "roi": -0.0517,
      "roi_error": 0.0678
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 782,
-     "ganadas": 260,
-     "perdidas": 522,
+     "won": 260,
+     "lost": 522,
      "push": 0,
-     "pct": 0.3325,
-     "unidades": -13.7042,
+     "win_pct": 0.3325,
+     "units": -13.7042,
      "roi": -0.0175,
      "roi_error": 0.086
     },
-    "PASAR": {
+    "PASS": {
      "n": 920,
-     "ganadas": 441,
-     "perdidas": 479,
+     "won": 441,
+     "lost": 479,
      "push": 0,
-     "pct": 0.4793,
-     "unidades": -93.126,
+     "win_pct": 0.4793,
+     "units": -93.126,
      "roi": -0.1012,
      "roi_error": 0.0455
     }
    },
    "spread": {
-    "JUGADA": {
+    "PLAY": {
      "n": 534,
-     "ganadas": 257,
-     "perdidas": 269,
+     "won": 257,
+     "lost": 269,
      "push": 8,
-     "pct": 0.4886,
-     "unidades": -34.9803,
+     "win_pct": 0.4886,
+     "units": -34.9803,
      "roi": -0.0655,
      "roi_error": 0.0411
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 936,
-     "ganadas": 417,
-     "perdidas": 504,
+     "won": 417,
+     "lost": 504,
      "push": 15,
-     "pct": 0.4528,
-     "unidades": -125.8056,
+     "win_pct": 0.4528,
+     "units": -125.8056,
      "roi": -0.1344,
      "roi_error": 0.0308
     },
-    "PASAR": {
+    "PASS": {
      "n": 711,
-     "ganadas": 337,
-     "perdidas": 365,
+     "won": 337,
+     "lost": 365,
      "push": 9,
-     "pct": 0.4801,
-     "unidades": -58.7833,
+     "win_pct": 0.4801,
+     "units": -58.7833,
      "roi": -0.0827,
      "roi_error": 0.0356
     }
    },
    "total": {
-    "JUGADA": {
+    "PLAY": {
      "n": 783,
-     "ganadas": 389,
-     "perdidas": 391,
+     "won": 389,
+     "lost": 391,
      "push": 3,
-     "pct": 0.4987,
-     "unidades": -37.1572,
+     "win_pct": 0.4987,
+     "units": -37.1572,
      "roi": -0.0475,
      "roi_error": 0.0341
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 576,
-     "ganadas": 288,
-     "perdidas": 280,
+     "won": 288,
+     "lost": 280,
      "push": 8,
-     "pct": 0.507,
-     "unidades": -17.876,
+     "win_pct": 0.507,
+     "units": -17.876,
      "roi": -0.031,
      "roi_error": 0.0396
     },
-    "PASAR": {
+    "PASS": {
      "n": 822,
-     "ganadas": 384,
-     "perdidas": 430,
+     "won": 384,
+     "lost": 430,
      "push": 8,
-     "pct": 0.4717,
-     "unidades": -82.029,
+     "win_pct": 0.4717,
+     "units": -82.029,
      "roi": -0.0998,
      "roi_error": 0.0331
     }
    },
-   "todas": {
-    "JUGADA": {
+   "all": {
+    "PLAY": {
      "n": 1764,
-     "ganadas": 809,
-     "perdidas": 944,
+     "won": 809,
+     "lost": 944,
      "push": 11,
-     "pct": 0.4615,
-     "unidades": -95.2285,
+     "win_pct": 0.4615,
+     "units": -95.2285,
      "roi": -0.054,
      "roi_error": 0.026
     },
-    "EVITAR": {
+    "AVOID": {
      "n": 2294,
-     "ganadas": 965,
-     "perdidas": 1306,
+     "won": 965,
+     "lost": 1306,
      "push": 23,
-     "pct": 0.4249,
-     "unidades": -157.3858,
+     "win_pct": 0.4249,
+     "units": -157.3858,
      "roi": -0.0686,
      "roi_error": 0.0334
     },
-    "PASAR": {
+    "PASS": {
      "n": 2453,
-     "ganadas": 1162,
-     "perdidas": 1274,
+     "won": 1162,
+     "lost": 1274,
      "push": 17,
-     "pct": 0.477,
-     "unidades": -233.9382,
+     "win_pct": 0.477,
+     "units": -233.9382,
      "roi": -0.0954,
      "roi_error": 0.0228
     }
    }
   },
-  "temporadas_con_lineas": [
+  "seasons_with_lines": [
    2021,
    2022,
    2026
   ],
-  "nota": "Unidad plana (1u por jugada) contra la línea de cierre de DraftKings/consenso vía ESPN."
+  "note": "Flat one-unit bets against the DraftKings/consensus closing line from ESPN."
  },
- "reglas": {
+ "rules": {
   "edge_min": 0.05,
   "kelly_fraction": 0.25,
   "stake_cap": 0.02,
@@ -748,10 +748,10 @@
   "move_total": 4.0,
   "min_games": 3
  },
- "referencia_prototipo": {
-  "acierto": 0.73,
-  "acierto_14": 0.92,
-  "mae_margen": 15.5,
+ "prototype_reference": {
+  "accuracy": 0.73,
+  "accuracy_14": 0.92,
+  "mae_margin": 15.5,
   "mae_total": 20.0
  }
 }

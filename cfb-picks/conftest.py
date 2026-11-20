@@ -1,4 +1,4 @@
-"""Hace que `src` sea importable al correr pytest desde cualquier carpeta del repo."""
+"""Make `src` importable when running pytest from any folder in the repo."""
 
 import sys
 from pathlib import Path

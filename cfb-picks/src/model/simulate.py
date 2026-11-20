@@ -1,9 +1,8 @@
-"""Backtest de apuestas: aplica la regla JUGADA/PASAR/EVITAR semana a semana
-contra las líneas de cierre reales y registra qué habría pasado.
+"""Betting backtest: apply the PLAY / PASS / AVOID rule week by week against
+real closing lines and record what would have happened.
 
-Es walk-forward igual que el backtest de predicción: los ratings de la semana W
-solo usan semanas < W, y el chequeo de estabilidad se hace con los datos que
-había en ese momento.
+It is walk-forward like the prediction backtest: ratings for week W only use
+weeks before W, and the stability check uses the data available at that time.
 """
 
 from __future__ import annotations
@@ -32,28 +31,25 @@ _ODDS_FIELDS = (
     "ml_home_open",
     "ml_away_open",
 )
+_FLOAT_FIELDS = ("spread_home", "total", "spread_home_open", "total_open")
 
 
 def odds_row_to_dict(row) -> dict:
-    """Fila de odds_history.parquet -> dict con None en lo que falta."""
+    """A row of odds_history.parquet -> dict with None for anything missing."""
     out = {"provider": getattr(row, "provider", None)}
     for field in _ODDS_FIELDS:
         value = getattr(row, field, None)
         if value is None or pd.isna(value):
             out[field] = None
         else:
-            out[field] = (
-                float(value)
-                if field in ("spread_home", "total", "spread_home_open", "total_open")
-                else int(value)
-            )
+            out[field] = float(value) if field in _FLOAT_FIELDS else int(value)
     return out
 
 
 def drop_last_games(
     sa: SeasonArrays, mask: np.ndarray, teams: tuple[int, ...], n: int = 2
 ) -> np.ndarray:
-    """Copia de `mask` sin los últimos n juegos de cada equipo (los arreglos están en orden cronológico)."""
+    """Copy of `mask` without each team's last n games (arrays are in chronological order)."""
     out = mask.copy()
     for team in teams:
         played = np.flatnonzero(mask & sa.completed & ((sa.h == team) | (sa.a == team)))
@@ -61,14 +57,14 @@ def drop_last_games(
     return out
 
 
-def settle(tipo: str, lado: str, linea: float | None, margin: float, total: float) -> int:
-    """1 = gana, 0 = push, -1 = pierde."""
-    if tipo == "ml":
-        value = margin if lado == "local" else -margin
-    elif tipo == "spread":
-        value = (margin + linea) if lado == "local" else -(margin + linea)
+def settle(market: str, side: str, line: float | None, margin: float, total: float) -> int:
+    """1 = win, 0 = push, -1 = loss. `margin` is home minus away."""
+    if market == "ml":
+        value = margin if side == "home" else -margin
+    elif market == "spread":
+        value = (margin + line) if side == "home" else -(margin + line)
     else:
-        value = (total - linea) if lado == "over" else (linea - total)
+        value = (total - line) if side == "over" else (line - total)
     return int(np.sign(value))
 
 
@@ -120,45 +116,40 @@ def simulate_bets(
                         min_games_played=int(min(state.games[h], state.games[a])),
                     )
                     margin, total = float(sa.hp[g] - sa.ap[g]), float(sa.hp[g] + sa.ap[g])
-                    for tipo in ("ml", "spread", "total"):
-                        lado = ev[tipo]["pick"]
-                        side = ev[tipo].get(lado) if lado else None
+                    for market in ("ml", "spread", "total"):
+                        pick = ev[market]["pick"]
+                        side = ev[market].get(pick) if pick else None
                         if not side or side["edge"] is None:
                             continue
-                        linea = (
-                            markets["spread"]["linea_local"]
-                            if tipo == "spread"
-                            else markets["total"]["linea"]
-                            if tipo == "total"
-                            else None
-                        )
-                        res = settle(tipo, lado, linea, margin, total)
-                        profit = (
-                            (american_to_decimal(side["momio"]) - 1.0)
-                            if res > 0
-                            else (0.0 if res == 0 else -1.0)
-                        )
+                        line = None
+                        if market == "spread":
+                            line = markets["spread"]["home_line"]
+                        elif market == "total":
+                            line = markets["total"]["line"]
+                        result = settle(market, pick, line, margin, total)
+                        if result > 0:
+                            profit = american_to_decimal(side["odds"]) - 1.0
+                        else:
+                            profit = 0.0 if result == 0 else -1.0
                         rows.append(
                             {
                                 "season": season,
                                 "week": int(week),
                                 "game_id": sa.game_id[g],
-                                "tipo": tipo,
-                                "lado": lado,
-                                "linea": linea,
-                                "momio": side["momio"],
-                                "p_modelo": side["p_modelo"],
-                                "p_mercado": side["p_mercado"],
+                                "market": market,
+                                "side": pick,
+                                "line": line,
+                                "odds": side["odds"],
+                                "p_model": side["p_model"],
+                                "p_market": side["p_market"],
                                 "edge": side["edge"],
                                 "ev": side["ev"],
-                                "estable": side["estable"],
-                                "etiqueta": side["etiqueta"],
+                                "stable": side["stable"],
+                                "label": side["label"],
                                 "stake": side["stake"],
-                                "resultado": res,
+                                "result": result,
                                 "profit": profit,
-                                "desacuerdo": ev["desacuerdo_total"]
-                                if tipo == "total"
-                                else ev["desacuerdo_margen"],
+                                "gap": ev["total_gap"] if market == "total" else ev["margin_gap"],
                             }
                         )
         if sa.completed.any():
@@ -170,28 +161,28 @@ def simulate_bets(
 
 
 def record(bets: pd.DataFrame) -> dict:
-    """Resumen de un conjunto de apuestas a unidad plana."""
+    """Summary of a set of flat one-unit bets."""
     n = len(bets)
     if n == 0:
         return {
             "n": 0,
-            "ganadas": 0,
-            "perdidas": 0,
+            "won": 0,
+            "lost": 0,
             "push": 0,
-            "pct": None,
-            "unidades": 0.0,
+            "win_pct": None,
+            "units": 0.0,
             "roi": None,
             "roi_error": None,
         }
-    won, lost = int((bets["resultado"] > 0).sum()), int((bets["resultado"] < 0).sum())
+    won, lost = int((bets["result"] > 0).sum()), int((bets["result"] < 0).sum())
     profit = bets["profit"].to_numpy(dtype=float)
     return {
         "n": n,
-        "ganadas": won,
-        "perdidas": lost,
+        "won": won,
+        "lost": lost,
         "push": n - won - lost,
-        "pct": won / max(won + lost, 1),
-        "unidades": float(profit.sum()),
+        "win_pct": won / max(won + lost, 1),
+        "units": float(profit.sum()),
         "roi": float(profit.mean()),
         "roi_error": float(profit.std(ddof=1) / math.sqrt(n)) if n > 1 else None,
     }

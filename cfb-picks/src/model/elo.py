@@ -1,13 +1,13 @@
-"""Elo con margen de victoria.
+"""Elo with margin of victory.
 
-Idea: cada equipo tiene un rating; antes del juego la diferencia de ratings da
-una probabilidad esperada, y después del juego el ganador le quita puntos al
-perdedor en proporción a la sorpresa. El multiplicador de margen hace que una
-paliza mueva más que una victoria por 3, pero con rendimientos decrecientes y
-descontando que el favorito suele ganar por más.
+Idea: each team has a rating; before the game the rating difference gives an
+expected probability, and after the game the winner takes points from the
+loser in proportion to the surprise. The margin multiplier makes a blowout
+move ratings more than a 3-point win, but with diminishing returns and
+discounting the fact that the favorite usually wins by more.
 
-A diferencia del SRS, Elo es secuencial: el orden de los juegos importa y los
-ratings se arrastran de una temporada a la siguiente (regresados a la media).
+Unlike SRS, Elo is sequential: the order of the games matters and the ratings
+carry over from one season to the next (regressed to the mean).
 """
 
 from __future__ import annotations
@@ -24,13 +24,13 @@ MEAN = 1500.0
 
 @dataclass(frozen=True)
 class EloParams:
-    k: float = 25.0  # velocidad de actualización
-    hfa: float = 55.0  # ventaja de local en puntos Elo
-    carry: float = 0.65  # fracción del rating que se conserva entre temporadas
-    scale: float = 25.0  # puntos Elo por punto de margen
+    k: float = 25.0  # update speed
+    hfa: float = 55.0  # home-field advantage in Elo points
+    carry: float = 0.65  # fraction of the rating kept between seasons
+    scale: float = 25.0  # Elo points per point of margin
     newcomer: float = 1350.0
     fcs0: float = 1150.0
-    fcs_k: float = 0.1  # el promedio FCS casi no se mueve con un juego
+    fcs_k: float = 0.1  # the FCS average barely moves with one game
 
 
 @dataclass
@@ -41,7 +41,7 @@ class EloState:
 
 class EloModel:
     name = "elo"
-    label = "Elo con margen de victoria"
+    label = "Elo with margin of victory"
 
     def __init__(self, params: EloParams | None = None) -> None:
         self.params = params or EloParams()
@@ -65,7 +65,7 @@ class EloModel:
         rating = prior["rating"].astype(float).copy()
         games = np.zeros(sa.n, dtype=int)
         fcs_i = sa.fcs_index
-        for g in np.flatnonzero(mask & sa.completed):  # los arreglos ya están en orden cronológico
+        for g in np.flatnonzero(mask & sa.completed):  # arrays are already in chronological order
             h, a = sa.h[g], sa.a[g]
             diff = rating[h] - rating[a] + (0.0 if sa.neutral[g] else p.hfa)
             expected = 1.0 / (1.0 + 10.0 ** (-diff / 400.0))
@@ -87,7 +87,7 @@ class EloModel:
         h, a = np.asarray(h), np.asarray(a)
         site = (~np.asarray(neutral, dtype=bool)).astype(float)
         margin = (state.rating[h] - state.rating[a] + p.hfa * site) / p.scale
-        return margin, np.full(len(h), np.nan)  # Elo no proyecta totales
+        return margin, np.full(len(h), np.nan)  # Elo does not project totals
 
     def describe(self) -> dict:
-        return {"modelo": self.name, **asdict(self.params)}
+        return {"model": self.name, **asdict(self.params)}

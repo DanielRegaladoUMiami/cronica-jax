@@ -1,20 +1,20 @@
-"""SRS: ratings ajustados por calendario.
+"""SRS: schedule-adjusted ratings.
 
-Idea (SRS clásico): el rating de un equipo es su margen promedio más el rating
-promedio de sus rivales. Como los ratings de los rivales dependen a su vez de
-los suyos, se itera hasta que dejan de cambiar.
+Idea (classic SRS): a team's rating is its average margin plus the average
+rating of its opponents. Since the opponents' ratings depend in turn on those
+of their own opponents, this is iterated until they stop changing.
 
-Aquí se resuelve directamente el sistema lineal al que converge esa iteración
-(mínimos cuadrados con encogimiento), con cuatro mejoras:
+Here the linear system that iteration converges to is solved directly
+(least squares with shrinkage), with four improvements:
 
-1. Tope a las palizas (`cap`): ganar por 50 no dice mucho más que ganar por 28.
-2. Encogimiento (`k` juegos "fantasma") hacia un prior: con pocos juegos el
-   rating no se dispara.
-3. Prior de pretemporada: una fracción (`rho`) del rating final del año anterior.
-4. Ventaja de local estimada con los mismos datos.
+1. Blowout cap (`cap`): winning by 50 does not say much more than winning by 28.
+2. Shrinkage (`k` "phantom" games) toward a prior: with few games the
+   rating does not blow up.
+3. Preseason prior: a fraction (`rho`) of the previous year's final rating.
+4. Home-field advantage estimated from the same data.
 
-Un segundo sistema idéntico sobre los TOTALES da el nivel de anotación de cada
-equipo, y de ahí sale el marcador: local = (total + margen) / 2.
+A second, identical system on the TOTALS gives each team's scoring level,
+and the score follows from it: home = (total + margin) / 2.
 """
 
 from __future__ import annotations
@@ -28,32 +28,32 @@ from .data import SeasonArrays, align
 
 @dataclass(frozen=True)
 class SrsParams:
-    cap: float = 28.0  # tope del margen por juego
-    k: float = 2.0  # encogimiento del rating de margen (en juegos)
-    k_total: float = 4.0  # encogimiento del rating de totales
-    rho: float = 0.6  # fracción del rating del año anterior que entra como prior
+    cap: float = 28.0  # cap on the margin per game
+    k: float = 2.0  # shrinkage of the margin rating (in games)
+    k_total: float = 4.0  # shrinkage of the totals rating
+    rho: float = 0.6  # fraction of the previous year's rating that goes in as the prior
     rho_total: float = 0.5
-    half_life: float = 0.0  # semanas; 0 = todos los juegos pesan igual
-    hfa0: float = 2.5  # prior de la ventaja de local
+    half_life: float = 0.0  # weeks; 0 = all games weigh the same
+    hfa0: float = 2.5  # prior for home-field advantage
     hfa_k: float = 40.0
-    newcomer: float = -8.0  # prior de un equipo recién llegado a FBS
-    fcs0: float = -22.0  # prior del pseudo-equipo FCS si no hay año anterior
+    newcomer: float = -8.0  # prior for a team that just joined FBS
+    fcs0: float = -22.0  # prior for the FCS pseudo-team if there is no previous year
     base_total0: float = 53.0
     base_total_k: float = 10.0
 
 
 @dataclass
 class SrsState:
-    rating: np.ndarray  # puntos mejor que el promedio (margen)
-    pace: np.ndarray  # aporte del equipo al total del juego
+    rating: np.ndarray  # points better than average (margin)
+    pace: np.ndarray  # the team's contribution to the game total
     hfa: float
     base_total: float
-    games: np.ndarray  # juegos usados por equipo
+    games: np.ndarray  # games used per team
 
 
 class SrsModel:
     name = "srs"
-    label = "SRS (margen ajustado por calendario)"
+    label = "SRS (schedule-adjusted margin)"
 
     def __init__(self, params: SrsParams | None = None) -> None:
         self.params = params or SrsParams()
@@ -69,7 +69,7 @@ class SrsModel:
         rating[np.isnan(rating)] = p.newcomer
         rating[sa.fcs_index] = prev.rating[
             prev_sa.fcs_index
-        ]  # el promedio FCS casi no cambia de un año a otro
+        ]  # the FCS average barely changes from one year to the next
         pace = p.rho_total * align(prev.pace, prev_sa, sa, default=0.0)
         pace[sa.fcs_index] = prev.pace[prev_sa.fcs_index]
         return {"rating": rating, "pace": pace, "base_total": prev.base_total}
@@ -87,7 +87,7 @@ class SrsModel:
         if p.half_life > 0 and now_week is not None and len(idx):
             w = 0.5 ** (np.maximum(now_week - sa.week[idx], 0) / p.half_life)
 
-        # ---- margen: m = R_local - R_visita + hfa * (no neutral)
+        # ---- margin: m = R_home - R_away + hfa * (not neutral)
         m = np.clip(sa.hp[idx] - sa.ap[idx], -p.cap, p.cap)
         A = np.zeros((n + 1, n + 1))
         b = np.zeros(n + 1)
@@ -109,7 +109,7 @@ class SrsModel:
         b[:n] += p.k * prior["rating"]
         beta = np.linalg.solve(A, b)
 
-        # ---- total: t = base + S_local + S_visita
+        # ---- total: t = base + S_home + S_away
         t = sa.hp[idx] + sa.ap[idx]
         A2 = np.zeros((n + 1, n + 1))
         b2 = np.zeros(n + 1)
@@ -149,7 +149,7 @@ class SrsModel:
         return margin, total
 
     def describe(self) -> dict:
-        return {"modelo": self.name, **asdict(self.params)}
+        return {"model": self.name, **asdict(self.params)}
 
 
 def srs_iterative(
@@ -162,9 +162,9 @@ def srs_iterative(
     iters: int = 5000,
     tol: float = 1e-10,
 ) -> np.ndarray:
-    """La versión literal del SRS: rating = margen promedio + rating promedio de rivales,
-    repetido hasta converger. Existe para documentar (y testear) que `SrsModel.fit`
-    llega al mismo resultado resolviendo el sistema de una vez."""
+    """The literal version of SRS: rating = average margin + average opponent rating,
+    repeated until it converges. It exists to document (and test) that `SrsModel.fit`
+    reaches the same result by solving the system in one go."""
     idx = np.flatnonzero(mask & sa.completed)
     h, a = sa.h[idx], sa.a[idx]
     m = np.clip(sa.hp[idx] - sa.ap[idx], -cap, cap) - hfa * (~sa.neutral[idx])
@@ -173,11 +173,11 @@ def srs_iterative(
     rating = np.zeros(sa.n)
     for _ in range(iters):
         acc = np.zeros(sa.n)
-        np.add.at(acc, h, m + rating[a])  # el local: su margen + rating del rival
-        np.add.at(acc, a, -m + rating[h])  # el visitante: lo mismo visto desde su lado
+        np.add.at(acc, h, m + rating[a])  # home team: its margin + the opponent's rating
+        np.add.at(acc, a, -m + rating[h])  # away team: the same seen from its side
         new = (acc + k * prior) / np.maximum(games + k, 1e-12)
         new[games + k == 0] = 0.0
-        # Promediar con el paso anterior evita que la iteración oscile.
+        # Averaging with the previous step keeps the iteration from oscillating.
         new = 0.5 * (new + rating)
         if np.max(np.abs(new - rating)) < tol:
             return new

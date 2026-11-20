@@ -1,4 +1,4 @@
-"""Carga los hiperparámetros calibrados y construye los modelos candidatos."""
+"""Load the tuned hyperparameters and build the candidate models."""
 
 from __future__ import annotations
 
@@ -18,13 +18,13 @@ def load_params() -> dict:
 
 
 def build_models(params: dict | None = None) -> dict:
-    """Los candidatos, en orden: baseline, SRS, Elo y (si aporta) la mezcla."""
+    """The candidates, in order: baseline, SRS, Elo and (when it adds something) the blend."""
     params = load_params() if params is None else params
     srs = SrsModel(SrsParams(**params["srs"])) if "srs" in params else SrsModel()
     elo = EloModel(EloParams(**params["elo"])) if "elo" in params else EloModel()
     models = {"baseline": BaselineModel(), "srs": srs, "elo": elo}
-    weight = float(params.get("peso_srs_en_mezcla", 0.5))
-    # Si la mezcla óptima es prácticamente 100% SRS, no es un modelo distinto.
+    weight = float(params.get("srs_blend_weight", 0.5))
+    # If the best blend is essentially 100% SRS, it is not a different model.
     if 0.05 < weight < 0.95:
         models["blend"] = BlendModel(srs, elo, weight)
     return models
@@ -32,4 +32,4 @@ def build_models(params: dict | None = None) -> dict:
 
 def selected_name(params: dict | None = None) -> str:
     params = load_params() if params is None else params
-    return params.get("seleccionado", "srs")
+    return params.get("selected", "srs")

@@ -1,13 +1,13 @@
-"""Líneas de apertura y cierre de juegos ya jugados (ESPN summary -> pickcenter).
+"""Opening and closing lines for games already played (ESPN summary -> pickcenter).
 
-Sirven para el ROI simulado del track record: comparar lo que el modelo habría
-dicho antes de cada juego contra la línea de cierre real.
+They are used for the simulated ROI in the track record: comparing what the
+model would have said before each game against the actual closing line.
 
-Uso:
-    python -m src.data.odds_history              # temporada actual
+Usage:
+    python -m src.data.odds_history              # current season
     python -m src.data.odds_history --season 2025
 
-Es incremental: solo pide los juegos que todavía no están en
+It is incremental: it only requests the games that are not yet in
 data/odds_history.parquet.
 """
 
@@ -56,7 +56,7 @@ def fetch_odds_history(
         games = games[~games["fcs_game"]]
     existing = load_odds_history()
     todo = games[~games["game_id"].isin(existing["game_id"])]
-    log(f"{season}: {len(games)} juegos jugados, {len(todo)} sin líneas guardadas")
+    log(f"{season}: {len(games)} games played, {len(todo)} without saved lines")
     if todo.empty:
         return existing
 
@@ -68,7 +68,7 @@ def fetch_odds_history(
         try:
             odds = parse_odds(client.pickcenter(game_id))
         except EspnError:
-            failed += 1  # no se guarda: se reintenta en la próxima corrida
+            failed += 1  # not saved: it is retried on the next run
             return None
         row = {"game_id": game_id, "season": season, "has_odds": odds is not None}
         row.update({col: (odds or {}).get(col) for col in ODDS_COLUMNS})
@@ -98,14 +98,15 @@ def fetch_odds_history(
     out.to_parquet(config.ODDS_HISTORY_PATH, index=False)
     got = int(new["has_odds"].sum()) if len(new) else 0
     log(
-        f"{season}: {len(new)} consultados, {got} con líneas, {failed} fallidos · API {client.stats['red']} · caché {client.stats['cache']}"
+        f"{season}: {len(new)} queried, {got} with lines, {failed} failed · "
+        f"API {client.stats['network']} · cache {client.stats['cache']}"
     )
     return out
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Baja líneas de cierre históricas (pickcenter de ESPN)"
+        description="Download historical closing lines (ESPN pickcenter)"
     )
     parser.add_argument("--season", type=int, default=config.current_season())
     parser.add_argument("--workers", type=int, default=6)
@@ -120,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     cur = out[out["season"] == args.season]
-    print(f"Líneas guardadas para {args.season}: {int(cur['has_odds'].sum())} de {len(cur)} juegos")
+    print(f"Lines saved for {args.season}: {int(cur['has_odds'].sum())} of {len(cur)} games")
     return 0
 
 

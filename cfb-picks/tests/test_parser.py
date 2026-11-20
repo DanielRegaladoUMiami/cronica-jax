@@ -1,5 +1,5 @@
-"""Parser del API de ESPN. Los fixtures son respuestas reales recortadas
-(tests/fixtures), más tres casos límite construidos a partir de ellas."""
+"""ESPN API parser. The fixtures are trimmed real responses
+(tests/fixtures), plus three edge cases built from them."""
 
 import json
 from datetime import datetime, timedelta, timezone
@@ -32,7 +32,7 @@ def events(scoreboard):
     return {e["id"]: e for e in scoreboard["events"]}
 
 
-# ------------------------------------------------------------------ números
+# ------------------------------------------------------------------ numbers
 @pytest.mark.parametrize(
     "raw, expected",
     [
@@ -78,7 +78,7 @@ def test_parse_line(raw, expected):
     assert parse_line(raw) == expected
 
 
-# -------------------------------------------------------------------- juegos
+# --------------------------------------------------------------------- games
 def test_scheduled_game(events):
     row = parse_event(events["401856866"])
     assert row["status"] == "scheduled" and row["completed"] is False
@@ -86,8 +86,8 @@ def test_scheduled_game(events):
     assert (row["away_abbr"], row["home_abbr"]) == ("BYU", "KU")
     assert (
         row["home_points"] is None and row["away_points"] is None
-    )  # un juego sin jugar no tiene marcador
-    assert row["away_rank"] == 10 and row["home_rank"] is None  # 99 en el API = sin ranking
+    )  # a game not yet played has no score
+    assert row["away_rank"] == 10 and row["home_rank"] is None  # 99 in the API = unranked
     assert (row["season"], row["week"], row["neutral_site"]) == (2026, 12, False)
     assert row["date"] == datetime(2026, 11, 21, 17, 0, tzinfo=timezone.utc)
 
@@ -113,7 +113,7 @@ def test_canceled_game_is_not_completed(events):
 
 
 def test_final_without_real_score_is_not_trusted(events):
-    row = parse_event(events["900000003"])  # "final" 0-0: imposible, no se usa para entrenar
+    row = parse_event(events["900000003"])  # "final" 0-0: impossible, not used for training
     assert row["status"] == "unknown" and row["completed"] is False
 
 
@@ -135,9 +135,9 @@ def test_malformed_events_do_not_crash():
 
 # ---------------------------------------------------------------------- odds
 def test_scoreboard_odds_use_home_line_convention(events):
-    odds = parse_event_odds(events["401856866"])  # ESPN: "BYU -5.5", BYU es visitante
+    odds = parse_event_odds(events["401856866"])  # ESPN: "BYU -5.5", BYU is the away team
     assert odds["provider"] == "DraftKings"
-    assert odds["spread_home"] == 5.5  # línea del LOCAL: Kansas +5.5
+    assert odds["spread_home"] == 5.5  # HOME team's line: Kansas +5.5
     assert (odds["spread_home_odds"], odds["spread_away_odds"]) == (-108, -112)
     assert (odds["total"], odds["over_odds"], odds["under_odds"]) == (46.5, -115, -105)
     assert (odds["ml_home"], odds["ml_away"]) == (185, -225)
@@ -153,7 +153,7 @@ def test_pickcenter_closing_lines():
     odds = parse_odds(payload["pickcenter"])
     assert odds["spread_home"] == 2.5 and odds["total"] == 54.5
     assert odds["spread_home_open"] == 1.5 and odds["total_open"] == 52.5
-    assert odds["ml_home"] is None  # este juego no traía moneyline: queda vacío, no inventado
+    assert odds["ml_home"] is None  # this game had no moneyline: left empty, not made up
 
 
 def test_odds_fallbacks():
@@ -192,7 +192,7 @@ def test_prefers_draftkings_when_several_providers():
     assert parse_odds(entries)["provider"] == "DraftKings"
 
 
-# ------------------------------------------------------ standings y calendario
+# ------------------------------------------------------ standings and calendar
 def test_standings_give_fbs_membership():
     fbs = parse_standings_fbs(json.loads((FIXTURES / "standings.json").read_text()))
     assert fbs["252"] == "Big 12 Conference"  # BYU
@@ -217,11 +217,11 @@ def test_settled_week_detection(events):
             {"events": [final]}, now=datetime(2026, 11, 11, 12, tzinfo=timezone.utc)
         )
         is False
-    )  # muy reciente
+    )  # too recent
     assert (
         scoreboard_is_settled(
             {"events": [final, events["401856866"]]}, now=after + timedelta(days=30)
         )
         is False
-    )  # queda uno sin jugar
+    )  # one game is still unplayed
     assert scoreboard_is_settled({"events": []}) is False

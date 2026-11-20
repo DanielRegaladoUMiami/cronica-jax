@@ -1,10 +1,10 @@
-"""Cliente mínimo para el API público de ESPN, con caché en disco.
+"""Minimal client for ESPN's public API, with an on-disk cache.
 
-Política de caché:
-- Una semana ya jugada (todos los juegos finales y con más de 2 días) no se
-  vuelve a pedir nunca.
-- La semana en curso se refresca si la copia tiene más de `max_age` segundos.
-- Si el API falla, se lanza `EspnError`. Nunca se devuelven datos inventados.
+Cache policy:
+- A week that has already been played (all games final and more than 2 days
+  old) is never requested again.
+- The current week is refreshed if the copy is older than `max_age` seconds.
+- If the API fails, `EspnError` is raised. Made-up data is never returned.
 """
 
 from __future__ import annotations
@@ -24,14 +24,14 @@ from .. import config
 
 
 class EspnError(RuntimeError):
-    """El API no respondió o respondió algo que no se puede usar."""
+    """The API did not respond, or responded with something unusable."""
 
 
 _UNSETTLED_OK = {"STATUS_CANCELED", "STATUS_POSTPONED", "STATUS_FORFEIT"}
 
 
 def scoreboard_is_settled(payload: dict, now: datetime | None = None) -> bool:
-    """True si la semana ya no va a cambiar (se puede cachear para siempre)."""
+    """True if the week will no longer change (it can be cached forever)."""
     events = payload.get("events") or []
     if not events:
         return False
@@ -50,7 +50,7 @@ def scoreboard_is_settled(payload: dict, now: datetime | None = None) -> bool:
 
 
 def _strip_links(obj: Any) -> Any:
-    """Quita enlaces/logos de un bloque de odds para que la caché pese poco."""
+    """Strip links/logos from an odds block to keep the cache small."""
     drop = {"link", "links", "logo", "logos", "footer", "header"}
     if isinstance(obj, dict):
         return {k: _strip_links(v) for k, v in obj.items() if k not in drop}
@@ -73,13 +73,13 @@ class EspnClient:
         self.timeout = timeout
         self.retries = retries
         self.offline = offline
-        self.stats = {"red": 0, "cache": 0}
+        self.stats = {"network": 0, "cache": 0}
         self._session = requests.Session()
         self._session.headers.update({"User-Agent": "cfb-picks/1.0", "Accept": "application/json"})
         self._lock = threading.Lock()
         self._last_call = 0.0
 
-    # ------------------------------------------------------------------ red
+    # -------------------------------------------------------------- network
     def _throttle(self) -> None:
         with self._lock:
             wait = self.pause - (time.monotonic() - self._last_call)
@@ -89,34 +89,34 @@ class EspnClient:
 
     def fetch_json(self, url: str, params: dict | None = None) -> dict:
         if self.offline:
-            raise EspnError(f"modo offline y sin caché para {url} {params}")
+            raise EspnError(f"offline mode and no cache for {url} {params}")
         last_err: Exception | None = None
         for attempt in range(self.retries):
             self._throttle()
             try:
                 resp = self._session.get(url, params=params, timeout=self.timeout)
             except requests.exceptions.ProxyError as exc:
-                # Un 403 del proxy es una política de red, no un fallo transitorio.
+                # A 403 from the proxy is a network policy, not a transient failure.
                 if "403" in str(exc):
-                    raise EspnError(f"la red bloquea {url}: {exc}") from exc
+                    raise EspnError(f"the network blocks {url}: {exc}") from exc
                 last_err = exc
             except requests.RequestException as exc:
                 last_err = exc
             else:
                 if resp.status_code == 200:
                     try:
-                        self.stats["red"] += 1
+                        self.stats["network"] += 1
                         return resp.json()
                     except ValueError as exc:
                         last_err = exc
                 elif resp.status_code in (429, 500, 502, 503, 504):
                     last_err = EspnError(f"HTTP {resp.status_code}")
                 else:
-                    raise EspnError(f"HTTP {resp.status_code} en {resp.url}")
+                    raise EspnError(f"HTTP {resp.status_code} from {resp.url}")
             time.sleep(1.5 * (2**attempt))
-        raise EspnError(f"sin respuesta de {url} {params}: {last_err}")
+        raise EspnError(f"no response from {url} {params}: {last_err}")
 
-    # ---------------------------------------------------------------- caché
+    # ---------------------------------------------------------------- cache
     def _path(self, key: str) -> Path:
         return self.cache_dir / f"{key}.json.gz"
 
@@ -150,11 +150,10 @@ class EspnClient:
         refresh: bool = False,
         transform: Callable[[dict], Any] | None = None,
     ) -> Any:
-        """Devuelve la respuesta desde caché si sigue vigente; si no, la pide.
+        """Return the cached response if it is still fresh; otherwise request it.
 
-        max_age=None significa "para siempre". `settled(payload)` verdadero
-        también la hace permanente. `transform` reduce la respuesta antes de
-        guardarla.
+        max_age=None means "forever". A true `settled(payload)` also makes it
+        permanent. `transform` trims the response before it is saved.
         """
         cached, age = self.read_cache(key)
         if cached is not None and not refresh:
@@ -183,7 +182,7 @@ class EspnClient:
         max_age: float = 900,
         refresh: bool = False,
     ) -> dict:
-        """Todos los juegos FBS de una semana (seasontype 2 = regular, 3 = postemporada)."""
+        """All FBS games in a week (seasontype 2 = regular season, 3 = postseason)."""
         params = {
             "dates": season,
             "seasontype": seasontype,
@@ -203,10 +202,10 @@ class EspnClient:
     def scoreboard_date(
         self, yyyymmdd: str, *, max_age: float = 900, refresh: bool = False
     ) -> dict:
-        """Juegos FBS de un día concreto (YYYYMMDD)."""
+        """FBS games on a specific day (YYYYMMDD)."""
         params = {"dates": yyyymmdd, "groups": config.FBS_GROUP, "limit": config.SCOREBOARD_LIMIT}
         return self.get(
-            f"scoreboard_dia/{yyyymmdd}",
+            f"scoreboard_day/{yyyymmdd}",
             f"{config.ESPN_SITE}/scoreboard",
             params,
             max_age=max_age,
@@ -215,7 +214,7 @@ class EspnClient:
         )
 
     def standings(self, season: int, *, refresh: bool = False) -> dict:
-        """Standings FBS de la temporada: de aquí sale qué equipos son FBS ese año."""
+        """FBS standings for the season: the source for which teams are FBS that year."""
         past = season < config.current_season()
         return self.get(
             f"standings/{season}",
@@ -226,7 +225,7 @@ class EspnClient:
         )
 
     def pickcenter(self, event_id: str, *, refresh: bool = False) -> list:
-        """Líneas (apertura y cierre) de un juego. Solo se guarda el bloque `pickcenter`."""
+        """Lines (opening and closing) for a game. Only the `pickcenter` block is stored."""
         payload = self.get(
             f"pickcenter/{event_id}",
             f"{config.ESPN_SITE}/summary",

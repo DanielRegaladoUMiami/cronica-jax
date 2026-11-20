@@ -1,12 +1,12 @@
-"""Backtest walk-forward: para predecir la semana W solo se usan semanas < W.
+"""Walk-forward backtest: to predict week W, only weeks before W are used.
 
-La tabla comparativa de modelos se imprime con `python -m src.compare`.
+The model comparison table is printed with `python -m src.compare`.
 """
 
 from __future__ import annotations
 
-import itertools
 from collections.abc import Iterable
+from itertools import pairwise
 
 import numpy as np
 import pandas as pd
@@ -14,32 +14,31 @@ import pandas as pd
 from .data import SeasonArrays
 from .prob import norm_cdf
 
+_COLUMNS = (
+    "season",
+    "week",
+    "game_id",
+    "h",
+    "a",
+    "neutral",
+    "fcs",
+    "pred_margin",
+    "pred_total",
+    "margin",
+    "total",
+    "games_h",
+    "games_a",
+)
+
 
 def walk_forward(
     model, seasons: dict[int, SeasonArrays], eval_seasons: Iterable[int] | None = None
 ) -> pd.DataFrame:
-    """Predice cada semana jugada usando solo lo anterior. Las temporadas que no
-    están en `eval_seasons` se recorren igual (dejan el prior para la siguiente)
-    pero no se evalúan."""
+    """Predict every played week using only what came before it. Seasons outside
+    `eval_seasons` are still run (they leave the prior for the next one) but are
+    not evaluated."""
     eval_seasons = set(eval_seasons) if eval_seasons is not None else None
-    cols: dict[str, list] = {
-        k: []
-        for k in (
-            "season",
-            "week",
-            "game_id",
-            "h",
-            "a",
-            "neutral",
-            "fcs",
-            "pred_margin",
-            "pred_total",
-            "margin",
-            "total",
-            "games_h",
-            "games_a",
-        )
-    }
+    cols: dict[str, list] = {k: [] for k in _COLUMNS}
     prev_state = prev_sa = None
     for season in sorted(seasons):
         sa = seasons[season]
@@ -75,20 +74,19 @@ def walk_forward(
 
 
 def residual_sigma(df: pd.DataFrame) -> tuple[float, float]:
-    """Desviación estándar real del error (RMSE) de margen y de total."""
+    """Real standard deviation of the error (RMSE) for margin and total."""
     sm = float(np.sqrt(np.mean((df["pred_margin"] - df["margin"]) ** 2)))
     tot = df.dropna(subset=["pred_total"])
-    st = (
-        float(np.sqrt(np.mean((tot["pred_total"] - tot["total"]) ** 2)))
-        if len(tot)
-        else float("nan")
-    )
+    if len(tot):
+        st = float(np.sqrt(np.mean((tot["pred_total"] - tot["total"]) ** 2)))
+    else:
+        st = float("nan")
     return sm, st
 
 
 def metrics(df: pd.DataFrame, sigma_margin: float | None = None) -> dict:
-    """Métricas del backtest. `sigma_margin` es la sigma con la que se calculan las
-    probabilidades (para Brier); si falta se usa la del propio conjunto."""
+    """Backtest metrics. `sigma_margin` is the sigma used to turn margins into
+    probabilities (for the Brier score); defaults to the set's own."""
     if df.empty:
         return {"n": 0}
     err = df["pred_margin"] - df["margin"]
@@ -100,43 +98,45 @@ def metrics(df: pd.DataFrame, sigma_margin: float | None = None) -> dict:
     sigma = sigma_margin or sm
     p_home = norm_cdf(df["pred_margin"].to_numpy() / sigma)
     tot = df.dropna(subset=["pred_total"])
+    tot_err = tot["pred_total"] - tot["total"]
     return {
         "n": len(df),
-        "acierto": float(correct.mean()),
-        "acierto_14": float(correct[big].mean()) if big.any() else None,
+        "accuracy": float(correct.mean()),
+        "accuracy_14": float(correct[big].mean()) if big.any() else None,
         "n_14": int(big.sum()),
-        "mae_margen": float(err.abs().mean()),
-        "rmse_margen": sm,
-        "sesgo_margen": float(err.mean()),
-        "mae_total": float((tot["pred_total"] - tot["total"]).abs().mean()) if len(tot) else None,
+        "mae_margin": float(err.abs().mean()),
+        "rmse_margin": sm,
+        "bias_margin": float(err.mean()),
+        "mae_total": float(tot_err.abs().mean()) if len(tot) else None,
         "rmse_total": st if len(tot) else None,
-        "sesgo_total": float((tot["pred_total"] - tot["total"]).mean()) if len(tot) else None,
+        "bias_total": float(tot_err.mean()) if len(tot) else None,
         "brier": float(np.mean((p_home - home_won.to_numpy(dtype=float)) ** 2)),
     }
 
 
 def calibration(df: pd.DataFrame, sigma: float, step: float = 0.05) -> list[dict]:
-    """Cuando el modelo dice X% para su favorito, ¿con qué frecuencia gana?"""
+    """When the model gives its favorite X%, how often does that favorite win?"""
     if df.empty:
         return []
     p_home = norm_cdf(df["pred_margin"].to_numpy() / sigma)
     p_fav = np.maximum(p_home, 1 - p_home)
-    fav_won = np.where(p_home >= 0.5, df["margin"].to_numpy() > 0, df["margin"].to_numpy() < 0)
+    margin = df["margin"].to_numpy()
+    fav_won = np.where(p_home >= 0.5, margin > 0, margin < 0)
     edges = np.arange(0.5, 1.0 + 1e-9, step)
     out = []
-    for lo, hi in itertools.pairwise(edges):
+    for lo, hi in pairwise(edges):
         sel = (p_fav >= lo) & ((p_fav < hi) if hi < 1.0 - 1e-9 else (p_fav <= 1.0))
         if sel.any():
             n = int(sel.sum())
             obs = float(fav_won[sel].mean())
             out.append(
                 {
-                    "desde": round(float(lo), 2),
-                    "hasta": round(float(hi), 2),
+                    "from": round(float(lo), 2),
+                    "to": round(float(hi), 2),
                     "n": n,
-                    "predicho": float(p_fav[sel].mean()),
-                    "observado": obs,
-                    "error_est": float(np.sqrt(max(obs * (1 - obs), 1e-9) / n)),
+                    "predicted": float(p_fav[sel].mean()),
+                    "observed": obs,
+                    "std_error": float(np.sqrt(max(obs * (1 - obs), 1e-9) / n)),
                 }
             )
     return out
@@ -145,8 +145,7 @@ def calibration(df: pd.DataFrame, sigma: float, step: float = 0.05) -> list[dict
 def by_week(df: pd.DataFrame, sigma: float) -> list[dict]:
     out = []
     for (season, week), grp in df.groupby(["season", "week"]):
-        m = metrics(grp, sigma)
-        out.append({"temporada": int(season), "semana": int(week), **m})
+        out.append({"season": int(season), "week": int(week), **metrics(grp, sigma)})
     return out
 
 

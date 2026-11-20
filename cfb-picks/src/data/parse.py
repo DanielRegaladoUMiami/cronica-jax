@@ -1,7 +1,7 @@
-"""Parsers puros del JSON de ESPN. Sin red ni disco: fáciles de testear.
+"""Pure parsers for ESPN's JSON. No network or disk: easy to test.
 
-Regla general: si un dato no viene o no se entiende, se devuelve None.
-Nunca se rellena con un valor inventado.
+General rule: if a value is missing or cannot be understood, None is returned.
+It is never filled in with a made-up value.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Any
 
 
 def dig(obj: Any, *path: Any, default: Any = None) -> Any:
-    """Acceso seguro a JSON anidado: dig(d, "a", 0, "b")."""
+    """Safe access to nested JSON: dig(d, "a", 0, "b")."""
     for key in path:
         if isinstance(obj, dict):
             obj = obj.get(key)
@@ -26,14 +26,14 @@ def dig(obj: Any, *path: Any, default: Any = None) -> Any:
     return obj
 
 
-# ------------------------------------------------------------------ números
+# ------------------------------------------------------------------ numbers
 _EMPTY = {"", "-", "--", "OFF", "N/A", "NA", "NONE", "NULL", "NAN"}
 
 
 def parse_american(value: Any) -> int | None:
-    """Momio americano -> int. "+185" -> 185, "-110" -> -110, "EVEN" -> 100.
+    """American odds -> int. "+185" -> 185, "-110" -> -110, "EVEN" -> 100.
 
-    Devuelve None si falta o no es un momio válido (|momio| < 100 no existe).
+    Returns None if missing or not valid odds (|odds| < 100 does not exist).
     """
     if value is None or isinstance(value, bool):
         return None
@@ -55,7 +55,7 @@ def parse_american(value: Any) -> int | None:
 
 
 def parse_line(value: Any) -> float | None:
-    """Línea de puntos -> float. "+5.5" -> 5.5, "o46.5" -> 46.5, "PK" -> 0.0."""
+    """Points line -> float. "+5.5" -> 5.5, "o46.5" -> 46.5, "PK" -> 0.0."""
     if value is None or isinstance(value, bool):
         return None
     if isinstance(value, (int, float)):
@@ -69,7 +69,7 @@ def parse_line(value: Any) -> float | None:
     return float(match.group(1)) if match else None
 
 
-# -------------------------------------------------------------------- juegos
+# --------------------------------------------------------------------- games
 def parse_status(event: dict) -> str:
     """final | scheduled | in_progress | postponed | canceled | forfeit | unknown."""
     st = dig(event, "status", "type", default={}) or {}
@@ -97,7 +97,7 @@ def _team_id(competitor: dict) -> str | None:
 
 def _score(competitor: dict) -> int | None:
     raw = competitor.get("score")
-    if isinstance(raw, dict):  # el endpoint de schedule lo trae como {"value": 24.0}
+    if isinstance(raw, dict):  # the schedule endpoint returns it as {"value": 24.0}
         raw = raw.get("value")
     try:
         return int(float(raw))
@@ -130,8 +130,8 @@ def parse_team(competitor: dict) -> dict | None:
 
 
 def parse_event(event: dict) -> dict | None:
-    """Un evento del scoreboard -> fila plana. None si el juego no es utilizable
-    (falta un equipo, equipo por definir, estructura inesperada)."""
+    """A scoreboard event -> flat row. None if the game is not usable
+    (a team is missing, team to be determined, unexpected structure)."""
     comp = dig(event, "competitions", 0)
     if not isinstance(comp, dict):
         return None
@@ -153,7 +153,7 @@ def parse_event(event: dict) -> dict | None:
     status = parse_status(event)
     home, away = sides["home"], sides["away"]
     hp, ap = home["points"], away["points"]
-    # Un final sin marcador (o 0-0, imposible con tiempo extra) no sirve para entrenar.
+    # A final without a score (or 0-0, impossible with overtime) is useless for training.
     if status == "final" and (hp is None or ap is None or (hp == 0 and ap == 0)):
         status = "unknown"
     completed = status == "final"
@@ -191,7 +191,7 @@ def parse_event_teams(event: dict) -> list[dict]:
 
 
 def parse_calendar(payload: dict) -> dict:
-    """Calendario de la temporada: semanas regulares y de postemporada con sus fechas."""
+    """Season calendar: regular-season and postseason weeks with their dates."""
     out: dict[str, list[dict]] = {"regular": [], "postseason": []}
     for block in dig(payload, "leagues", 0, "calendar", default=[]) or []:
         if not isinstance(block, dict):
@@ -215,7 +215,7 @@ def parse_calendar(payload: dict) -> dict:
 
 
 def parse_standings_fbs(payload: dict) -> dict[str, str]:
-    """Standings FBS -> {team_id: conferencia}. Recorre conferencias y divisiones."""
+    """FBS standings -> {team_id: conference}. Walks conferences and divisions."""
     teams: dict[str, str] = {}
 
     def walk(node: dict, conference: str | None) -> None:
@@ -238,7 +238,7 @@ _PROVIDER_PREFERENCE = ("draftkings", "espn bet", "caesars", "consensus")
 def _spread_from_details(
     details: Any, home_abbr: str | None, away_abbr: str | None
 ) -> float | None:
-    """ "BYU -5.5" -> línea del local, usando qué equipo aparece como favorito."""
+    """ "BYU -5.5" -> home team's line, based on which team is listed as the favorite."""
     if not details or not home_abbr or not away_abbr:
         return None
     text = str(details).strip().upper()
@@ -256,10 +256,10 @@ def _spread_from_details(
 
 
 def parse_odds_entry(entry: dict) -> dict:
-    """Normaliza un bloque de odds de ESPN (scoreboard `odds[i]` o summary `pickcenter[i]`).
+    """Normalize an ESPN odds block (scoreboard `odds[i]` or summary `pickcenter[i]`).
 
-    Convención: `spread_home` es la línea del LOCAL (negativa = local favorito).
-    Los campos que no vienen quedan en None.
+    Convention: `spread_home` is the HOME team's line (negative = home team favored).
+    Missing fields are left as None.
     """
     home_abbr = dig(entry, "homeTeamOdds", "team", "abbreviation")
     away_abbr = dig(entry, "awayTeamOdds", "team", "abbreviation")
@@ -275,7 +275,7 @@ def parse_odds_entry(entry: dict) -> dict:
     if spread_home is None:
         spread_home = _spread_from_details(entry.get("details"), home_abbr, away_abbr)
     if spread_home is None:
-        spread_home = parse_line(entry.get("spread"))  # ESPN lo publica como línea del local
+        spread_home = parse_line(entry.get("spread"))  # ESPN publishes it as the home team's line
 
     total = parse_line(dig(entry, "total", "over", "close", "line"))
     if total is None:
@@ -316,7 +316,7 @@ def has_any_line(odds: dict | None) -> bool:
 
 
 def parse_odds(entries: Any) -> dict | None:
-    """Elige el mejor proveedor de una lista de odds y lo normaliza. None si no hay líneas."""
+    """Pick the best provider from a list of odds and normalize it. None if there are no lines."""
     if not isinstance(entries, list):
         return None
     parsed = [parse_odds_entry(e) for e in entries if isinstance(e, dict)]
@@ -337,5 +337,5 @@ def parse_odds(entries: Any) -> dict | None:
 
 
 def parse_event_odds(event: dict) -> dict | None:
-    """Odds de un evento del scoreboard (`competitions[0].odds`)."""
+    """Odds for a scoreboard event (`competitions[0].odds`)."""
     return parse_odds(dig(event, "competitions", 0, "odds"))

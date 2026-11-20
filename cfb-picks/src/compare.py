@@ -1,11 +1,11 @@
-"""Tabla comparativa de modelos (backtest walk-forward) y selección del mejor.
+"""Model comparison table (walk-forward backtest) and selection of the best one.
 
-Uso:
-    python -m src.compare             # imprime la tabla
-    python -m src.compare --select    # además guarda el de menor error en params.json
+Usage:
+    python -m src.compare             # print the table
+    python -m src.compare --select    # also save the lowest-error model to params.json
 
-La selección usa el error absoluto medio del margen en la temporada actual
-(FBS vs FBS), que los modelos nunca vieron al calibrarse.
+Selection uses the mean absolute error of the margin in the current season
+(FBS vs FBS), which the models never saw while being tuned.
 """
 
 from __future__ import annotations
@@ -27,72 +27,79 @@ def _fmt(value, pct=False, nd=2) -> str:
 
 
 def print_table(backtest: dict) -> None:
-    season = backtest["temporada"]
-    for key, title in (
-        ("actual", f"{season} · FBS vs FBS (fuera de muestra)"),
-        ("actual_con_fcs", f"{season} · todos los juegos (incluye FCS)"),
-        ("historia", f"{backtest.get('calibrado_con')} · FBS vs FBS (usado para calibrar)"),
-    ):
-        print(f"\n{title}")
-        print(
-            f"{'modelo':46s} {'n':>5s} {'acierto':>8s} {'14+ pts':>8s} {'MAE margen':>11s} {'MAE total':>10s} {'Brier':>7s}"
-        )
-        for row in backtest["comparacion"]:
+    season = backtest["season"]
+    sections = (
+        ("current", f"{season} · FBS vs FBS (out of sample)"),
+        ("current_with_fcs", f"{season} · all games (FCS included)"),
+        ("history", f"{backtest.get('tuned_on')} · FBS vs FBS (used for tuning)"),
+    )
+    header = (
+        f"{'model':40s} {'n':>5s} {'winner':>8s} {'14+ pts':>8s}"
+        f" {'margin MAE':>11s} {'total MAE':>10s} {'Brier':>7s}"
+    )
+    for key, title in sections:
+        print(f"\n{title}\n{header}")
+        for row in backtest["comparison"]:
             m = row[key]
             if not m.get("n"):
                 continue
-            mark = " <-" if row["seleccionado"] else ""
+            mark = " <-" if row["selected"] else ""
             print(
-                f"{row['label'][:46]:46s} {m['n']:5d} {_fmt(m['acierto'], True):>8s} {_fmt(m['acierto_14'], True):>8s} "
-                f"{_fmt(m['mae_margen']):>11s} {_fmt(m['mae_total']):>10s} {_fmt(m['brier'], nd=4):>7s}{mark}"
+                f"{row['label'][:40]:40s} {m['n']:5d} {_fmt(m['accuracy'], True):>8s}"
+                f" {_fmt(m['accuracy_14'], True):>8s} {_fmt(m['mae_margin']):>11s}"
+                f" {_fmt(m['mae_total']):>10s} {_fmt(m['brier'], nd=4):>7s}{mark}"
             )
-    mkt = backtest.get("mercado")
+    mkt = backtest.get("market")
     if mkt:
         print(
-            f"\nReferencia · línea de cierre del mercado ({mkt['n']} juegos de {season}): acierto {mkt['acierto']:.1%}, "
-            f"MAE margen {mkt['mae_margen']:.2f} (modelo {mkt['modelo_mae_margen']:.2f}), MAE total {mkt['mae_total']:.2f} (modelo {mkt['modelo_mae_total']:.2f})"
+            f"\nReference · market closing line ({mkt['n']} games in {season}):"
+            f" winner {mkt['accuracy']:.1%}, margin MAE {mkt['mae_margin']:.2f}"
+            f" (model {mkt['model_mae_margin']:.2f}), total MAE {mkt['mae_total']:.2f}"
+            f" (model {mkt['model_mae_total']:.2f})"
         )
-    ref = backtest["referencia_prototipo"]
+    ref = backtest["prototype_reference"]
     print(
-        f"Referencia · prototipo: acierto {ref['acierto']:.0%}, {ref['acierto_14']:.0%} con 14+, MAE margen ~{ref['mae_margen']}, MAE total ~{ref['mae_total']}"
+        f"Reference · original prototype: winner {ref['accuracy']:.0%},"
+        f" {ref['accuracy_14']:.0%} at 14+, margin MAE ~{ref['mae_margin']},"
+        f" total MAE ~{ref['mae_total']}"
     )
-    bets = backtest["apuestas"].get("historia") or {}
+    bets = backtest["bets"].get("history") or {}
     if bets:
-        print(
-            f"\nRegla JUGADA contra líneas de cierre, temporadas {backtest['apuestas']['temporadas_con_lineas']}:"
-        )
-        for tipo in ("ml", "spread", "total", "todas"):
-            for label in ("JUGADA", "EVITAR"):
-                r = bets[tipo][label]
+        print(f"\nPLAY rule vs closing lines, seasons {backtest['bets']['seasons_with_lines']}:")
+        for market in ("ml", "spread", "total", "all"):
+            for label in ("PLAY", "AVOID"):
+                r = bets[market][label]
                 if r["n"]:
                     print(
-                        f"  {tipo:6s} {label:7s} {r['ganadas']:4d}-{r['perdidas']:<4d} ({r['pct']:.1%})  {r['unidades']:+7.1f}u  ROI {r['roi']:+.1%} ± {r['roi_error']:.1%}"
+                        f"  {market:6s} {label:5s} {r['won']:4d}-{r['lost']:<4d}"
+                        f" ({r['win_pct']:.1%})  {r['units']:+7.1f}u"
+                        f"  ROI {r['roi']:+.1%} ± {r['roi_error']:.1%}"
                     )
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Compara los modelos en el backtest walk-forward")
+    parser = argparse.ArgumentParser(description="Compare the models in the walk-forward backtest")
     parser.add_argument("--season", type=int, default=config.current_season())
     parser.add_argument(
-        "--select", action="store_true", help="guardar el modelo de menor error en params.json"
+        "--select", action="store_true", help="save the lowest-error model to params.json"
     )
     args = parser.parse_args(argv)
 
     backtest, _ = build_backtest(load_games(), args.season, Rules(), log=lambda *_: None)
     if args.select:
         best = min(
-            (r for r in backtest["comparacion"] if r["actual"].get("n")),
-            key=lambda r: r["actual"]["mae_margen"],
+            (r for r in backtest["comparison"] if r["current"].get("n")),
+            key=lambda r: r["current"]["mae_margin"],
         )
         params = load_params()
-        params["seleccionado"] = best["modelo"]
-        params["seleccionado_por"] = (
-            f"menor MAE de margen en el walk-forward de {args.season} (FBS vs FBS)"
+        params["selected"] = best["model"]
+        params["selected_by"] = (
+            f"lowest margin MAE in the {args.season} walk-forward backtest (FBS vs FBS)"
         )
         config.PARAMS_PATH.write_text(json.dumps(params, indent=2, ensure_ascii=False) + "\n")
-        for row in backtest["comparacion"]:
-            row["seleccionado"] = row["modelo"] == best["modelo"]
-        print(f"Seleccionado: {best['label']}")
+        for row in backtest["comparison"]:
+            row["selected"] = row["model"] == best["model"]
+        print(f"Selected: {best['label']}")
     print_table(backtest)
     return 0
 

@@ -1,5 +1,5 @@
 {
-  "calibrado_con": "2022-2025",
+  "tuned_on": "2022-2025",
   "srs": {
     "cap": 45.0,
     "k": 3.0,
@@ -23,33 +23,33 @@
     "fcs0": 1150.0,
     "fcs_k": 0.1
   },
-  "peso_srs_en_mezcla": 0.993888594847875,
-  "historia": {
+  "srs_blend_weight": 0.993888594847875,
+  "history": {
     "srs": {
-      "margen": 16.0034369642505,
+      "margin": 16.0034369642505,
       "total": 16.113279896085636,
       "n": 3174,
-      "acierto": 0.70825456836799,
-      "mae_margen": 12.669107956854202,
+      "accuracy": 0.70825456836799,
+      "mae_margin": 12.669107956854202,
       "mae_total": 12.880827806581873
     },
     "elo": {
-      "margen": 16.79718476380195,
+      "margin": 16.79718476380195,
       "total": null,
       "n": 3174,
-      "acierto": 0.6969124133585382,
-      "mae_margen": 13.271408277908588,
+      "accuracy": 0.6969124133585382,
+      "mae_margin": 13.271408277908588,
       "mae_total": null
     },
     "blend": {
-      "margen": 16.0034062071829,
+      "margin": 16.0034062071829,
       "total": 16.113279896085636,
       "n": 3174,
-      "acierto": 0.70825456836799,
-      "mae_margen": 12.669171441921415,
+      "accuracy": 0.70825456836799,
+      "mae_margin": 12.669171441921415,
       "mae_total": 12.880827806581873
     }
   },
-  "seleccionado": "srs",
-  "seleccionado_por": "menor MAE de margen en el walk-forward de 2026 (FBS vs FBS)"
+  "selected": "srs",
+  "selected_by": "lowest margin MAE in the 2026 walk-forward backtest (FBS vs FBS)"
 }

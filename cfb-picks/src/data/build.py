@@ -1,9 +1,9 @@
-"""Descarga todos los juegos FBS y arma data/games.parquet.
+"""Download all FBS games and build data/games.parquet.
 
-Uso:
-    python -m src.data.build                 # temporada actual + historia 2021-2025
-    python -m src.data.build --no-history    # solo la temporada actual
-    python -m src.data.build --refresh       # ignora la caché de la semana en curso
+Usage:
+    python -m src.data.build                 # current season + 2021-2025 history
+    python -m src.data.build --no-history    # current season only
+    python -m src.data.build --refresh       # ignore the cache for the current week
 """
 
 from __future__ import annotations
@@ -48,11 +48,11 @@ GAME_COLUMNS = [
 def fetch_season(
     client: EspnClient, season: int, *, refresh: bool = False, log=print
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
-    """Baja una temporada completa semana por semana. Devuelve (juegos, equipos, calendario)."""
+    """Download a full season week by week. Returns (games, teams, calendar)."""
     first = client.scoreboard_week(season, 1, refresh=refresh)
     calendar = parse_calendar(first)
     if not calendar["regular"]:
-        raise EspnError(f"el API no devolvió calendario para {season}")
+        raise EspnError(f"the API returned no calendar for {season}")
     n_regular = max(w["week"] for w in calendar["regular"])
 
     rows: list[dict] = []
@@ -64,7 +64,8 @@ def fetch_season(
         events = payload.get("events") or []
         if len(events) >= config.SCOREBOARD_LIMIT:
             log(
-                f"  aviso: la respuesta llegó al límite de {config.SCOREBOARD_LIMIT} juegos; puede faltar alguno"
+                f"  warning: the response hit the limit of {config.SCOREBOARD_LIMIT} games; "
+                "some may be missing"
             )
         for event in events:
             row = parse_event(event)
@@ -86,13 +87,13 @@ def fetch_season(
                 n_regular + 1,
             )
         except EspnError as exc:
-            # La postemporada futura puede no existir todavía; no es un error del pipeline.
-            log(f"  postemporada {season} ({entry['label']}) no disponible: {exc}")
+            # A future postseason may not exist yet; that is not a pipeline error.
+            log(f"  {season} postseason ({entry['label']}) not available: {exc}")
 
     games = pd.DataFrame(rows)
     if games.empty:
-        raise EspnError(f"el API no devolvió juegos para {season}")
-    # Un juego reprogramado puede salir en dos semanas: quedarse con la versión jugada.
+        raise EspnError(f"the API returned no games for {season}")
+    # A rescheduled game can show up in two weeks: keep the played version.
     games = (
         games.sort_values(["completed", "date"])
         .drop_duplicates("game_id", keep="last")
@@ -103,14 +104,14 @@ def fetch_season(
     fbs = parse_standings_fbs(client.standings(season, refresh=refresh))
     if len(fbs) < 100:
         raise EspnError(
-            f"standings de {season} devolvió solo {len(fbs)} equipos FBS; no se puede clasificar FBS/FCS"
+            f"{season} standings returned only {len(fbs)} FBS teams; cannot classify FBS/FCS"
         )
     games["home_fbs"] = games["home_id"].isin(fbs)
     games["away_fbs"] = games["away_id"].isin(fbs)
     games["fcs_game"] = ~(games["home_fbs"] & games["away_fbs"])
     stray = ~(games["home_fbs"] | games["away_fbs"])
     if stray.any():
-        log(f"  {int(stray.sum())} juego(s) sin ningún equipo FBS descartado(s)")
+        log(f"  {int(stray.sum())} game(s) with no FBS team dropped")
         games = games[~stray].reset_index(drop=True)
 
     for col in ("home_points", "away_points", "home_rank", "away_rank"):
@@ -124,19 +125,19 @@ def fetch_season(
     team_df["conference"] = team_df["team_id"].map(fbs).fillna("")
     team_df["season"] = season
     if skipped:
-        log(f"  {skipped} evento(s) sin equipos definidos omitido(s)")
+        log(f"  {skipped} event(s) with undefined teams skipped")
     return games[GAME_COLUMNS], team_df, calendar
 
 
 def season_summary(games: pd.DataFrame) -> pd.DataFrame:
     g = games
     out = g.groupby("season").agg(
-        juegos=("game_id", "size"),
-        jugados=("completed", "sum"),
+        games=("game_id", "size"),
+        played=("completed", "sum"),
         fbs_vs_fbs=("fcs_game", lambda s: int((~s).sum())),
         vs_fcs=("fcs_game", "sum"),
         neutral=("neutral_site", "sum"),
-        semanas=("week_index", "nunique"),
+        weeks=("week_index", "nunique"),
     )
     return out.astype(int)
 
@@ -169,15 +170,15 @@ def build(
         is_current = year == season
         if not is_current and not refresh_history and existing is not None:
             prev = existing[existing["season"] == year]
-            # Una temporada pasada ya no cambia: se reutiliza lo que hay en el parquet.
+            # A past season no longer changes: what is in the parquet is reused.
             if len(prev) > 600 and prev["completed"].mean() > 0.97:
                 frames.append(prev[GAME_COLUMNS])
-                log(f"{year}: {len(prev)} juegos (reutilizados de games.parquet)")
+                log(f"{year}: {len(prev)} games (reused from games.parquet)")
                 continue
         games, teams, _ = fetch_season(client, year, refresh=refresh and is_current, log=log)
         frames.append(games)
         team_frames.append(teams)
-        log(f"{year}: {len(games)} juegos descargados ({int(games['completed'].sum())} jugados)")
+        log(f"{year}: {len(games)} games downloaded ({int(games['completed'].sum())} played)")
 
     all_games = (
         pd.concat(frames, ignore_index=True).sort_values(["date", "game_id"]).reset_index(drop=True)
@@ -189,13 +190,13 @@ def build(
         teams = pd.concat(team_frames, ignore_index=True).sort_values("season")
         if config.TEAMS_PATH.exists():
             teams = pd.concat([load_teams(), teams], ignore_index=True).sort_values("season")
-        # Un registro por equipo: el de la temporada más reciente.
+        # One record per team: the one from the most recent season.
         teams = (
             teams.drop_duplicates("team_id", keep="last").sort_values("team").reset_index(drop=True)
         )
         teams.to_parquet(config.TEAMS_PATH, index=False)
 
-    log(f"\nPeticiones al API: {client.stats['red']} · desde caché: {client.stats['cache']}")
+    log(f"\nAPI requests: {client.stats['network']} · from cache: {client.stats['cache']}")
     return all_games
 
 
@@ -208,22 +209,24 @@ def _parse_history(text: str) -> list[int]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Descarga los juegos FBS desde ESPN y arma data/games.parquet"
+        description="Download FBS games from ESPN and build data/games.parquet"
     )
     parser.add_argument("--season", type=int, default=config.current_season())
     parser.add_argument(
         "--history",
         default=f"{config.HISTORY_SEASONS[0]}-{config.HISTORY_SEASONS[-1]}",
-        help="temporadas previas, p. ej. 2021-2025 o 2024,2025",
-    )
-    parser.add_argument("--no-history", action="store_true", help="bajar solo la temporada actual")
-    parser.add_argument(
-        "--refresh", action="store_true", help="ignorar la caché de la temporada actual"
+        help="previous seasons, e.g. 2021-2025 or 2024,2025",
     )
     parser.add_argument(
-        "--refresh-history", action="store_true", help="volver a bajar temporadas pasadas"
+        "--no-history", action="store_true", help="download only the current season"
     )
-    parser.add_argument("--offline", action="store_true", help="usar solo la caché (sin red)")
+    parser.add_argument(
+        "--refresh", action="store_true", help="ignore the cache for the current season"
+    )
+    parser.add_argument(
+        "--refresh-history", action="store_true", help="download past seasons again"
+    )
+    parser.add_argument("--offline", action="store_true", help="use the cache only (no network)")
     args = parser.parse_args(argv)
 
     history = (
@@ -239,20 +242,21 @@ def main(argv: list[str] | None = None) -> int:
             offline=args.offline,
         )
     except EspnError as exc:
-        print(f"ERROR: el API de ESPN falló y no se inventan datos: {exc}", file=sys.stderr)
+        print(f"ERROR: the ESPN API failed, and data is never made up: {exc}", file=sys.stderr)
         return 1
 
-    print("\nResumen por temporada:")
+    print("\nSummary by season:")
     print(season_summary(games).to_string())
     cur = games[games["season"] == args.season]
     done = cur[cur["completed"]]
     print(
-        f"\nTemporada {args.season}: {len(cur)} juegos en total, {len(done)} jugados "
-        f"(hasta la semana {int(done['week_index'].max()) if len(done) else 0}), "
-        f"{int((~done['fcs_game']).sum())} FBS vs FBS y {int(done['fcs_game'].sum())} contra FCS."
+        f"\nSeason {args.season}: {len(cur)} games in total, {len(done)} played "
+        f"(through week {int(done['week_index'].max()) if len(done) else 0}), "
+        f"{int((~done['fcs_game']).sum())} FBS vs FBS and {int(done['fcs_game'].sum())} vs FCS."
     )
     print(
-        f"Guardado en {config.GAMES_PATH.relative_to(config.ROOT)} · {(datetime.now(timezone.utc) - started).seconds}s"
+        f"Saved to {config.GAMES_PATH.relative_to(config.ROOT)} · "
+        f"{(datetime.now(timezone.utc) - started).seconds}s"
     )
     return 0
 

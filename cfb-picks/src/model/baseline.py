@@ -1,18 +1,18 @@
-"""Baseline: regresión de puntos ajustada por el nivel del rival (% de victorias).
+"""Baseline: points regression adjusted for opponent strength (win %).
 
-Es una reconstrucción del prototipo a partir de su descripción (el model.py
-original no estaba disponible al escribir esto):
+It is a reconstruction of the prototype from its description (the original
+model.py was not available when this was written):
 
-    puntos anotados  = a_equipo + b * (%victorias_rival - 0.5) + c * local
-    puntos permitidos = d_equipo + e * (%victorias_rival - 0.5) + f * local
+    points scored  = a_team + b * (opponent_win% - 0.5) + c * home
+    points allowed = d_team + e * (opponent_win% - 0.5) + f * home
 
-Las pendientes b, e y el efecto de local se estiman con todos los equipos a la
-vez; cada equipo tiene su propio intercepto ("lo que anota contra un rival
-promedio"). El marcador proyectado promedia la visión de la ofensiva de un
-equipo con la de la defensa del otro.
+The slopes b, e and the home effect are estimated with all teams at once;
+each team has its own intercept ("what it scores against an average
+opponent"). The projected score averages the view from one team's offense
+with the view from the other team's defense.
 
-Su debilidad, y la razón para reemplazarlo: el % de victorias no distingue un
-8-2 contra calendario fácil de un 8-2 contra calendario difícil.
+Its weakness, and the reason to replace it: win % cannot tell an 8-2 against
+an easy schedule from an 8-2 against a tough schedule.
 """
 
 from __future__ import annotations
@@ -26,8 +26,8 @@ from .data import SeasonArrays
 
 @dataclass
 class BaselineState:
-    off: np.ndarray  # puntos anotados contra un rival promedio
-    deff: np.ndarray  # puntos permitidos contra un rival promedio
+    off: np.ndarray  # points scored against an average opponent
+    deff: np.ndarray  # points allowed against an average opponent
     wpct: np.ndarray
     b_off: float
     b_def: float
@@ -38,10 +38,10 @@ class BaselineState:
 
 class BaselineModel:
     name = "baseline"
-    label = "Baseline (puntos vs % de victorias del rival)"
+    label = "Baseline (points vs opponent win %)"
 
     def __init__(self, shrink: float = 1.0) -> None:
-        self.shrink = shrink  # juegos "fantasma" hacia el promedio de la liga
+        self.shrink = shrink  # "phantom" games toward the league average
 
     def prior(self, prev, prev_sa, sa: SeasonArrays) -> dict:
         return {}
@@ -61,7 +61,7 @@ class BaselineModel:
         )
         wpct = np.where(games > 0, wins / np.maximum(games, 1), 0.5)
 
-        # Una fila por equipo-juego (cada juego se ve desde los dos lados).
+        # One row per team-game (each game is seen from both sides).
         team = np.concatenate([h, a])
         opp = np.concatenate([a, h])
         pf = np.concatenate([hp, ap])
@@ -101,7 +101,7 @@ class BaselineModel:
     ) -> tuple[np.ndarray, np.ndarray]:
         h, a = np.asarray(h), np.asarray(a)
         site = (~np.asarray(neutral, dtype=bool)).astype(float)
-        xh, xa = s.wpct[h] - 0.5, s.wpct[a] - 0.5  # nivel del local y del visitante
+        xh, xa = s.wpct[h] - 0.5, s.wpct[a] - 0.5  # strength of the home and away teams
         home_pts = 0.5 * (
             (s.off[h] + s.b_off * xa + s.home_off * site)
             + (s.deff[a] + s.b_def * xh - s.home_def * site)
@@ -113,4 +113,4 @@ class BaselineModel:
         return home_pts - away_pts, home_pts + away_pts
 
     def describe(self) -> dict:
-        return {"modelo": self.name, "shrink": self.shrink}
+        return {"model": self.name, "shrink": self.shrink}

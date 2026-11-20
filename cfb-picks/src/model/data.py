@@ -1,7 +1,7 @@
-"""Convierte games.parquet en arreglos numpy por temporada (rápidos para el backtest).
+"""Turn games.parquet into per-season numpy arrays (fast for the backtest).
 
-Todos los equipos que no son FBS se agrupan en un pseudo-equipo "FCS": de cada
-uno solo vemos 1-2 juegos contra FBS, así que un rating individual sería ruido.
+All non-FBS teams are grouped into one "FCS" pseudo-team: we only see 1-2 games
+against FBS from each of them, so an individual rating would be noise.
 """
 
 from __future__ import annotations
@@ -17,17 +17,17 @@ FCS = "FCS"
 @dataclass
 class SeasonArrays:
     season: int
-    team_ids: list[str]  # índice -> team_id; el último es el pseudo-equipo FCS
-    names: dict[str, str]  # team_id -> nombre corto
+    team_ids: list[str]  # index -> team_id; the last one is the FCS pseudo-team
+    names: dict[str, str]  # team_id -> short name
     game_id: np.ndarray
-    week: np.ndarray  # week_index (postemporada = última semana regular + 1)
-    h: np.ndarray  # índice del local
-    a: np.ndarray  # índice del visitante
-    hp: np.ndarray  # puntos del local (nan si no se ha jugado)
+    week: np.ndarray  # week_index (postseason = last regular-season week + 1)
+    h: np.ndarray  # home team index
+    a: np.ndarray  # away team index
+    hp: np.ndarray  # home team points (nan if not played yet)
     ap: np.ndarray
     neutral: np.ndarray
     completed: np.ndarray
-    fcs: np.ndarray  # True si alguno de los dos no es FBS
+    fcs: np.ndarray  # True if either team is not FBS
 
     def __post_init__(self) -> None:
         self.index = {tid: i for i, tid in enumerate(self.team_ids)}
@@ -60,7 +60,7 @@ def make_season(games: pd.DataFrame, season: int) -> SeasonArrays:
     team_ids = [*fbs, FCS]
     index = {tid: i for i, tid in enumerate(team_ids)}
     names = {**dict(zip(g["home_id"], g["home_team"])), **dict(zip(g["away_id"], g["away_team"]))}
-    names[FCS] = "FCS (promedio)"
+    names[FCS] = "FCS (average)"
     fcs_i = len(team_ids) - 1
     return SeasonArrays(
         season=season,
@@ -85,8 +85,8 @@ def make_seasons(games: pd.DataFrame) -> dict[int, SeasonArrays]:
 def align(
     prev_values: np.ndarray, prev: SeasonArrays, cur: SeasonArrays, default: float
 ) -> np.ndarray:
-    """Lleva un vector de ratings de la temporada anterior al orden de equipos de la actual.
-    Los equipos nuevos en FBS reciben `default`."""
+    """Map a ratings vector from the previous season onto the current season's team order.
+    Teams new to FBS get `default`."""
     out = np.full(cur.n, default, dtype=float)
     for i, tid in enumerate(cur.team_ids):
         j = prev.index.get(tid)

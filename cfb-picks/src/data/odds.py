@@ -1,13 +1,13 @@
-"""Odds de la semana: tus líneas (data/odds_manual.csv) + las de ESPN.
+"""This week's odds: your lines (data/odds_manual.csv) merged with ESPN's.
 
-Reglas de combinación, por mercado (moneyline, spread, total):
-- La LÍNEA y el MOMIO que se usan para apostar son los tuyos si los capturaste;
-  si no, los de ESPN (DraftKings).
-- La probabilidad del mercado SIN VIG se calcula con una cotización de dos lados
-  de una sola fuente: tu casa si capturaste ambos lados; si no, ESPN (misma
-  línea); si no hay dos lados, se le quita un vig típico al único lado que hay.
-- Un precio que falta nunca se inventa en silencio: si se asume -110 (estándar
-  de spread/total) queda marcado como "asumido".
+Merge rules, per market (moneyline, spread, total):
+- The LINE and the PRICE used for a bet are yours when you captured them;
+  otherwise they are ESPN's (DraftKings).
+- The no-vig market probability comes from a two-sided quote from one book:
+  yours if you captured both sides; otherwise ESPN's (same line); with only
+  one side available, a typical vig is removed from it.
+- A missing price is never invented silently: when -110 (the standard price
+  for spreads and totals) is assumed, it is flagged as "assumed".
 """
 
 from __future__ import annotations
@@ -40,8 +40,9 @@ MANUAL_COLUMNS = [
     "captured_at",
 ]
 STANDARD_PRICE = -110
+DEFAULT_BOOK = "my book"
 
-# Formas comunes de escribir un equipo -> nombre corto de ESPN (ya normalizados).
+# Common ways of writing a team -> ESPN's short name (both already normalized).
 ALIASES = {
     "miami fl": "miami",
     "miami florida": "miami",
@@ -50,13 +51,10 @@ ALIASES = {
     "southern california": "usc",
     "southern cal": "usc",
     "hawaii": "hawai i",
-    "ole miss": "ole miss",
     "mississippi": "ole miss",
-    "nc state": "nc state",
     "north carolina state": "nc state",
     "appalachian state": "app state",
     "connecticut": "uconn",
-    "massachusetts": "massachusetts",
     "umass": "massachusetts",
     "louisiana monroe": "ul monroe",
     "ulm": "ul monroe",
@@ -69,7 +67,6 @@ ALIASES = {
     "sam houston state": "sam houston",
     "florida intl": "florida international",
     "fiu": "florida international",
-    "san jose st": "san jose state",
 }
 
 
@@ -82,7 +79,7 @@ def normalize_team(name: str) -> str:
 
 
 def team_lookup(teams: pd.DataFrame) -> dict[str, str]:
-    """nombre normalizado -> team_id. Acepta nombre corto, nombre completo y abreviatura (si es única)."""
+    """Normalized name -> team_id. Accepts short name, full name and (if unique) abbreviation."""
     lookup: dict[str, str] = {}
     abbr_count = teams["abbr"].str.lower().value_counts()
     for row in teams.itertuples():
@@ -96,7 +93,7 @@ def team_lookup(teams: pd.DataFrame) -> dict[str, str]:
 def load_manual_odds(
     path: Path = config.ODDS_MANUAL_PATH, season: int | None = None, week: int | None = None
 ) -> list[dict]:
-    """Lee odds_manual.csv. Los campos vacíos quedan en None."""
+    """Read odds_manual.csv. Empty fields come back as None."""
     if not Path(path).exists():
         return []
     rows = []
@@ -126,7 +123,7 @@ def load_manual_odds(
                     "total": parse_line(raw.get("total")),
                     "over_odds": parse_american(raw.get("over_odds")),
                     "under_odds": parse_american(raw.get("under_odds")),
-                    "book": (raw.get("book") or "").strip() or "manual",
+                    "book": (raw.get("book") or "").strip() or DEFAULT_BOOK,
                     "captured_at": (raw.get("captured_at") or "").strip(),
                 }
             )
@@ -136,91 +133,76 @@ def load_manual_odds(
 def match_manual(
     rows: list[dict], week_games: pd.DataFrame, teams: pd.DataFrame
 ) -> tuple[dict[str, dict], list[str]]:
-    """Empareja cada fila manual con un juego de la semana. Devuelve ({game_id: fila}, avisos)."""
+    """Match each manual row to a game this week. Returns ({game_id: row}, warnings)."""
     lookup = team_lookup(teams)
     by_pair = {(g.away_id, g.home_id): g.game_id for g in week_games.itertuples()}
     matched: dict[str, dict] = {}
     warnings: list[str] = []
     for row in rows:
         label = f"{row['away']} @ {row['home']}"
-        away_id, home_id = (
-            lookup.get(normalize_team(row["away"])),
-            lookup.get(normalize_team(row["home"])),
-        )
+        away_id = lookup.get(normalize_team(row["away"]))
+        home_id = lookup.get(normalize_team(row["home"]))
         if away_id is None or home_id is None:
             missing = row["away"] if away_id is None else row["home"]
-            warnings.append(
-                f"odds_manual: no reconozco el equipo '{missing}' ({label}); la fila se ignoró"
-            )
+            warnings.append(f"odds_manual: unknown team '{missing}' ({label}); row ignored")
             continue
         game_id = by_pair.get((away_id, home_id))
         if game_id is None:
             if (home_id, away_id) in by_pair:
                 warnings.append(
-                    f"odds_manual: {label} existe pero con local y visitante invertidos; la fila se ignoró"
+                    f"odds_manual: {label} exists but with home and away swapped; row ignored"
                 )
             else:
-                warnings.append(
-                    f"odds_manual: {label} no está en los juegos de la semana; la fila se ignoró"
-                )
+                warnings.append(f"odds_manual: {label} is not on this week's schedule; row ignored")
             continue
         matched[game_id] = row
     return matched, warnings
 
 
-# ------------------------------------------------------------------ mercados
+# ------------------------------------------------------------------- markets
 def _quote(odds: int | None, source: str) -> dict | None:
-    return None if odds is None else {"momio": int(odds), "fuente": source}
+    return None if odds is None else {"odds": int(odds), "source": source}
 
 
 def _fair_pair(
     a: dict | None, b: dict | None, ref: tuple[int | None, int | None] | None
-) -> tuple[float | None, float | None, str | None]:
-    """Probabilidades sin vig de los dos lados de un mercado.
+) -> tuple[float | None, float | None, dict | None]:
+    """No-vig probabilities for the two sides of a market.
 
-    a, b: cotizaciones que se usarían para apostar. ref: cotización de dos lados de
-    ESPN para la misma línea (o None). Devuelve (p_a, p_b, método)."""
-    real_a = a is not None and a["fuente"] != "asumido"
-    real_b = b is not None and b["fuente"] != "asumido"
-    if real_a and real_b and a["fuente"] == b["fuente"]:
-        pa, pb = american_to_prob(a["momio"]), american_to_prob(b["momio"])
-        return pa / (pa + pb), pb / (pa + pb), f"dos lados ({a['fuente']})"
+    a, b: the quotes a bet would be placed at. ref: ESPN's two-sided quote for the
+    same line (or None). Returns (p_a, p_b, how the vig was removed)."""
+    real_a = a is not None and a["source"] != "assumed"
+    real_b = b is not None and b["source"] != "assumed"
+    if real_a and real_b and a["source"] == b["source"]:
+        pa, pb = american_to_prob(a["odds"]), american_to_prob(b["odds"])
+        return pa / (pa + pb), pb / (pa + pb), {"method": "two_sided", "source": a["source"]}
     if ref is not None and ref[0] is not None and ref[1] is not None:
         pa, pb = american_to_prob(ref[0]), american_to_prob(ref[1])
-        return pa / (pa + pb), pb / (pa + pb), "dos lados (espn)"
+        return pa / (pa + pb), pb / (pa + pb), {"method": "two_sided", "source": "espn"}
     if real_a or real_b:
         known, is_a = (a, True) if real_a else (b, False)
-        p = min(american_to_prob(known["momio"]) / DEFAULT_OVERROUND, 0.999)
-        return (
-            (p, 1 - p, f"un lado ({known['fuente']}), vig estimado")
-            if is_a
-            else (1 - p, p, f"un lado ({known['fuente']}), vig estimado")
-        )
-    if a is not None and b is not None:  # ambos asumidos a -110
-        return 0.5, 0.5, "precio asumido"
+        p = min(american_to_prob(known["odds"]) / DEFAULT_OVERROUND, 0.999)
+        how = {"method": "one_sided", "source": known["source"]}
+        return (p, 1 - p, how) if is_a else (1 - p, p, how)
+    if a is not None and b is not None:  # both assumed at -110
+        return 0.5, 0.5, {"method": "assumed", "source": None}
     return None, None, None
 
 
 def build_markets(manual: dict | None, espn: dict | None) -> dict:
-    """Combina tus líneas con las de ESPN para un juego.
+    """Merge your lines with ESPN's for one game.
 
-    Convención interna: spread_home = línea del local (negativa = local favorito).
+    Internal convention: home_line is the HOME team's spread (negative = home favorite).
     """
     manual = manual or {}
     espn = espn or {}
-    book = manual.get("book") or "manual"
+    book = manual.get("book") or DEFAULT_BOOK
 
     # ---------------- moneyline
     ml_home = _quote(manual.get("ml_home"), book) or _quote(espn.get("ml_home"), "espn")
     ml_away = _quote(manual.get("ml_away"), book) or _quote(espn.get("ml_away"), "espn")
     p_home, p_away, how = _fair_pair(ml_home, ml_away, (espn.get("ml_home"), espn.get("ml_away")))
-    ml = {
-        "local": ml_home,
-        "visita": ml_away,
-        "p_local": p_home,
-        "p_visita": p_away,
-        "sin_vig": how,
-    }
+    ml = {"home": ml_home, "away": ml_away, "p_home": p_home, "p_away": p_away, "devig": how}
 
     # ---------------- spread
     espn_line = espn.get("spread_home")
@@ -231,13 +213,13 @@ def build_markets(manual: dict | None, espn: dict | None) -> dict:
     else:
         line, line_src = None, None
     spread = {
-        "linea_local": line,
-        "fuente_linea": line_src,
-        "local": None,
-        "visita": None,
-        "p_local": None,
-        "p_visita": None,
-        "sin_vig": None,
+        "home_line": line,
+        "line_source": line_src,
+        "home": None,
+        "away": None,
+        "p_home": None,
+        "p_away": None,
+        "devig": None,
     }
     if line is not None:
         same = espn_line is not None and abs(float(espn_line) - line) < 1e-9
@@ -246,13 +228,11 @@ def build_markets(manual: dict | None, espn: dict | None) -> dict:
         if same:
             sp_home = sp_home or _quote(espn.get("spread_home_odds"), "espn")
             sp_away = sp_away or _quote(espn.get("spread_away_odds"), "espn")
-        sp_home = sp_home or _quote(STANDARD_PRICE, "asumido")
-        sp_away = sp_away or _quote(STANDARD_PRICE, "asumido")
+        sp_home = sp_home or _quote(STANDARD_PRICE, "assumed")
+        sp_away = sp_away or _quote(STANDARD_PRICE, "assumed")
         ref = (espn.get("spread_home_odds"), espn.get("spread_away_odds")) if same else None
         ph, pa, how = _fair_pair(sp_home, sp_away, ref)
-        spread.update(
-            {"local": sp_home, "visita": sp_away, "p_local": ph, "p_visita": pa, "sin_vig": how}
-        )
+        spread.update({"home": sp_home, "away": sp_away, "p_home": ph, "p_away": pa, "devig": how})
 
     # ---------------- total
     espn_total = espn.get("total")
@@ -263,13 +243,13 @@ def build_markets(manual: dict | None, espn: dict | None) -> dict:
     else:
         tline, tsrc = None, None
     total = {
-        "linea": tline,
-        "fuente_linea": tsrc,
+        "line": tline,
+        "line_source": tsrc,
         "over": None,
         "under": None,
         "p_over": None,
         "p_under": None,
-        "sin_vig": None,
+        "devig": None,
     }
     if tline is not None:
         same = espn_total is not None and abs(float(espn_total) - tline) < 1e-9
@@ -278,49 +258,52 @@ def build_markets(manual: dict | None, espn: dict | None) -> dict:
         if same:
             over = over or _quote(espn.get("over_odds"), "espn")
             under = under or _quote(espn.get("under_odds"), "espn")
-        over = over or _quote(STANDARD_PRICE, "asumido")
-        under = under or _quote(STANDARD_PRICE, "asumido")
+        over = over or _quote(STANDARD_PRICE, "assumed")
+        under = under or _quote(STANDARD_PRICE, "assumed")
         ref = (espn.get("over_odds"), espn.get("under_odds")) if same else None
         po, pu, how = _fair_pair(over, under, ref)
-        total.update({"over": over, "under": under, "p_over": po, "p_under": pu, "sin_vig": how})
+        total.update({"over": over, "under": under, "p_over": po, "p_under": pu, "devig": how})
 
     return {
         "ml": ml,
         "spread": spread,
         "total": total,
-        "tiene_manual": bool(manual),
+        "has_manual": bool(manual),
         "espn": espn or None,
     }
 
 
-def compare_sources(manual: dict | None, espn: dict | None) -> list[str]:
-    """Diferencias notables entre tu casa y ESPN/DraftKings (para validar capturas y comparar precios)."""
+def compare_sources(
+    manual: dict | None, espn: dict | None, home: str = "Home", away: str = "Away"
+) -> list[str]:
+    """Notable differences between your book and ESPN's provider (to catch typos and shop prices)."""
     if not manual or not espn:
         return []
+    book = manual.get("book") or DEFAULT_BOOK
+    provider = espn.get("provider") or "ESPN"
     notes = []
-    for side, label in (("ml_home", "ML local"), ("ml_away", "ML visitante")):
-        mine, theirs = manual.get(side), espn.get(side)
+    for key, team in (("ml_home", home), ("ml_away", away)):
+        mine, theirs = manual.get(key), espn.get(key)
         if mine is None or theirs is None:
             continue
         if (mine < 0) != (theirs < 0) and min(abs(mine), abs(theirs)) > 125:
             notes.append(
-                f"{label}: tu casa {mine:+d} y DraftKings {theirs:+d} no coinciden en el favorito; revisa la captura"
+                f"{team} moneyline: {book} has {mine:+d} but {provider} has {theirs:+d}."
+                " They disagree on the favorite, so check the entry."
             )
         elif abs(american_to_prob(mine) - american_to_prob(theirs)) >= 0.02:
-            better = (
-                "DraftKings paga mejor"
-                if american_to_prob(theirs) < american_to_prob(mine)
-                else "tu casa paga mejor"
+            better = provider if american_to_prob(theirs) < american_to_prob(mine) else book
+            notes.append(
+                f"{team} moneyline: {book} {mine:+d} vs {provider} {theirs:+d} ({better} pays better)"
             )
-            notes.append(f"{label}: tu casa {mine:+d} vs DraftKings {theirs:+d} ({better})")
     if manual.get("spread_away") is not None and espn.get("spread_home") is not None:
         mine, theirs = -float(manual["spread_away"]), float(espn["spread_home"])
         if abs(mine - theirs) >= 1.0:
-            notes.append(f"Spread del local: tu casa {mine:+g} vs DraftKings {theirs:+g}")
+            notes.append(f"Spread: {book} has {home} {mine:+g}, {provider} has {home} {theirs:+g}")
     if (
         manual.get("total") is not None
         and espn.get("total") is not None
         and abs(manual["total"] - espn["total"]) >= 1.0
     ):
-        notes.append(f"Total: tu casa {manual['total']:g} vs DraftKings {espn['total']:g}")
+        notes.append(f"Total: {book} {manual['total']:g} vs {provider} {espn['total']:g}")
     return notes

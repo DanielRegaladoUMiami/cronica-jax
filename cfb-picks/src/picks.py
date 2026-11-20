@@ -1,16 +1,16 @@
-"""Picks de la semana.
+"""Weekly picks.
 
-Uso:
-    python -m src.picks --week 12        # una semana concreta
-    python -m src.picks                  # la semana en curso
-    python -m src.picks --skip-build     # sin volver a bajar games.parquet
+Usage:
+    python -m src.picks --week 12        # a specific week
+    python -m src.picks                  # the current week
+    python -m src.picks --skip-build     # do not download games again
 
-Qué hace:
-1. Actualiza games.parquet y las líneas de cierre de juegos ya jugados.
-2. Ajusta el modelo seleccionado con todo lo jugado hasta hoy.
-3. Para cada juego: marcador proyectado, probabilidades, edge contra tus líneas
-   (data/odds_manual.csv) o las de ESPN, chequeo de estabilidad y etiqueta.
-4. Exporta site/data/picks.json y site/data/backtest.json.
+What it does:
+1. Updates games.parquet and the closing lines of games already played.
+2. Fits the selected model on everything played so far.
+3. For each game: projected score, probabilities, edge against your lines
+   (data/odds_manual.csv) or ESPN's, a stability check and a label.
+4. Exports site/data/picks.json and site/data/backtest.json.
 """
 
 from __future__ import annotations
@@ -38,27 +38,40 @@ from .data.odds import (
 )
 from .data.odds_history import fetch_odds_history, load_odds_history
 from .data.parse import parse_calendar, parse_event, parse_event_odds
-from .model.backtest import by_week, calibration, fbs_only, metrics, residual_sigma, walk_forward
+from .model.backtest import (
+    by_week,
+    calibration,
+    fbs_only,
+    metrics,
+    residual_sigma,
+    walk_forward,
+)
 from .model.data import make_seasons
 from .model.prob import american_to_decimal, norm_cdf, prob_to_american
 from .model.registry import build_models, load_params, selected_name
-from .model.rules import Rules, evaluate_game
+from .model.rules import AVOID, PASS, PLAY, Rules, evaluate_game
 from .model.simulate import drop_last_games, record, simulate_bets
 
-PROTOTYPE_REFERENCE = {"acierto": 0.73, "acierto_14": 0.92, "mae_margen": 15.5, "mae_total": 20.0}
-MIN_POINTS = 3.0  # piso para el marcador proyectado de un equipo
+PROTOTYPE_REFERENCE = {"accuracy": 0.73, "accuracy_14": 0.92, "mae_margin": 15.5, "mae_total": 20.0}
+MIN_POINTS = 3.0  # floor for a team's projected score
+LABELS = (PLAY, AVOID, PASS)
+NO_DATA_REASONS = {
+    "in_progress": "already started",
+    "postponed": "postponed",
+    "canceled": "canceled",
+}
 
 
-# ------------------------------------------------------------------ utilidades
+# ------------------------------------------------------------------- helpers
 def _clean(obj):
-    """Deja el objeto listo para JSON: sin NaN ni tipos de numpy, con decimales razonables."""
+    """Make an object JSON-ready: no NaN, no numpy types, sensible precision."""
     if isinstance(obj, dict):
         return {str(k): _clean(v) for k, v in obj.items()}
     if isinstance(obj, (list, tuple)):
         return [_clean(v) for v in obj]
     if isinstance(obj, (np.bool_, bool)):
         return bool(obj)
-    if isinstance(obj, (np.integer,)):
+    if isinstance(obj, np.integer):
         return int(obj)
     if isinstance(obj, (np.floating, float)):
         value = float(obj)
@@ -69,7 +82,7 @@ def _clean(obj):
 
 
 def week_for(calendar: dict, now: datetime) -> int:
-    """Semana en curso como week_index (postemporada = última semana regular + 1)."""
+    """Current week as a week_index (postseason = last regular week + 1)."""
     regular = sorted(calendar["regular"], key=lambda w: w["week"])
     if not regular or now < regular[0]["start"]:
         return 1
@@ -79,55 +92,49 @@ def week_for(calendar: dict, now: datetime) -> int:
     return regular[-1]["week"] + 1
 
 
-def load_notes(season: int, week: int) -> list[dict]:
-    """data/notas.csv: ajuste manual en puntos y notas por juego (lesiones, clima, motivación)."""
-    if not config.NOTES_PATH.exists():
-        return []
-    rows = []
-    with open(config.NOTES_PATH, newline="", encoding="utf-8") as fh:
-        for raw in csv.DictReader(fh):
-            try:
-                if int(raw["season"]) != season or int(raw["week"]) != week:
-                    continue
-            except (KeyError, TypeError, ValueError):
-                continue
-            rows.append(
-                {
-                    "away": (raw.get("away") or "").strip(),
-                    "home": (raw.get("home") or "").strip(),
-                    "ajuste_margen_local": _points(raw.get("ajuste_margen_local")),
-                    "ajuste_total": _points(raw.get("ajuste_total")),
-                    "notas": (raw.get("notas") or "").strip(),
-                }
-            )
-    return rows
-
-
 def _points(value) -> float:
-    """Ajuste en puntos escrito a mano; vacío o ilegible cuenta como 0."""
+    """A hand-written point adjustment; empty or unreadable counts as 0."""
     try:
         return float(value or 0)
     except ValueError:
         return 0.0
 
 
-def load_parlays(season: int, week: int) -> dict[str, list[str]]:
-    """data/parlays.csv: parlays guardados (una fila por pierna de moneyline)."""
-    path = config.DATA_DIR / "parlays.csv"
-    out: dict[str, list[str]] = {}
+def _week_rows(path, season: int, week: int) -> list[dict]:
+    """Rows of a hand-edited CSV that belong to this season and week."""
     if not path.exists():
-        return out
+        return []
+    rows = []
     with open(path, newline="", encoding="utf-8") as fh:
         for raw in csv.DictReader(fh):
             try:
-                if int(raw["season"]) != season or int(raw["week"]) != week:
-                    continue
+                if int(raw["season"]) == season and int(raw["week"]) == week:
+                    rows.append(raw)
             except (KeyError, TypeError, ValueError):
                 continue
-            if (raw.get("equipo") or "").strip():
-                out.setdefault((raw.get("nombre") or "Parlay").strip(), []).append(
-                    raw["equipo"].strip()
-                )
+    return rows
+
+
+def load_notes(season: int, week: int) -> list[dict]:
+    """data/notes.csv: a manual point adjustment and a note per game (injuries, weather, motivation)."""
+    return [
+        {
+            "away": (raw.get("away") or "").strip(),
+            "home": (raw.get("home") or "").strip(),
+            "home_margin_adj": _points(raw.get("home_margin_adj")),
+            "total_adj": _points(raw.get("total_adj")),
+            "notes": (raw.get("notes") or "").strip(),
+        }
+        for raw in _week_rows(config.NOTES_PATH, season, week)
+    ]
+
+
+def load_parlays(season: int, week: int) -> dict[str, list[str]]:
+    """data/parlays.csv: saved moneyline parlays (one row per leg)."""
+    out: dict[str, list[str]] = {}
+    for raw in _week_rows(config.PARLAYS_PATH, season, week):
+        if (raw.get("team") or "").strip():
+            out.setdefault((raw.get("name") or "Parlay").strip(), []).append(raw["team"].strip())
     return out
 
 
@@ -138,18 +145,19 @@ def _records(games: pd.DataFrame, season: int) -> dict[str, str]:
     for row in done.itertuples():
         home_won = row.home_points > row.away_points
         for tid, won in ((row.home_id, home_won), (row.away_id, not home_won)):
-            (wins if won else losses)[tid] = (wins if won else losses).get(tid, 0) + 1
+            tally = wins if won else losses
+            tally[tid] = tally.get(tid, 0) + 1
     return {tid: f"{wins.get(tid, 0)}-{losses.get(tid, 0)}" for tid in set(wins) | set(losses)}
 
 
-# ---------------------------------------------------------------- backtest.json
+# -------------------------------------------------------------- backtest.json
 def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) -> tuple[dict, dict]:
-    """Corre el walk-forward de todos los modelos y el backtest de apuestas del seleccionado.
-    Devuelve (backtest.json, contexto para los picks)."""
+    """Run the walk-forward backtest for every model and the betting backtest for
+    the selected one. Returns (backtest.json, context for the picks)."""
     params = load_params()
     seasons = make_seasons(games)
     years = sorted(seasons)
-    eval_years = years[1:] if len(years) > 1 else years  # la primera temporada solo deja el prior
+    eval_years = years[1:] if len(years) > 1 else years  # the first season only leaves the prior
     history_years = [y for y in eval_years if y < season]
     models = build_models(params)
     chosen = selected_name(params)
@@ -163,134 +171,114 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
         frames[name] = wf
         hist = fbs_only(wf[wf["season"] < season])
         cur = wf[wf["season"] == season]
-        sigma_hist = (
-            residual_sigma(hist)[0] if len(hist) else None
-        )  # sigma conocida ANTES de la temporada
+        # sigma known BEFORE the season starts, so the Brier score is out of sample too
+        sigma_hist = residual_sigma(hist)[0] if len(hist) else None
         comparison.append(
             {
-                "modelo": name,
+                "model": name,
                 "label": model.label,
-                "seleccionado": name == chosen,
-                "actual": metrics(fbs_only(cur), sigma_hist),
-                "actual_con_fcs": metrics(cur, sigma_hist),
-                "historia": metrics(hist) if len(hist) else {"n": 0},
+                "selected": name == chosen,
+                "current": metrics(fbs_only(cur), sigma_hist),
+                "current_with_fcs": metrics(cur, sigma_hist),
+                "history": metrics(hist) if len(hist) else {"n": 0},
             }
         )
 
     wf = frames[chosen]
-    pool = fbs_only(wf[wf["week"] >= 2])  # la semana 1 no tiene juegos del año: más error
+    pool = fbs_only(wf[wf["week"] >= 2])  # week 1 has no games from that season yet: more error
     sigma_m, sigma_t = residual_sigma(pool)
     cur = fbs_only(wf[wf["season"] == season])
     hist = fbs_only(wf[wf["season"] < season])
     cur_metrics = metrics(cur, sigma_m)
     cal_cur, cal_hist = calibration(cur, sigma_m), calibration(hist, sigma_m)
-    cal_error = (
-        (
-            sum(abs(b["predicho"] - b["observado"]) * b["n"] for b in cal_hist)
-            / max(sum(b["n"] for b in cal_hist), 1)
-        )
-        if cal_hist
-        else None
-    )
+    cal_error = None
+    if cal_hist:
+        weighted = sum(abs(b["predicted"] - b["observed"]) * b["n"] for b in cal_hist)
+        cal_error = weighted / max(sum(b["n"] for b in cal_hist), 1)
 
-    # ---- apuestas simuladas contra líneas de cierre
+    # ---- simulated bets against closing lines
     odds = load_odds_history()
     odds_seasons = sorted(int(s) for s in odds.loc[odds["has_odds"], "season"].unique())
-    bets = (
-        simulate_bets(models[chosen], seasons, odds, sigma_m, sigma_t, rules, odds_seasons)
-        if odds_seasons
-        else pd.DataFrame()
-    )
+    bets = pd.DataFrame()
+    if odds_seasons:
+        bets = simulate_bets(models[chosen], seasons, odds, sigma_m, sigma_t, rules, odds_seasons)
 
     def summary(frame: pd.DataFrame) -> dict:
-        out = {}
         if frame.empty:
-            return out
-        for tipo in ("ml", "spread", "total"):
-            out[tipo] = {
-                label: record(frame[(frame["tipo"] == tipo) & (frame["etiqueta"] == label)])
-                for label in ("JUGADA", "EVITAR", "PASAR")
-            }
-        out["todas"] = {
-            label: record(frame[frame["etiqueta"] == label])
-            for label in ("JUGADA", "EVITAR", "PASAR")
-        }
+            return {}
+        out = {}
+        for market in ("ml", "spread", "total"):
+            sel = frame[frame["market"] == market]
+            out[market] = {label: record(sel[sel["label"] == label]) for label in LABELS}
+        out["all"] = {label: record(frame[frame["label"] == label]) for label in LABELS}
         return out
 
     cur_bets = bets[bets["season"] == season] if len(bets) else bets
     weekly = []
     cumulative = 0.0
     for row in by_week(cur, sigma_m):
-        wk = row["semana"]
-        plays = (
-            cur_bets[(cur_bets["week"] == wk) & (cur_bets["etiqueta"] == "JUGADA")]
-            if len(cur_bets)
-            else cur_bets
-        )
-        rec = (
-            record(plays)
-            if len(cur_bets)
-            else record(pd.DataFrame(columns=["resultado", "profit"]))
-        )
-        cumulative += rec["unidades"]
+        week = row["week"]
+        if len(cur_bets):
+            plays = cur_bets[(cur_bets["week"] == week) & (cur_bets["label"] == PLAY)]
+            rec = record(plays)
+        else:
+            rec = record(pd.DataFrame(columns=["result", "profit"]))
+        cumulative += rec["units"]
         weekly.append(
             {
-                "semana": wk,
+                "week": week,
                 "n": row["n"],
-                "acierto": row["acierto"],
-                "mae_margen": row["mae_margen"],
+                "accuracy": row["accuracy"],
+                "mae_margin": row["mae_margin"],
                 "mae_total": row["mae_total"],
-                "jugadas": rec["n"],
-                "ganadas": rec["ganadas"],
-                "perdidas": rec["perdidas"],
-                "unidades": rec["unidades"],
-                "acumulado": cumulative,
+                "plays": rec["n"],
+                "won": rec["won"],
+                "lost": rec["lost"],
+                "units": rec["units"],
+                "cumulative": cumulative,
             }
         )
 
     market = None
     if len(cur_bets):
-        with_line = cur.merge(
-            odds[["game_id", "spread_home", "total"]].rename(columns={"total": "linea_total"}),
-            on="game_id",
-        )
-        with_line = with_line.dropna(subset=["spread_home"])
+        lines = odds[["game_id", "spread_home", "total"]].rename(columns={"total": "total_line"})
+        with_line = cur.merge(lines, on="game_id").dropna(subset=["spread_home"])
         if len(with_line):
             mkt_margin = -with_line["spread_home"]
             decided = mkt_margin != 0
             market = {
                 "n": len(with_line),
-                "mae_margen": float((mkt_margin - with_line["margin"]).abs().mean()),
-                "acierto": float(((mkt_margin > 0) == (with_line["margin"] > 0))[decided].mean()),
-                "mae_total": float((with_line["linea_total"] - with_line["total"]).abs().mean()),
-                "modelo_mae_margen": float(
+                "mae_margin": float((mkt_margin - with_line["margin"]).abs().mean()),
+                "accuracy": float(((mkt_margin > 0) == (with_line["margin"] > 0))[decided].mean()),
+                "mae_total": float((with_line["total_line"] - with_line["total"]).abs().mean()),
+                "model_mae_margin": float(
                     (with_line["pred_margin"] - with_line["margin"]).abs().mean()
                 ),
-                "modelo_mae_total": float(
+                "model_mae_total": float(
                     (with_line["pred_total"] - with_line["total"]).abs().mean()
                 ),
             }
 
     backtest = {
-        "generado": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "temporada": season,
-        "seleccionado": chosen,
-        "seleccionado_label": models[chosen].label,
-        "calibrado_con": params.get("calibrado_con"),
-        "temporadas_historia": history_years,
-        "comparacion": comparison,
-        "mercado": market,
-        "semanas": weekly,
-        "calibracion": {"actual": cal_cur, "historia": cal_hist, "error_medio": cal_error},
-        "sigma": {"margen": sigma_m, "total": sigma_t, "n": len(pool)},
-        "apuestas": {
-            "actual": summary(cur_bets),
-            "historia": summary(bets),
-            "temporadas_con_lineas": odds_seasons,
-            "nota": "Unidad plana (1u por jugada) contra la línea de cierre de DraftKings/consenso vía ESPN.",
+        "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "season": season,
+        "selected": chosen,
+        "selected_label": models[chosen].label,
+        "tuned_on": params.get("tuned_on"),
+        "history_seasons": history_years,
+        "comparison": comparison,
+        "market": market,
+        "weeks": weekly,
+        "calibration": {"current": cal_cur, "history": cal_hist, "mean_error": cal_error},
+        "sigma": {"margin": sigma_m, "total": sigma_t, "n": len(pool)},
+        "bets": {
+            "current": summary(cur_bets),
+            "history": summary(bets),
+            "seasons_with_lines": odds_seasons,
+            "note": "Flat one-unit bets against the DraftKings/consensus closing line from ESPN.",
         },
-        "reglas": rules.as_dict(),
-        "referencia_prototipo": PROTOTYPE_REFERENCE,
+        "rules": rules.as_dict(),
+        "prototype_reference": PROTOTYPE_REFERENCE,
     }
     context = {
         "model": models[chosen],
@@ -302,11 +290,11 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
         "evidence": summary(bets),
         "odds_seasons": odds_seasons,
     }
-    log(f"Modelo: {models[chosen].label} · sigma margen {sigma_m:.1f} · sigma total {sigma_t:.1f}")
+    log(f"Model: {models[chosen].label} · margin sigma {sigma_m:.1f} · total sigma {sigma_t:.1f}")
     return backtest, context
 
 
-# ------------------------------------------------------------------ picks.json
+# ----------------------------------------------------------------- picks.json
 def build_picks(
     games: pd.DataFrame,
     teams: pd.DataFrame,
@@ -322,7 +310,7 @@ def build_picks(
     sa = seasons[season]
     warnings: list[str] = []
 
-    # Estado del modelo con TODO lo jugado hasta hoy (incluye juegos entre semana de esta misma semana).
+    # Model state with EVERYTHING played so far (including this week's midweek games).
     prior = _season_prior(model, seasons, season)
     train = sa.completed.copy()
     state = model.fit(sa, train, prior, now_week=week)
@@ -334,10 +322,9 @@ def build_picks(
         order = np.argsort(-rating[: sa.n - 1])
         rank_of = {int(i): pos + 1 for pos, i in enumerate(order)}
 
-    # Odds de ESPN en vivo para la semana.
-    n_regular = int(
-        games.loc[(games["season"] == season) & (games["season_type"] == 2), "week"].max()
-    )
+    # Live ESPN odds for the week.
+    regular = games[(games["season"] == season) & (games["season_type"] == 2)]
+    n_regular = int(regular["week"].max())
     espn_odds: dict[str, dict] = {}
     live_status: dict[str, str] = {}
     try:
@@ -359,13 +346,10 @@ def build_picks(
                 if odds:
                     espn_odds[row["game_id"]] = odds
     except EspnError as exc:
-        warnings.append(
-            f"ESPN no devolvió las odds de la semana ({exc}); se usan solo las líneas manuales"
-        )
+        warnings.append(f"ESPN did not return this week's odds ({exc}); using manual lines only")
 
-    week_games = games[(games["season"] == season) & (games["week_index"] == week)].sort_values(
-        ["date", "game_id"]
-    )
+    week_games = games[(games["season"] == season) & (games["week_index"] == week)]
+    week_games = week_games.sort_values(["date", "game_id"])
     manual_rows = load_manual_odds(season=season, week=week)
     manual_by_game, manual_warnings = match_manual(manual_rows, week_games, teams)
     warnings.extend(manual_warnings)
@@ -374,12 +358,11 @@ def build_picks(
     notes_by_game: dict[str, dict] = {}
     pair_to_game = {(g.away_id, g.home_id): g.game_id for g in week_games.itertuples()}
     for note in load_notes(season, week):
-        gid = pair_to_game.get(
-            (lookup.get(normalize_team(note["away"])), lookup.get(normalize_team(note["home"])))
-        )
+        pair = (lookup.get(normalize_team(note["away"])), lookup.get(normalize_team(note["home"])))
+        gid = pair_to_game.get(pair)
         if gid is None:
             warnings.append(
-                f"notas.csv: no encuentro {note['away']} @ {note['home']} en la semana {week}"
+                f"notes.csv: could not find {note['away']} @ {note['home']} in week {week}"
             )
         else:
             notes_by_game[gid] = note
@@ -392,7 +375,7 @@ def build_picks(
         is_fbs = idx != sa.fcs_index
         return {
             "id": tid,
-            "nombre": name,
+            "name": name,
             "abbr": abbr,
             "color": info.get("color") or "",
             "alt_color": info.get("alt_color") or "",
@@ -401,49 +384,38 @@ def build_picks(
             "fbs": is_fbs,
             "rating": float(rating[idx]) if rating is not None and is_fbs else None,
             "rating_rank": rank_of.get(idx) if is_fbs else None,
-            "juegos": int(state.games[idx]) if is_fbs else None,
+            "games": int(state.games[idx]) if is_fbs else None,
         }
 
-    juegos = []
+    out_games = []
     for g in week_games.itertuples():
         status = live_status.get(g.game_id, g.status)
         if status == "final":
-            continue  # ya jugado: aparecerá en el track record
+            continue  # already played: it will show up in the track record
         h, a = sa.idx(g.home_id), sa.idx(g.away_id)
         manual = manual_by_game.get(g.game_id)
         espn = espn_odds.get(g.game_id)
         note = notes_by_game.get(g.game_id, {})
         base = {
             "id": g.game_id,
-            "fecha": g.date.isoformat().replace("+00:00", "Z"),
-            "estado": status,
+            "date": g.date.isoformat().replace("+00:00", "Z"),
+            "status": status,
             "neutral": bool(g.neutral_site),
-            "en_mi_lista": manual is not None,
-            "visita": team_block(g.away_id, g.away_team, g.away_abbr, g.away_rank, a),
-            "local": team_block(g.home_id, g.home_team, g.home_abbr, g.home_rank, h),
-            "notas": note.get("notas", ""),
+            "on_my_list": manual is not None,
+            "away": team_block(g.away_id, g.away_team, g.away_abbr, g.away_rank, a),
+            "home": team_block(g.home_id, g.home_team, g.home_abbr, g.home_rank, h),
+            "notes": note.get("notes", ""),
         }
-        if status not in ("scheduled",):
-            juegos.append(
-                {
-                    **base,
-                    "sin_datos": True,
-                    "motivo_sin_datos": {
-                        "in_progress": "ya empezó",
-                        "postponed": "pospuesto",
-                        "canceled": "cancelado",
-                    }.get(status, "sin datos del API"),
-                }
-            )
+        if status != "scheduled":
+            reason = NO_DATA_REASONS.get(status, "no data from the API")
+            out_games.append({**base, "no_data": True, "no_data_reason": reason})
             continue
 
-        margin, total = model.predict(state, [h], [a], [bool(g.neutral_site)])
+        neutral = bool(g.neutral_site)
+        margin, total = model.predict(state, [h], [a], [neutral])
         alt_state = model.fit(sa, drop_last_games(sa, train, (h, a)), prior, now_week=week)
-        margin_alt, total_alt = model.predict(alt_state, [h], [a], [bool(g.neutral_site)])
-        adj_m, adj_t = (
-            float(note.get("ajuste_margen_local", 0.0)),
-            float(note.get("ajuste_total", 0.0)),
-        )
+        margin_alt, total_alt = model.predict(alt_state, [h], [a], [neutral])
+        adj_m, adj_t = float(note.get("home_margin_adj", 0.0)), float(note.get("total_adj", 0.0))
         margin_f, margin_alt_f = float(margin[0]) + adj_m, float(margin_alt[0]) + adj_m
         has_total = not math.isnan(float(total[0]))
         total_f = float(total[0]) + adj_t if has_total else None
@@ -464,34 +436,39 @@ def build_picks(
         )
         alerts: list[str] = []
         if fcs_game:
-            alerts.append("rival FCS: el modelo usa el promedio de FCS, proyección poco fiable")
-            for tipo in ("ml", "spread", "total"):
-                for side in ev[tipo].values():
-                    if isinstance(side, dict) and side.get("etiqueta") == "JUGADA":
+            fcs_note = "FCS opponent: the model uses an FCS average, so this projection is rough"
+            alerts.append(fcs_note)
+            for market in ("ml", "spread", "total"):
+                for side in ev[market].values():
+                    if isinstance(side, dict) and side.get("label") == PLAY:
                         side.update(
                             {
-                                "etiqueta": "EVITAR",
+                                "label": AVOID,
                                 "stake": 0.0,
                                 "kelly": 0.0,
-                                "motivos": ["rival FCS: proyección poco fiable", *side["motivos"]],
+                                "reasons": [fcs_note, *side["reasons"]],
                             }
                         )
-        if abs(margin_f - margin_alt_f) >= 4.0:
+        swing = abs(margin_f - margin_alt_f)
+        if swing >= 4.0:
             alerts.append(
-                f"modelo inestable: la proyección cambia {abs(margin_f - margin_alt_f):.1f} pts al quitar los últimos 2 partidos de cada equipo"
+                f"unstable model: the projection moves {swing:.1f} pts"
+                " without each team's last 2 games"
             )
-        if ev["mov_spread"] is not None and abs(ev["mov_spread"]) >= rules.move_spread:
-            toward = g.home_team if ev["mov_spread"] > 0 else g.away_team
+        if ev["spread_move"] is not None and abs(ev["spread_move"]) >= rules.move_spread:
+            toward = g.home_team if ev["spread_move"] > 0 else g.away_team
             alerts.append(
-                f"la línea se movió {abs(ev['mov_spread']):.1f} pts hacia {toward} desde la apertura"
+                f"the line moved {abs(ev['spread_move']):.1f} pts toward {toward} since it opened"
             )
-        if ev["mov_total"] is not None and abs(ev["mov_total"]) >= rules.move_total:
+        if ev["total_move"] is not None and abs(ev["total_move"]) >= rules.move_total:
+            verb = "rose" if ev["total_move"] > 0 else "dropped"
             alerts.append(
-                f"el total {'subió' if ev['mov_total'] > 0 else 'bajó'} {abs(ev['mov_total']):.1f} pts desde la apertura (¿clima, lesiones?)"
+                f"the total {verb} {abs(ev['total_move']):.1f} pts since it opened"
+                " (weather or injuries?)"
             )
-        if ev["desacuerdo_margen"] is not None and abs(ev["desacuerdo_margen"]) >= rules.gap_margin:
+        if ev["margin_gap"] is not None and abs(ev["margin_gap"]) >= rules.gap_margin:
             alerts.append(
-                f"el modelo difiere {abs(ev['desacuerdo_margen']):.1f} pts del spread del mercado"
+                f"the model is {abs(ev['margin_gap']):.1f} pts away from the market spread"
             )
 
         home_pts, away_pts = _scoreline(margin_f, total_f)
@@ -499,109 +476,108 @@ def build_picks(
         espn_ref = None
         if espn:
             espn_ref = {
-                "proveedor": espn.get("provider"),
-                "spread_local": espn.get("spread_home"),
+                "provider": espn.get("provider"),
+                "spread_home": espn.get("spread_home"),
                 "total": espn.get("total"),
-                "ml_local": espn.get("ml_home"),
-                "ml_visita": espn.get("ml_away"),
-                "spread_apertura": espn.get("spread_home_open"),
-                "total_apertura": espn.get("total_open"),
+                "ml_home": espn.get("ml_home"),
+                "ml_away": espn.get("ml_away"),
+                "spread_open": espn.get("spread_home_open"),
+                "total_open": espn.get("total_open"),
             }
-        juegos.append(
+        out_games.append(
             {
                 **base,
-                "sin_datos": False,
+                "no_data": False,
                 "fcs": fcs_game,
-                "proyeccion": {
-                    "local": home_pts,
-                    "visita": away_pts,
-                    "margen": margin_f,
+                "projection": {
+                    "home": home_pts,
+                    "away": away_pts,
+                    "margin": margin_f,
                     "total": total_f,
-                    "p_local": p_home,
-                    "p_visita": 1 - p_home,
-                    "ganador": "local" if margin_f >= 0 else "visita",
-                    "momio_justo_local": prob_to_american(p_home),
-                    "momio_justo_visita": prob_to_american(1 - p_home),
-                    "margen_sin_ultimos2": margin_alt_f,
-                    "total_sin_ultimos2": total_alt_f,
-                    "ajuste_margen_local": adj_m,
-                    "ajuste_total": adj_t,
+                    "p_home": p_home,
+                    "p_away": 1 - p_home,
+                    "winner": "home" if margin_f >= 0 else "away",
+                    "fair_ml_home": prob_to_american(p_home),
+                    "fair_ml_away": prob_to_american(1 - p_home),
+                    "margin_without_last2": margin_alt_f,
+                    "total_without_last2": total_alt_f,
+                    "home_margin_adj": adj_m,
+                    "total_adj": adj_t,
                 },
-                "mercado": {
-                    "margen": ev["margen_mercado"],
-                    "desacuerdo_margen": ev["desacuerdo_margen"],
-                    "desacuerdo_total": ev["desacuerdo_total"],
-                    "mov_spread": ev["mov_spread"],
-                    "mov_total": ev["mov_total"],
+                "market": {
+                    "margin": ev["market_margin"],
+                    "margin_gap": ev["margin_gap"],
+                    "total_gap": ev["total_gap"],
+                    "spread_move": ev["spread_move"],
+                    "total_move": ev["total_move"],
                     "espn": espn_ref,
                 },
-                "ml": {**ev["ml"], "sin_vig": markets["ml"]["sin_vig"]},
+                "ml": {**ev["ml"], "devig": markets["ml"]["devig"]},
                 "spread": {
                     **ev["spread"],
-                    "linea_local": markets["spread"]["linea_local"],
-                    "fuente_linea": markets["spread"]["fuente_linea"],
-                    "sin_vig": markets["spread"]["sin_vig"],
+                    "home_line": markets["spread"]["home_line"],
+                    "line_source": markets["spread"]["line_source"],
+                    "devig": markets["spread"]["devig"],
                 },
                 "total": {
                     **ev["total"],
-                    "linea": markets["total"]["linea"],
-                    "fuente_linea": markets["total"]["fuente_linea"],
-                    "sin_vig": markets["total"]["sin_vig"],
+                    "line": markets["total"]["line"],
+                    "line_source": markets["total"]["line_source"],
+                    "devig": markets["total"]["devig"],
                 },
-                "comparacion": compare_sources(manual, espn),
-                "alertas": alerts,
+                "price_notes": compare_sources(manual, espn, home=g.home_team, away=g.away_team),
+                "alerts": alerts,
             }
         )
 
     parlays = []
     for name, legs in load_parlays(season, week).items():
-        parlay, parlay_warnings = evaluate_parlay(name, legs, juegos, lookup)
+        parlay, parlay_warnings = evaluate_parlay(name, legs, out_games, lookup)
         warnings.extend(parlay_warnings)
         parlays.append(parlay)
 
     met = context["metrics"]
     return {
-        "generado": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "temporada": season,
-        "semana": week,
-        "semana_label": f"Semana {week}" if week <= n_regular else "Postemporada",
-        "modelo": {
-            "nombre": model.name,
+        "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "season": season,
+        "week": week,
+        "week_label": f"Week {week}" if week <= n_regular else "Postseason",
+        "model": {
+            "name": model.name,
             "label": model.label,
-            "sigma_margen": sigma_m,
+            "sigma_margin": sigma_m,
             "sigma_total": sigma_t,
-            "acierto": met.get("acierto"),
-            "acierto_14": met.get("acierto_14"),
-            "mae_margen": met.get("mae_margen"),
+            "accuracy": met.get("accuracy"),
+            "accuracy_14": met.get("accuracy_14"),
+            "mae_margin": met.get("mae_margin"),
             "mae_total": met.get("mae_total"),
             "n_backtest": met.get("n"),
-            "error_calibracion": context["cal_error"],
-            "juegos_entrenamiento": int(train.sum()),
+            "calibration_error": context["cal_error"],
+            "training_games": int(train.sum()),
         },
-        "reglas": rules.as_dict(),
-        "evidencia": {"temporadas": context["odds_seasons"], **context["evidence"]},
-        "avisos": warnings,
-        "juegos": juegos,
+        "rules": rules.as_dict(),
+        "evidence": {"seasons": context["odds_seasons"], **context["evidence"]},
+        "warnings": warnings,
+        "games": out_games,
         "parlays": parlays,
     }
 
 
 def _season_prior(model, seasons: dict, season: int) -> dict:
-    """Recorre las temporadas anteriores para dejar el prior de la actual."""
+    """Run through the earlier seasons to leave the prior for the current one."""
     prev_state = prev_sa = None
     for year in sorted(y for y in seasons if y < season):
         sa = seasons[year]
         prior = model.prior(prev_state, prev_sa, sa)
         if sa.completed.any():
-            prev_state = model.fit(
-                sa, np.ones(len(sa.week), dtype=bool), prior, now_week=int(sa.week.max()) + 1
-            )
+            everything = np.ones(len(sa.week), dtype=bool)
+            prev_state = model.fit(sa, everything, prior, now_week=int(sa.week.max()) + 1)
             prev_sa = sa
     return model.prior(prev_state, prev_sa, seasons[season])
 
 
 def _scoreline(margin: float, total: float | None) -> tuple[float | None, float | None]:
-    """Marcador proyectado a partir de margen y total, sin dejar a nadie por debajo de un piso."""
+    """Projected score from margin and total, never leaving a team below a floor."""
     if total is None:
         return None, None
     home, away = (total + margin) / 2.0, (total - margin) / 2.0
@@ -613,86 +589,76 @@ def _scoreline(margin: float, total: float | None) -> tuple[float | None, float 
 
 
 def evaluate_parlay(
-    name: str, legs: list[str], juegos: list[dict], lookup: dict[str, str]
+    name: str, legs: list[str], games: list[dict], lookup: dict[str, str]
 ) -> tuple[dict, list[str]]:
-    """Parlay de moneylines: probabilidad del modelo, del mercado sin vig y lo que paga la casa."""
+    """A moneyline parlay: model probability, no-vig market probability and what the book pays."""
     warnings: list[str] = []
     by_team: dict[str, tuple[dict, str]] = {}
-    for game in juegos:
-        if game.get("sin_datos"):
+    for game in games:
+        if game.get("no_data"):
             continue
-        by_team[game["local"]["id"]] = (game, "local")
-        by_team[game["visita"]["id"]] = (game, "visita")
-    piernas = []
+        by_team[game["home"]["id"]] = (game, "home")
+        by_team[game["away"]["id"]] = (game, "away")
+    out_legs = []
     for team in legs:
         tid = lookup.get(normalize_team(team))
         if tid is None or tid not in by_team:
-            warnings.append(
-                f"parlay '{name}': no encuentro un juego pendiente de '{team}' esta semana"
-            )
-            piernas.append({"equipo": team, "sin_datos": True})
+            warnings.append(f"parlay '{name}': no pending game found for '{team}' this week")
+            out_legs.append({"team": team, "no_data": True})
             continue
-        game, lado = by_team[tid]
-        side = game["ml"][lado]
-        rival = game["visita" if lado == "local" else "local"]["nombre"]
-        piernas.append(
+        game, side_key = by_team[tid]
+        side = game["ml"][side_key]
+        out_legs.append(
             {
-                "equipo": game[lado]["nombre"],
-                "juego_id": game["id"],
-                "lado": lado,
-                "rival": rival,
-                "sede": "local" if lado == "local" else "visita",
-                "p_modelo": side["p_modelo"],
-                "p_mercado": side["p_mercado"],
-                "momio": side["momio"],
-                "fuente": side["fuente"],
+                "team": game[side_key]["name"],
+                "abbr": game[side_key]["abbr"],
+                "game_id": game["id"],
+                "side": side_key,
+                "opponent": game["away" if side_key == "home" else "home"]["name"],
+                "venue": side_key,
+                "p_model": side["p_model"],
+                "p_market": side["p_market"],
+                "odds": side["odds"],
+                "source": side["source"],
                 "edge": side["edge"],
-                "etiqueta": side["etiqueta"],
-                "sin_datos": False,
+                "label": side["label"],
+                "no_data": False,
             }
         )
-    ok = [p for p in piernas if not p.get("sin_datos")]
-    complete = len(ok) == len(piernas) and len(ok) > 0
-    out = {"nombre": name, "piernas": piernas, "completo": complete}
+    ok = [leg for leg in out_legs if not leg.get("no_data")]
+    out = {"name": name, "legs": out_legs, "complete": bool(ok) and len(ok) == len(out_legs)}
     if not ok:
         return out, warnings
-    p_model = float(np.prod([p["p_modelo"] for p in ok]))
-    out["p_modelo"] = p_model
-    if all(p["p_mercado"] is not None for p in ok):
-        out["p_mercado"] = float(np.prod([p["p_mercado"] for p in ok]))
-    if all(p["momio"] is not None for p in ok):
-        decimal = float(np.prod([american_to_decimal(p["momio"]) for p in ok]))
+    p_model = float(np.prod([leg["p_model"] for leg in ok]))
+    out["p_model"] = p_model
+    if all(leg["p_market"] is not None for leg in ok):
+        out["p_market"] = float(np.prod([leg["p_market"] for leg in ok]))
+    if all(leg["odds"] is not None for leg in ok):
+        decimal = float(np.prod([american_to_decimal(leg["odds"]) for leg in ok]))
         out.update(
             {
                 "decimal": decimal,
-                "prob_casa": 1.0 / decimal,
-                "ev_modelo": p_model * decimal - 1.0,
-                "ev_mercado": out["p_mercado"] * decimal - 1.0 if "p_mercado" in out else None,
+                "implied_prob": 1.0 / decimal,
+                "ev_model": p_model * decimal - 1.0,
+                "ev_market": out["p_market"] * decimal - 1.0 if "p_market" in out else None,
             }
         )
-    weakest = min(ok, key=lambda p: p["p_modelo"])
-    out["mas_debil"] = weakest["equipo"]
-    with_edge = [p for p in ok if p["edge"] is not None]
+    out["weakest"] = min(ok, key=lambda leg: leg["p_model"])["team"]
+    with_edge = [leg for leg in ok if leg["edge"] is not None]
     if with_edge:
-        out["peor_valor"] = min(with_edge, key=lambda p: p["edge"])["equipo"]
+        out["worst_value"] = min(with_edge, key=lambda leg: leg["edge"])["team"]
     return out, warnings
 
 
 # ------------------------------------------------------------------------ CLI
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Genera los picks de la semana y exporta los JSON del sitio"
-    )
-    parser.add_argument(
-        "--week", type=int, default=None, help="semana (por defecto, la que está en curso)"
-    )
+    parser = argparse.ArgumentParser(description="Generate this week's picks and the site's JSON")
+    parser.add_argument("--week", type=int, default=None, help="week (default: the current one)")
     parser.add_argument("--season", type=int, default=config.current_season())
     parser.add_argument(
-        "--skip-build",
-        action="store_true",
-        help="no volver a descargar juegos ni líneas históricas",
+        "--skip-build", action="store_true", help="do not download games or closing lines again"
     )
-    parser.add_argument("--offline", action="store_true", help="usar solo la caché")
+    parser.add_argument("--offline", action="store_true", help="use the cache only")
     args = parser.parse_args(argv)
 
     rules = Rules()
@@ -710,81 +676,70 @@ def main(argv: list[str] | None = None) -> int:
         backtest, context = build_backtest(games, args.season, rules)
         picks = build_picks(games, teams, args.season, week, context, rules, client)
     except EspnError as exc:
-        print(f"ERROR: el API de ESPN falló y no se inventan datos: {exc}", file=sys.stderr)
+        print(f"ERROR: the ESPN API failed and no data is made up: {exc}", file=sys.stderr)
         return 1
 
     config.SITE_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    (config.SITE_DATA_DIR / "picks.json").write_text(
-        json.dumps(_clean(picks), ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
-    )
-    (config.SITE_DATA_DIR / "backtest.json").write_text(
-        json.dumps(_clean(backtest), ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
-    )
+    for name, payload in (("picks.json", picks), ("backtest.json", backtest)):
+        text = json.dumps(_clean(payload), ensure_ascii=False, indent=1) + "\n"
+        (config.SITE_DATA_DIR / name).write_text(text, encoding="utf-8")
 
     print_summary(picks)
     return 0
 
 
+def _side_name(game: dict, market: str, key: str) -> str:
+    if market == "total":
+        return f"{'Over' if key == 'over' else 'Under'} {game['total']['line']:g}"
+    team = game[key]["name"]
+    if market == "ml":
+        return team
+    home_line = game["spread"]["home_line"]
+    return f"{team} {(home_line if key == 'home' else -home_line):+g}"
+
+
 def print_summary(picks: dict) -> None:
-    juegos = [g for g in picks["juegos"] if not g.get("sin_datos")]
+    games = [g for g in picks["games"] if not g.get("no_data")]
     print(
-        f"\n{picks['semana_label']} {picks['temporada']}: {len(juegos)} juegos con proyección, "
-        f"{sum(g['en_mi_lista'] for g in juegos)} con tus líneas"
+        f"\n{picks['week_label']} {picks['season']}: {len(games)} games with a projection,"
+        f" {sum(g['on_my_list'] for g in games)} with your lines"
     )
-    plays = []
-    for g in juegos:
-        for tipo, keys in (
-            ("ml", ("local", "visita")),
-            ("spread", ("local", "visita")),
+    found = []
+    for g in games:
+        for market, keys in (
+            ("ml", ("home", "away")),
+            ("spread", ("home", "away")),
             ("total", ("over", "under")),
         ):
             for key in keys:
-                side = g[tipo].get(key)
-                if side and side["etiqueta"] in ("JUGADA", "EVITAR"):
-                    plays.append((side["etiqueta"], side["edge"], tipo, key, g))
-    for label in ("JUGADA", "EVITAR"):
-        rows = sorted((p for p in plays if p[0] == label), key=lambda p: -p[1])
+                side = g[market].get(key)
+                if side and side["label"] in (PLAY, AVOID):
+                    found.append((side["label"], side["edge"], market, key, g))
+    for label in (PLAY, AVOID):
+        rows = sorted((f for f in found if f[0] == label), key=lambda f: -f[1])
         print(f"\n{label} ({len(rows)}):")
-        for _, edge, tipo, key, g in rows[:25]:
-            side = g[tipo][key]
-            name = {
-                "local": g["local"]["nombre"],
-                "visita": g["visita"]["nombre"],
-                "over": "Over",
-                "under": "Under",
-            }[key]
-            line = ""
-            if tipo == "spread":
-                home_line = g["spread"]["linea_local"]
-                line = f" {(home_line if key == 'local' else -home_line):+g}"
-            elif tipo == "total":
-                line = f" {g['total']['linea']:g}"
+        for _, edge, market, key, g in rows[:25]:
+            side = g[market][key]
+            why = f" · {side['reasons'][0]}" if side["reasons"] else ""
             print(
-                f"  {tipo:6s} {name}{line} ({side['momio']:+d}) · modelo {side['p_modelo']:.0%} vs mercado {side['p_mercado']:.0%} "
-                f"· edge {edge:+.1%} · {g['visita']['abbr']} @ {g['local']['abbr']}"
-                + (f" · {side['motivos'][0]}" if side["motivos"] else "")
+                f"  {market:6s} {_side_name(g, market, key)} ({side['odds']:+d})"
+                f" · model {side['p_model']:.0%} vs market {side['p_market']:.0%}"
+                f" · edge {edge:+.1%} · {g['away']['abbr']} @ {g['home']['abbr']}{why}"
             )
     for parlay in picks["parlays"]:
-        if "p_modelo" in parlay:
-            print(
-                f"\nParlay '{parlay['nombre']}': modelo {parlay['p_modelo']:.1%}"
-                + (
-                    f" · mercado sin vig {parlay['p_mercado']:.1%}"
-                    if parlay.get("p_mercado")
-                    else ""
-                )
-                + (
-                    f" · la casa paga como {parlay['prob_casa']:.1%}"
-                    if parlay.get("prob_casa")
-                    else ""
-                )
-                + f" · pierna más débil: {parlay['mas_debil']}"
-            )
-    for warning in picks["avisos"]:
-        print(f"AVISO: {warning}")
-    print(
-        f"\nExportado: {(config.SITE_DATA_DIR / 'picks.json').relative_to(config.ROOT)} y backtest.json"
-    )
+        if "p_model" not in parlay:
+            continue
+        parts = [f"model {parlay['p_model']:.1%}"]
+        if parlay.get("p_market"):
+            parts.append(f"no-vig market {parlay['p_market']:.1%}")
+        if parlay.get("implied_prob"):
+            parts.append(f"the book pays as if {parlay['implied_prob']:.1%}")
+        parts.append(f"weakest leg: {parlay['weakest']}")
+        print(f"\nParlay '{parlay['name']}': " + " · ".join(parts))
+    for warning in picks["warnings"]:
+        print(f"WARNING: {warning}")
+    out_dir = config.SITE_DATA_DIR.relative_to(config.ROOT)
+    print(f"\nExported: {out_dir}/picks.json and {out_dir}/backtest.json")
 
 
 if __name__ == "__main__":

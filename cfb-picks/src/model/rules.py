@@ -1,12 +1,12 @@
-"""Reglas de decisión: de una proyección y unas líneas a JUGADA / PASAR / EVITAR.
+"""Decision rules: from a projection and a set of lines to PLAY / PASS / AVOID.
 
-La misma función se usa para los picks de la semana y para el backtest de
-apuestas, así el track record mide exactamente la regla que ves en el sitio.
+The same function labels this week's picks and the betting backtest, so the
+track record measures exactly the rule shown on the site.
 
-JUGADA  = edge >= 5%, valor esperado positivo al momio real, y sin alertas.
-EVITAR  = hay edge en papel, pero el pick es inestable o el mercado está diciendo
-          algo que el modelo no sabe (lesiones, clima, noticias).
-PASAR   = no hay edge suficiente.
+PLAY   = edge of at least 5%, positive expected value at the real price, no red flags.
+AVOID  = there is an edge on paper, but the pick is unstable or the market is
+         telling us something the model cannot know (injuries, weather, news).
+PASS   = not enough edge.
 """
 
 from __future__ import annotations
@@ -15,26 +15,28 @@ from dataclasses import asdict, dataclass
 
 from .prob import expected_value, kelly_fraction, norm_cdf
 
+PLAY, AVOID, PASS, NO_LINE = "PLAY", "AVOID", "PASS", "NO LINE"
+
 
 @dataclass(frozen=True)
 class Rules:
-    edge_min: float = 0.05  # edge mínimo (probabilidad del modelo - mercado sin vig)
-    kelly_fraction: float = 0.25  # 1/4 de Kelly
-    stake_cap: float = 0.02  # tope: 2% del bankroll por jugada
+    edge_min: float = 0.05  # minimum edge (model probability minus no-vig market probability)
+    kelly_fraction: float = 0.25  # quarter Kelly
+    stake_cap: float = 0.02  # never more than 2% of bankroll on one play
     gap_margin: float = (
-        5.0  # pts de diferencia modelo vs spread del mercado -> EVITAR (ML y spread)
+        5.0  # points between model and market spread that trigger AVOID (ML, spread)
     )
-    gap_total: float = 7.0  # pts de diferencia modelo vs total del mercado -> EVITAR
-    move_spread: float = 3.0  # movimiento de la línea (apertura -> ahora) en contra del pick
+    gap_total: float = 7.0  # same, for totals
+    move_spread: float = 3.0  # line move (open -> now) against the pick that triggers AVOID
     move_total: float = 4.0
-    min_games: int = 3  # juegos mínimos de cada equipo para confiar en su rating
+    min_games: int = 3  # games each team needs before its rating is trusted
 
     def as_dict(self) -> dict:
         return asdict(self)
 
 
 def norm_ppf(p: float) -> float:
-    """Inversa de la normal estándar por bisección (suficiente para convertir prob -> puntos)."""
+    """Inverse standard normal by bisection (plenty for turning a probability into points)."""
     p = min(max(p, 1e-9), 1 - 1e-9)
     lo, hi = -8.0, 8.0
     for _ in range(60):
@@ -54,56 +56,56 @@ def _side(
     rules: Rules,
     alerts: list[str],
 ) -> dict:
-    """Evalúa un lado de un mercado."""
+    """Evaluate one side of a market."""
     out = {
-        "p_modelo": p_model,
-        "p_mercado": p_market,
+        "p_model": p_model,
+        "p_market": p_market,
         "edge": None,
-        "momio": quote["momio"] if quote else None,
-        "fuente": quote["fuente"] if quote else None,
+        "odds": quote["odds"] if quote else None,
+        "source": quote["source"] if quote else None,
         "ev": None,
-        "estable": None,
+        "stable": None,
         "kelly": 0.0,
         "stake": 0.0,
-        "etiqueta": "SIN LÍNEA",
-        "motivos": [],
+        "label": NO_LINE,
+        "reasons": [],
     }
     if p_market is None or quote is None:
         return out
     edge = p_model - p_market
-    ev = expected_value(p_model, quote["momio"])
+    ev = expected_value(p_model, quote["odds"])
     out["edge"], out["ev"] = edge, ev
     if p_alt is not None:
-        out["estable"] = bool(p_alt - p_market > 0) if edge > 0 else None
+        out["stable"] = bool(p_alt - p_market > 0) if edge > 0 else None
     if edge < rules.edge_min or ev <= 0:
-        out["etiqueta"] = "PASAR"
+        out["label"] = PASS
         return out
-    motivos = list(alerts)
-    if out["estable"] is False:
-        motivos.insert(0, "inestable: el pick cambia de lado al quitar los últimos 2 partidos")
-    if quote["fuente"] == "asumido":
-        motivos.append("precio asumido (-110): confirma el momio real")
-    blocking = [m for m in motivos if not m.startswith("precio asumido")]
-    out["motivos"] = motivos
+    reasons = list(alerts)
+    if out["stable"] is False:
+        reasons.insert(0, "unstable: the pick flips without each team's last 2 games")
+    if quote["source"] == "assumed":
+        reasons.append("assumed price (-110): confirm the real odds")
+    blocking = [r for r in reasons if not r.startswith("assumed price")]
+    out["reasons"] = reasons
     if blocking:
-        out["etiqueta"] = "EVITAR"
+        out["label"] = AVOID
         return out
-    out["etiqueta"] = "JUGADA"
-    out["kelly"] = kelly_fraction(p_model, quote["momio"])
+    out["label"] = PLAY
+    out["kelly"] = kelly_fraction(p_model, quote["odds"])
     out["stake"] = min(rules.kelly_fraction * out["kelly"], rules.stake_cap)
     return out
 
 
 def market_margin(markets: dict, sigma_m: float) -> float | None:
-    """Margen del local según el mercado: spread de ESPN, o el spread que se apuesta,
-    o (si solo hay moneyline) la probabilidad sin vig convertida a puntos."""
+    """Home margin according to the market: ESPN's spread, else the spread being bet,
+    else (moneyline only) the no-vig probability converted to points."""
     espn = markets.get("espn") or {}
     if espn.get("spread_home") is not None:
         return -float(espn["spread_home"])
-    if markets["spread"]["linea_local"] is not None:
-        return -float(markets["spread"]["linea_local"])
-    if markets["ml"]["p_local"] is not None:
-        return sigma_m * norm_ppf(markets["ml"]["p_local"])
+    if markets["spread"]["home_line"] is not None:
+        return -float(markets["spread"]["home_line"])
+    if markets["ml"]["p_home"] is not None:
+        return sigma_m * norm_ppf(markets["ml"]["p_home"])
     return None
 
 
@@ -119,37 +121,36 @@ def evaluate_game(
     rules: Rules,
     min_games_played: int = 99,
 ) -> dict:
-    """Evalúa los seis lados apostables de un juego (ML, spread y total)."""
+    """Evaluate the six bettable sides of a game (moneyline, spread and total)."""
     espn = markets.get("espn") or {}
     mkt_margin = market_margin(markets, sigma_m)
-    gap = (
-        None if mkt_margin is None else margin - mkt_margin
-    )  # >0: el modelo ve mejor al local que el mercado
+    # gap > 0: the model likes the home team more than the market does
+    gap = None if mkt_margin is None else margin - mkt_margin
     few = min_games_played < rules.min_games
+    thin = f"thin data: a team has played fewer than {rules.min_games} games"
 
-    # Movimiento de la línea desde la apertura (solo lo publica ESPN).
-    move_spread = None
+    # Line movement since the open (only ESPN publishes the opening line).
+    spread_move = None
     if espn.get("spread_home") is not None and espn.get("spread_home_open") is not None:
-        move_spread = -(
-            float(espn["spread_home"]) - float(espn["spread_home_open"])
-        )  # >0: se movió hacia el local
-    move_total = None
+        # > 0: the line moved toward the home team
+        spread_move = -(float(espn["spread_home"]) - float(espn["spread_home_open"]))
+    total_move = None
     if espn.get("total") is not None and espn.get("total_open") is not None:
-        move_total = float(espn["total"]) - float(espn["total_open"])  # >0: subió
+        total_move = float(espn["total"]) - float(espn["total_open"])  # > 0: the total went up
 
     def side_alerts(toward_home: bool) -> list[str]:
         alerts = []
         if few:
-            alerts.append(f"pocos datos: algún equipo tiene menos de {rules.min_games} juegos")
+            alerts.append(thin)
         if gap is not None and abs(gap) >= rules.gap_margin and (gap > 0) == toward_home:
-            alerts.append(f"el mercado sabe algo: el modelo difiere {abs(gap):.1f} pts del spread")
+            alerts.append(f"the market disagrees: the model is {abs(gap):.1f} pts off the spread")
         if (
-            move_spread is not None
-            and abs(move_spread) >= rules.move_spread
-            and (move_spread > 0) != toward_home
+            spread_move is not None
+            and abs(spread_move) >= rules.move_spread
+            and (spread_move > 0) != toward_home
         ):
             alerts.append(
-                f"la línea se movió {abs(move_spread):.1f} pts en contra desde la apertura"
+                f"the line moved {abs(spread_move):.1f} pts against this side since it opened"
             )
         return alerts
 
@@ -157,30 +158,30 @@ def evaluate_game(
     p_home_alt = None if margin_alt is None else float(norm_cdf(margin_alt / sigma_m))
     ml = markets["ml"]
     out_ml = {
-        "local": _side(p_home, p_home_alt, ml["p_local"], ml["local"], rules, side_alerts(True)),
-        "visita": _side(
+        "home": _side(p_home, p_home_alt, ml["p_home"], ml["home"], rules, side_alerts(True)),
+        "away": _side(
             1 - p_home,
             None if p_home_alt is None else 1 - p_home_alt,
-            ml["p_visita"],
-            ml["visita"],
+            ml["p_away"],
+            ml["away"],
             rules,
             side_alerts(False),
         ),
     }
 
     sp = markets["spread"]
-    out_sp = {"local": None, "visita": None}
-    if sp["linea_local"] is not None:
-        line = float(sp["linea_local"])
+    out_sp = {"home": None, "away": None}
+    if sp["home_line"] is not None:
+        line = float(sp["home_line"])
         pc = float(norm_cdf((margin + line) / sigma_m))
         pc_alt = None if margin_alt is None else float(norm_cdf((margin_alt + line) / sigma_m))
         out_sp = {
-            "local": _side(pc, pc_alt, sp["p_local"], sp["local"], rules, side_alerts(True)),
-            "visita": _side(
+            "home": _side(pc, pc_alt, sp["p_home"], sp["home"], rules, side_alerts(True)),
+            "away": _side(
                 1 - pc,
                 None if pc_alt is None else 1 - pc_alt,
-                sp["p_visita"],
-                sp["visita"],
+                sp["p_away"],
+                sp["away"],
                 rules,
                 side_alerts(False),
             ),
@@ -189,26 +190,27 @@ def evaluate_game(
     tot = markets["total"]
     out_tot = {"over": None, "under": None}
     tgap = None
-    if tot["linea"] is not None and total is not None:
-        tline = float(tot["linea"])
+    if tot["line"] is not None and total is not None:
+        tline = float(tot["line"])
         ref_total = float(espn["total"]) if espn.get("total") is not None else tline
         tgap = total - ref_total
 
         def total_alerts(over: bool) -> list[str]:
             alerts = []
             if few:
-                alerts.append(f"pocos datos: algún equipo tiene menos de {rules.min_games} juegos")
+                alerts.append(thin)
             if abs(tgap) >= rules.gap_total and (tgap > 0) == over:
                 alerts.append(
-                    f"el mercado sabe algo: el modelo difiere {abs(tgap):.1f} pts del total"
+                    f"the market disagrees: the model is {abs(tgap):.1f} pts off the total"
                 )
             if (
-                move_total is not None
-                and abs(move_total) >= rules.move_total
-                and (move_total > 0) != over
+                total_move is not None
+                and abs(total_move) >= rules.move_total
+                and (total_move > 0) != over
             ):
                 alerts.append(
-                    f"el total se movió {abs(move_total):.1f} pts en contra desde la apertura (¿clima, lesiones?)"
+                    f"the total moved {abs(total_move):.1f} pts against this side since it opened"
+                    " (weather or injuries?)"
                 )
             return alerts
 
@@ -233,15 +235,15 @@ def evaluate_game(
         with_edge = [(k, s) for k, s in sides if s["edge"] is not None]
         if with_edge:
             return max(with_edge, key=lambda ks: ks[1]["edge"])[0]
-        return max(sides, key=lambda ks: ks[1]["p_modelo"])[0]
+        return max(sides, key=lambda ks: ks[1]["p_model"])[0]
 
     return {
-        "ml": {**out_ml, "pick": best(out_ml, ("local", "visita"))},
-        "spread": {**out_sp, "pick": best(out_sp, ("local", "visita"))},
+        "ml": {**out_ml, "pick": best(out_ml, ("home", "away"))},
+        "spread": {**out_sp, "pick": best(out_sp, ("home", "away"))},
         "total": {**out_tot, "pick": best(out_tot, ("over", "under"))},
-        "margen_mercado": mkt_margin,
-        "desacuerdo_margen": gap,
-        "desacuerdo_total": tgap,
-        "mov_spread": move_spread,
-        "mov_total": move_total,
+        "market_margin": mkt_margin,
+        "margin_gap": gap,
+        "total_gap": tgap,
+        "spread_move": spread_move,
+        "total_move": total_move,
     }
