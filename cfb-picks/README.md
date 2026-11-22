@@ -1,17 +1,12 @@
-# CFB Picks (and soccer)
+# CFB Picks
 
-A prediction system for two sports. It downloads every game from ESPN's public
-API, fits a ratings model, checks it with a walk-forward backtest, and
-publishes the picks as a static site.
+A weekly college football prediction system. It downloads every FBS game from
+ESPN's public API, fits a ratings model, checks it with a walk-forward
+backtest, and publishes the picks as a static site.
 
-- **College football**: every FBS game, week by week.
-- **Soccer**: the Premier League, LaLiga, Serie A, the Bundesliga and Ligue 1,
-  for the next 7 days. See [Soccer](#soccer).
+**Live site:** https://danielregaladoumiami.github.io/cronica-jax/
 
-**Live site:** https://danielregaladoumiami.github.io/cronica-jax/ (the switch
-at the top changes sport; `#soccer-picks` links straight to soccer).
-
-## College football: how good it is, and how good it is not
+## How good it is, and how good it is not
 
 Walk-forward backtest of the 2026 season: 635 FBS vs FBS games the model never
 saw while it was being tuned.
@@ -61,7 +56,7 @@ Other commands:
 | `python -m src.data.odds_history` | Only download closing lines for games already played |
 | `python -m src.compare` | Model comparison table (`--select` saves the lowest-error model) |
 | `python -m src.model.tune` | Re-tune hyperparameters on past seasons |
-| `python -m pytest` | Tests (both sports) |
+| `python -m pytest` | Tests |
 
 ## Updating odds by hand
 
@@ -134,113 +129,18 @@ site evaluates every week.
    - **PASS**: not enough edge.
    - Stake: quarter Kelly, capped at 2% of bankroll.
 6. **Site** (`site/`): plain HTML and JavaScript that read
-   `site/data/picks.json` and `site/data/backtest.json` (and their `soccer_`
-   twins). No backend.
-
-## Soccer
-
-The same idea for the five big European leagues: results from ESPN, a goals
-model, a walk-forward backtest, and three markets per match (the three-way
-result, the goals total and the handicap).
-
-```bash
-python -m src.soccer.picks              # download, backtest, picks for the next 7 days
-python -m src.soccer.picks --skip-build # reuse the data on disk
-python -m src.soccer.data --odds        # only download matches and closing odds
-python -m src.soccer.tune               # re-tune the models on past seasons
-```
-
-### How good it is, and how good it is not
-
-Walk-forward backtest of the 2026-27 season so far (503 matches the model never
-saw while it was being tuned). RPS is the error of the three percentages: 0 is
-perfect, lower is better.
-
-| Forecast | Called the result | RPS | Log loss |
-|---|---|---|---|
-| League averages for every match | 45.5% | 0.2323 | 1.0613 |
-| Baseline (this season's scoring averages) | 51.9% | 0.2067 | 0.9887 |
-| **Poisson ratings (in use)** | **56.5%** | **0.1997** | **0.9681** |
-| Elo with goal difference | 53.9% | 0.1975 | 0.9588 |
-| Market closing odds | 56.0% | 0.1933 | 0.9477 |
-
-- **The percentages are honest**: pooled over home wins, draws and away wins,
-  they were off by half a point on average in 2022-2025.
-- **The model does not beat the market.** One unit on every PLAY against the
-  closing odds, 2022-23 through 2026-27: 4,455 bets, 2,289-2,108, ROI
-  -4.8% ± 1.4%, roughly the bookmaker's cut. Picks flagged AVOID returned
-  -14.7% ± 2.1%, so the flags do find the worst bets. In 2026-27 alone, which
-  the flags were not fitted to: PLAY -5.8% ± 5.2%, AVOID -17.2% ± 6.0%.
-- Elo forecasts results slightly better. The Poisson model is used because it
-  is the only one that gives a chance for every scoreline, which totals and
-  handicaps need.
-
-### How it works
-
-1. **Data** (`src/soccer/data.py`): the monthly scoreboard of each league
-   (11 requests per league and season, cached once a month is over) and, for
-   matches already played, the closing odds from each match's summary (one
-   request per match, cached forever).
-2. **Model** (`src/soccer/model.py`): every team gets an attack and a defense
-   rating, fitted together per league on about three seasons of matches.
-   Recent matches count more (a match's weight halves every 12 months),
-   ratings are shrunk toward the league average, and a newly promoted team
-   starts below average. Expected goals become a probability for every
-   scoreline (Poisson with a low-score correction), and from that grid come
-   the result, the totals and the handicaps.
-3. **Backtest** (`src/soccer/backtest.py`, `simulate.py`): to predict a week
-   (Tuesday to Monday), only earlier matches are used. Settings were tuned on
-   2022-2025 by log loss (`tune.py`); 2026-27 is scored without touching them.
-4. **Rules** (`src/soccer/rules.py`):
-   - **PLAY**: edge of at least 5%, positive expected value, no red flags.
-   - **AVOID**: the edge is 12+ points (the market strongly disagrees), it is
-     a result bet on a side the market gives under 45%, the pick flips without
-     each team's last 2 matches, or a team has fewer than 6 league matches on
-     record. Each flag marked picks that lost far more than the vig in
-     2022-2025.
-   - Line movement since the open is shown on the card but is not a flag: in
-     the two seasons with opening prices it did not separate good picks from
-     bad ones.
-
-### Notes and manual adjustments
-
-`data/soccer_notes.csv` holds a note per match and, optionally, goals added to
-or taken from a team's expected goals (this example is made up):
-
-```csv
-home,away,home_goals_adj,away_goals_adj,notes
-Arsenal,Chelsea,-0.3,,Top scorer suspended
-```
-
-Write teams the way ESPN does (`Man City`, `Manchester City` and `MNC` all
-work). A row that matches no team is ignored and a warning shows up on the
-site.
-
-### Known limits
-
-- Only final scores: no shots, no expected-goals data, no injuries, no
-  suspensions, no rotation before a European night.
-- Odds come from ESPN (DraftKings or ESPN BET). There is no manual odds file
-  for soccer yet, so a match ESPN has no price for shows the model's number
-  only.
-- Quarter lines (2.25, -0.75) are not evaluated, and neither are alternate
-  lines priced far from even.
-- One season of archived goal lines (2023-24, the old DraftKings feed) is left
-  out of the betting record: those lines kept updating during the matches, so
-  they were not prices anyone could have bet before kickoff.
+   `site/data/picks.json` and `site/data/backtest.json`. No backend.
 
 ## Publishing
 
 The site is served by GitHub Pages from the `gh-pages` branch, which holds
 nothing but the contents of `site/`.
 
-The workflow `.github/workflows/cfb-picks.yml` reruns both pipelines every
-morning from August through May and replaces that branch with the new build.
-College football is generated from August to January and soccer from August to
-May; out of season a sport keeps the picks already committed. GitHub only runs
-schedules from the default branch, so the workflow has to be on `main` for the
-updates to happen. It can also be started by hand from **Actions → CFB Picks →
-Run workflow**.
+The workflow `.github/workflows/cfb-picks.yml` reruns the pipeline every
+Thursday and Saturday morning (August through January) and replaces that
+branch with the new build. GitHub only runs schedules from the default branch,
+so the workflow has to be on `main` for the weekly updates to happen. It can
+also be started by hand from **Actions → CFB Picks → Run workflow**.
 
 If the site ever stops being served, check **Settings → Pages** and make sure
 the source is *Deploy from a branch*, branch `gh-pages`, folder `/ (root)`.
@@ -248,7 +148,7 @@ GitHub pauses scheduled workflows after 60 days without repository activity;
 they can be re-enabled from the Actions tab. If ESPN's API fails, the workflow
 fails and the site keeps its previous version: no data is made up.
 
-## Known limits (college football)
+## Known limits
 
 - It only uses final scores. It does not see plays, yards, injuries or weather.
 - FCS opponents are treated as one average team.

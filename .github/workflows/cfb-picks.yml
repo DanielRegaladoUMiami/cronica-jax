@@ -1,17 +1,15 @@
 name: CFB Picks
 
-# Runs both pipelines (college football and soccer) and publishes the site to the
-# gh-pages branch, which GitHub Pages serves.
+# Runs the pipeline and publishes the site to the gh-pages branch, which GitHub Pages serves.
 # Scheduled runs only fire from the repository's default branch.
 on:
   schedule:
-    # Every day at 13:17 UTC (8:17 AM ET in winter, 9:17 AM in summer), August to May.
-    # Soccer is played most days of the week and its odds move until kickoff.
-    - cron: "17 13 * 8-12,1-5 *"
+    # Thursday and Saturday at 13:17 UTC (8:17 AM ET in winter, 9:17 AM in summer), August to January.
+    - cron: "17 13 * 8-12,1 4,6"
   workflow_dispatch:
     inputs:
       week:
-        description: "College football week to generate (empty = the current week)"
+        description: "Week to generate (empty = the current week)"
         required: false
         type: string
   push:
@@ -56,27 +54,14 @@ jobs:
       - name: Tests
         run: python -m pytest -q
 
-      # Out of season a sport keeps the picks already committed to the repository.
-      - name: Generate college football picks
+      - name: Generate picks and backtest
         env:
           WEEK: ${{ inputs.week }}
         run: |
-          month=$(date -u +%-m)
           if [ -n "$WEEK" ]; then
             python -m src.picks --week "$WEEK"
-          elif [ "$month" -ge 8 ] || [ "$month" -le 1 ]; then
+          else
             python -m src.picks
-          else
-            echo "College football is out of season: nothing to generate."
-          fi
-
-      - name: Generate soccer picks
-        run: |
-          month=$(date -u +%-m)
-          if [ "$month" -ge 8 ] || [ "$month" -le 5 ]; then
-            python -m src.soccer.picks
-          else
-            echo "The European leagues are out of season: nothing to generate."
           fi
 
       # The branch only ever holds the latest build, so each run replaces it.
