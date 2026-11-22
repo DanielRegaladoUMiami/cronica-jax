@@ -194,8 +194,10 @@ The site is served by GitHub Pages from the `gh-pages` branch, which holds
 nothing but the contents of `site/`.
 
 The workflow `.github/workflows/cfb-picks.yml` reruns both pipelines every
-Thursday, Saturday and Sunday morning from August through February and
-replaces that branch with the new build. College football is generated from
+Thursday, Saturday and Sunday from August through February and replaces that
+branch with the new build. It is scheduled twice on those days (1:17 and 8:17
+AM Eastern in winter) because GitHub can start a scheduled run hours late; the
+header of the site shows when the picks were last updated. College football is generated from
 August to January and the NFL from September to February; out of season a
 league keeps the picks already committed. GitHub only runs schedules from the
 default branch, so the workflow has to be on `main` for the weekly updates to
