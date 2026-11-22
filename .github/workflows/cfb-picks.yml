@@ -1,15 +1,22 @@
 name: CFB Picks
 
-# Runs the pipeline and publishes the site to the gh-pages branch, which GitHub Pages serves.
+# Runs the college football and NFL pipelines and publishes the site to the gh-pages
+# branch, which GitHub Pages serves.
 # Scheduled runs only fire from the repository's default branch.
 on:
   schedule:
-    # Thursday and Saturday at 13:17 UTC (8:17 AM ET in winter, 9:17 AM in summer), August to January.
-    - cron: "17 13 * 8-12,1 4,6"
+    # Thursday, Saturday and Sunday at 13:17 UTC (8:17 AM ET in winter, 9:17 AM in summer),
+    # August to February: before Thursday night's game, Saturday's college slate and the
+    # NFL's Sunday slate.
+    - cron: "17 13 * 8-12,1,2 0,4,6"
   workflow_dispatch:
     inputs:
       week:
-        description: "Week to generate (empty = the current week)"
+        description: "College football week to generate (empty = the current week)"
+        required: false
+        type: string
+      nfl_week:
+        description: "NFL week to generate (empty = the current week; 19-22 are the playoff rounds)"
         required: false
         type: string
   push:
@@ -54,14 +61,31 @@ jobs:
       - name: Tests
         run: python -m pytest -q
 
-      - name: Generate picks and backtest
+      # Out of season a league keeps the picks already committed to the repository.
+      - name: Generate college football picks
         env:
           WEEK: ${{ inputs.week }}
         run: |
+          month=$(date -u +%-m)
           if [ -n "$WEEK" ]; then
             python -m src.picks --week "$WEEK"
-          else
+          elif [ "$month" -ge 8 ] || [ "$month" -le 1 ]; then
             python -m src.picks
+          else
+            echo "College football is out of season: nothing to generate."
+          fi
+
+      - name: Generate NFL picks
+        env:
+          WEEK: ${{ inputs.nfl_week }}
+        run: |
+          month=$(date -u +%-m)
+          if [ -n "$WEEK" ]; then
+            python -m src.picks --league nfl --week "$WEEK"
+          elif [ "$month" -ge 9 ] || [ "$month" -le 2 ]; then
+            python -m src.picks --league nfl
+          else
+            echo "The NFL is out of season: nothing to generate."
           fi
 
       # The branch only ever holds the latest build, so each run replaces it.
