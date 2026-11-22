@@ -1,7 +1,7 @@
 {
  "sport": "nfl",
  "league": "NFL",
- "generated": "2026-11-22T16:52:53+00:00",
+ "generated": "2026-11-22T17:42:12+00:00",
  "season": 2026,
  "big_margin": 7.0,
  "selected": "srs",
@@ -20,6 +20,9 @@
    "selected": false,
    "current": {
     "n": 151,
+    "correct": 92,
+    "wrong": 58,
+    "ties": 1,
     "accuracy": 0.6133,
     "accuracy_big": 0.6905,
     "n_big": 42,
@@ -34,6 +37,9 @@
    },
    "current_with_fcs": {
     "n": 151,
+    "correct": 92,
+    "wrong": 58,
+    "ties": 1,
     "accuracy": 0.6133,
     "accuracy_big": 0.6905,
     "n_big": 42,
@@ -48,6 +54,9 @@
    },
    "history": {
     "n": 1139,
+    "correct": 703,
+    "wrong": 433,
+    "ties": 3,
     "accuracy": 0.6188,
     "accuracy_big": 0.7143,
     "n_big": 343,
@@ -67,6 +76,9 @@
    "selected": true,
    "current": {
     "n": 151,
+    "correct": 95,
+    "wrong": 55,
+    "ties": 1,
     "accuracy": 0.6333,
     "accuracy_big": 0.8519,
     "n_big": 27,
@@ -81,6 +93,9 @@
    },
    "current_with_fcs": {
     "n": 151,
+    "correct": 95,
+    "wrong": 55,
+    "ties": 1,
     "accuracy": 0.6333,
     "accuracy_big": 0.8519,
     "n_big": 27,
@@ -95,6 +110,9 @@
    },
    "history": {
     "n": 1139,
+    "correct": 719,
+    "wrong": 417,
+    "ties": 3,
     "accuracy": 0.6329,
     "accuracy_big": 0.7581,
     "n_big": 215,
@@ -114,6 +132,9 @@
    "selected": false,
    "current": {
     "n": 151,
+    "correct": 95,
+    "wrong": 55,
+    "ties": 1,
     "accuracy": 0.6333,
     "accuracy_big": 0.8846,
     "n_big": 26,
@@ -128,6 +149,9 @@
    },
    "current_with_fcs": {
     "n": 151,
+    "correct": 95,
+    "wrong": 55,
+    "ties": 1,
     "accuracy": 0.6333,
     "accuracy_big": 0.8846,
     "n_big": 26,
@@ -142,6 +166,9 @@
    },
    "history": {
     "n": 1139,
+    "correct": 728,
+    "wrong": 408,
+    "ties": 3,
     "accuracy": 0.6408,
     "accuracy_big": 0.78,
     "n_big": 250,
@@ -161,6 +188,9 @@
    "selected": false,
    "current": {
     "n": 151,
+    "correct": 94,
+    "wrong": 56,
+    "ties": 1,
     "accuracy": 0.6267,
     "accuracy_big": 0.8696,
     "n_big": 23,
@@ -175,6 +205,9 @@
    },
    "current_with_fcs": {
     "n": 151,
+    "correct": 94,
+    "wrong": 56,
+    "ties": 1,
     "accuracy": 0.6267,
     "accuracy_big": 0.8696,
     "n_big": 23,
@@ -189,6 +222,9 @@
    },
    "history": {
     "n": 1139,
+    "correct": 720,
+    "wrong": 416,
+    "ties": 3,
     "accuracy": 0.6338,
     "accuracy_big": 0.7915,
     "n_big": 235,
@@ -205,8 +241,10 @@
  ],
  "market": {
   "n": 151,
+  "correct": 103,
+  "wrong": 47,
   "mae_margin": 9.5497,
-  "accuracy": 0.6821,
+  "accuracy": 0.6867,
   "mae_total": 10.4007,
   "model_mae_margin": 9.9035,
   "model_mae_total": 11.1737
@@ -215,6 +253,8 @@
   {
    "week": 1,
    "n": 16,
+   "correct": 11,
+   "wrong": 5,
    "accuracy": 0.6875,
    "mae_margin": 12.0504,
    "mae_total": 12.4823,
@@ -222,11 +262,20 @@
    "won": 0,
    "lost": 0,
    "units": 0.0,
-   "cumulative": 0.0
+   "cumulative": 0.0,
+   "ml": {
+    "plays": 0,
+    "won": 0,
+    "lost": 0,
+    "units": 0.0,
+    "cumulative": 0.0
+   }
   },
   {
    "week": 2,
    "n": 16,
+   "correct": 9,
+   "wrong": 7,
    "accuracy": 0.5625,
    "mae_margin": 12.841,
    "mae_total": 11.9779,
@@ -234,11 +283,20 @@
    "won": 0,
    "lost": 0,
    "units": 0.0,
-   "cumulative": 0.0
+   "cumulative": 0.0,
+   "ml": {
+    "plays": 0,
+    "won": 0,
+    "lost": 0,
+    "units": 0.0,
+    "cumulative": 0.0
+   }
   },
   {
    "week": 3,
    "n": 16,
+   "correct": 9,
+   "wrong": 7,
    "accuracy": 0.5625,
    "mae_margin": 8.1687,
    "mae_total": 11.4499,
@@ -246,11 +304,20 @@
    "won": 0,
    "lost": 0,
    "units": 0.0,
-   "cumulative": 0.0
+   "cumulative": 0.0,
+   "ml": {
+    "plays": 0,
+    "won": 0,
+    "lost": 0,
+    "units": 0.0,
+    "cumulative": 0.0
+   }
   },
   {
    "week": 4,
    "n": 16,
+   "correct": 10,
+   "wrong": 6,
    "accuracy": 0.625,
    "mae_margin": 6.5324,
    "mae_total": 11.1821,
@@ -258,11 +325,20 @@
    "won": 7,
    "lost": 3,
    "units": 3.9058,
-   "cumulative": 3.9058
+   "cumulative": 3.9058,
+   "ml": {
+    "plays": 3,
+    "won": 2,
+    "lost": 1,
+    "units": 1.2024,
+    "cumulative": 1.2024
+   }
   },
   {
    "week": 5,
    "n": 15,
+   "correct": 9,
+   "wrong": 5,
    "accuracy": 0.6429,
    "mae_margin": 10.2691,
    "mae_total": 10.2806,
@@ -270,11 +346,20 @@
    "won": 3,
    "lost": 9,
    "units": -5.1904,
-   "cumulative": -1.2846
+   "cumulative": -1.2846,
+   "ml": {
+    "plays": 6,
+    "won": 2,
+    "lost": 4,
+    "units": -1.06,
+    "cumulative": 0.1424
+   }
   },
   {
    "week": 6,
    "n": 14,
+   "correct": 6,
+   "wrong": 8,
    "accuracy": 0.4286,
    "mae_margin": 7.6572,
    "mae_total": 11.4329,
@@ -282,11 +367,20 @@
    "won": 2,
    "lost": 3,
    "units": 3.9259,
-   "cumulative": 2.6413
+   "cumulative": 2.6413,
+   "ml": {
+    "plays": 2,
+    "won": 1,
+    "lost": 1,
+    "units": 5.0,
+    "cumulative": 5.1424
+   }
   },
   {
    "week": 7,
    "n": 14,
+   "correct": 7,
+   "wrong": 7,
    "accuracy": 0.5,
    "mae_margin": 10.8274,
    "mae_total": 10.0538,
@@ -294,11 +388,20 @@
    "won": 2,
    "lost": 1,
    "units": 0.8895,
-   "cumulative": 3.5308
+   "cumulative": 3.5308,
+   "ml": {
+    "plays": 0,
+    "won": 0,
+    "lost": 0,
+    "units": 0.0,
+    "cumulative": 5.1424
+   }
   },
   {
    "week": 8,
    "n": 14,
+   "correct": 9,
+   "wrong": 5,
    "accuracy": 0.6429,
    "mae_margin": 11.3079,
    "mae_total": 11.7836,
@@ -306,11 +409,20 @@
    "won": 3,
    "lost": 0,
    "units": 4.6063,
-   "cumulative": 8.1371
+   "cumulative": 8.1371,
+   "ml": {
+    "plays": 1,
+    "won": 1,
+    "lost": 0,
+    "units": 2.7,
+    "cumulative": 7.8424
+   }
   },
   {
    "week": 9,
    "n": 15,
+   "correct": 14,
+   "wrong": 1,
    "accuracy": 0.9333,
    "mae_margin": 9.021,
    "mae_total": 11.7792,
@@ -318,11 +430,20 @@
    "won": 0,
    "lost": 7,
    "units": -7.0,
-   "cumulative": 1.1371
+   "cumulative": 1.1371,
+   "ml": {
+    "plays": 2,
+    "won": 0,
+    "lost": 2,
+    "units": -2.0,
+    "cumulative": 5.8424
+   }
   },
   {
    "week": 10,
    "n": 14,
+   "correct": 10,
+   "wrong": 4,
    "accuracy": 0.7143,
    "mae_margin": 9.8809,
    "mae_total": 8.3942,
@@ -330,11 +451,20 @@
    "won": 5,
    "lost": 4,
    "units": 0.6519,
-   "cumulative": 1.789
+   "cumulative": 1.789,
+   "ml": {
+    "plays": 2,
+    "won": 0,
+    "lost": 2,
+    "units": -2.0,
+    "cumulative": 3.8424
+   }
   },
   {
    "week": 11,
    "n": 1,
+   "correct": 1,
+   "wrong": 0,
    "accuracy": 1.0,
    "mae_margin": 17.1734,
    "mae_total": 19.5553,
@@ -342,7 +472,14 @@
    "won": 0,
    "lost": 0,
    "units": 0.0,
-   "cumulative": 1.789
+   "cumulative": 1.789,
+   "ml": {
+    "plays": 0,
+    "won": 0,
+    "lost": 0,
+    "units": 0.0,
+    "cumulative": 3.8424
+   }
   }
  ],
  "calibration": {

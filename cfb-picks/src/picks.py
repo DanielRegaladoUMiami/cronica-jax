@@ -257,20 +257,24 @@ def build_backtest(
         return out
 
     cur_bets = bets[bets["season"] == season] if len(bets) else bets
+    no_bets = pd.DataFrame(columns=["result", "profit"])
     weekly = []
-    cumulative = 0.0
+    cumulative = cumulative_ml = 0.0
     for row in by_week(cur, sigma_m, big):
         week = row["week"]
+        plays = no_bets
         if len(cur_bets):
             plays = cur_bets[(cur_bets["week"] == week) & (cur_bets["label"] == PLAY)]
-            rec = record(plays)
-        else:
-            rec = record(pd.DataFrame(columns=["result", "profit"]))
+        rec = record(plays)
+        rec_ml = record(plays[plays["market"] == "ml"]) if len(plays) else record(no_bets)
         cumulative += rec["units"]
+        cumulative_ml += rec_ml["units"]
         weekly.append(
             {
                 "week": week,
                 "n": row["n"],
+                "correct": row["correct"],
+                "wrong": row["wrong"],
                 "accuracy": row["accuracy"],
                 "mae_margin": row["mae_margin"],
                 "mae_total": row["mae_total"],
@@ -279,6 +283,14 @@ def build_backtest(
                 "lost": rec["lost"],
                 "units": rec["units"],
                 "cumulative": cumulative,
+                # the same record for moneyline plays alone, for the moneyline-only view
+                "ml": {
+                    "plays": rec_ml["n"],
+                    "won": rec_ml["won"],
+                    "lost": rec_ml["lost"],
+                    "units": rec_ml["units"],
+                    "cumulative": cumulative_ml,
+                },
             }
         )
 
@@ -288,11 +300,15 @@ def build_backtest(
         with_line = cur.merge(lines, on="game_id").dropna(subset=["spread_home"])
         if len(with_line):
             mkt_margin = -with_line["spread_home"]
-            decided = mkt_margin != 0
+            # A pick'em has no favorite and a tie has no winner: neither is a hit or a miss.
+            decided = (mkt_margin != 0) & (with_line["margin"] != 0)
+            hits = ((mkt_margin > 0) == (with_line["margin"] > 0))[decided]
             market = {
                 "n": len(with_line),
+                "correct": int(hits.sum()),
+                "wrong": int(len(hits) - hits.sum()),
                 "mae_margin": float((mkt_margin - with_line["margin"]).abs().mean()),
-                "accuracy": float(((mkt_margin > 0) == (with_line["margin"] > 0))[decided].mean()),
+                "accuracy": float(hits.mean()) if len(hits) else None,
                 "mae_total": float((with_line["total_line"] - with_line["total"]).abs().mean()),
                 "model_mae_margin": float(
                     (with_line["pred_margin"] - with_line["margin"]).abs().mean()
@@ -601,6 +617,9 @@ def build_picks(
             "sigma_margin": sigma_m,
             "sigma_total": sigma_t,
             "accuracy": met.get("accuracy"),
+            "correct": met.get("correct"),
+            "wrong": met.get("wrong"),
+            "ties": met.get("ties"),
             "accuracy_big": met.get("accuracy_big"),
             "big_margin": league.big_favorite,
             "mae_margin": met.get("mae_margin"),

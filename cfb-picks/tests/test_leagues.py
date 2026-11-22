@@ -296,6 +296,7 @@ def test_a_tie_has_no_winner_to_pick():
     )
     m = metrics(df, sigma_margin=13.0, big=7.0)
     assert m["n"] == 3 and m["accuracy"] == 1.0  # two decided games, both called right
+    assert (m["correct"], m["wrong"], m["ties"]) == (2, 0, 1)
     assert m["n_big"] == 0 and m["accuracy_big"] is None and m["big_margin"] == 7.0
     assert 0 < m["brier"] < 0.25
     bins = calibration(df, sigma=13.0, min_n=1)

@@ -159,6 +159,7 @@ def test_metrics_and_calibration():
     )
     m = metrics(df, sigma_margin=16.0)
     assert m["n"] == 4 and m["accuracy"] == 0.75
+    assert (m["correct"], m["wrong"], m["ties"]) == (3, 1, 0)
     assert m["mae_margin"] == pytest.approx((3 + 7 + 8 + 7) / 4)
     assert m["mae_total"] == pytest.approx((5 + 7 + 0) / 3)  # no projected total, not counted
     assert m["accuracy_big"] == 1.0 and m["n_big"] == 1 and m["big_margin"] == 14.0

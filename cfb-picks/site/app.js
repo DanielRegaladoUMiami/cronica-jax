@@ -123,6 +123,7 @@
     error: null,
     scope: store.get('scope', 'mine'),
     market: store.get('market', 'all'),
+    allMarkets: store.get('allMarkets', false),
     playsOnly: store.get('playsOnly', false),
     bankroll: store.get('bankroll', 1000),
     stake: store.get('stake', 10),
@@ -154,7 +155,10 @@
   const mineCount = () => allGames().filter((g) => g.on_my_list).length;
   const useMine = () => state.scope === 'mine' && mineCount() > 0;
   const scopedGames = () => (useMine() ? allGames().filter((g) => g.on_my_list) : allGames());
-  const visibleMarkets = () => (state.market === 'all' ? ['ml', 'spread', 'total'] : [state.market]);
+  // The site is about who wins: moneylines only, unless the visitor asks for spreads and totals too.
+  const mlOnly = () => !state.allMarkets;
+  const visibleMarkets = () => (mlOnly() ? ['ml'] : state.market === 'all' ? ['ml', 'spread', 'total'] : [state.market]);
+  const countText = (right, wrong, ties) => right + ' right · ' + wrong + ' wrong' + (ties ? ' · ' + plural(ties, 'tie') : '');
   const sideKeys = (market) => (market === 'total' ? ['over', 'under'] : ['away', 'home']);
   const matchup = (g) => g.away.abbr + ' @ ' + g.home.abbr;
 
@@ -281,15 +285,17 @@
 
   function realityCheck() {
     const P = state.picks, m = P.model;
-    const play = P.evidence && P.evidence.all && P.evidence.all.PLAY;
+    const record = P.evidence && P.evidence[mlOnly() ? 'ml' : 'all'];
+    const play = record && record.PLAY;
     const box = h('section', { class: 'callout', 'aria-label': 'Reality check' }, h('b', { class: 't' }, 'Reality check'));
     if (!m.n_backtest) {
       box.append(h('p', null, 'No ' + P.season + ' games have been played yet, so these projections lean on last season’s ratings and are less reliable.'));
       return box;
     }
     const line = h('p', null, 'The model has picked ', b(rate(m.accuracy, 0) + ' of winners'), ' this season');
+    if (m.correct != null) line.append(': ', b(m.correct + ' right and ' + m.wrong + ' wrong'));
     if (play && play.n) {
-      line.append(', but it has ', b('not beaten the betting market'), '. Past plays like the ones below went ' + play.won + '–' + play.lost +
+      line.append(', but it has ', b('not beaten the betting market'), '. Past ' + (mlOnly() ? 'moneyline ' : '') + 'plays like the ones below went ' + play.won + '–' + play.lost +
         ' against closing lines (ROI ' + signed(play.roi * 100, 1, '%') + '). Read a PLAY as “my number disagrees with the market,” not as a sure thing. ');
     } else {
       line.append('. ');
@@ -305,7 +311,7 @@
     const plays = picks.filter((p) => p.side.label === 'PLAY');
     const avoid = picks.filter((p) => p.side.label === 'AVOID');
     const box = h('section', { class: 'panel' });
-    box.append(h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, 'Best plays this week'),
+    box.append(h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, mlOnly() ? 'Best moneyline plays this week' : 'Best plays this week'),
       h('label', { class: 'field-input', for: 'bankroll' }, 'Bankroll $',
         h('input', { id: 'bankroll', type: 'number', min: '0', step: '50', inputmode: 'decimal', value: String(state.bankroll),
           onchange: (e) => setState('bankroll', Math.max(0, Number(e.target.value) || 0), 'bankroll') }))));
@@ -323,7 +329,8 @@
       const exposure = plays.reduce((acc, p) => acc + p.side.stake, 0);
       if (plays.length > 3) {
         box.append(h('p', { class: 'small' }, 'Betting every play at the suggested stake would put ' + (exposure * 100).toFixed(0) + '% of your bankroll' +
-          (state.bankroll > 0 ? ' (' + money(exposure * state.bankroll) + ')' : '') + ' at risk in one week. A moneyline and a spread on the same team are nearly the same bet, so pick one.'));
+          (state.bankroll > 0 ? ' (' + money(exposure * state.bankroll) + ')' : '') + ' at risk in one week.' +
+          (mlOnly() ? '' : ' A moneyline and a spread on the same team are nearly the same bet, so pick one.')));
       }
     }
     if (avoid.length) {
@@ -375,9 +382,11 @@
     if (mine) {
       row.append(seg('Games', [['mine', 'My games (' + mine + ')'], ['all', 'All games (' + total + ')']], useMine() ? 'mine' : 'all', (v, id) => setState('scope', v, id)));
     }
-    row.append(seg('Bet type', [['all', 'All bets'], ['ml', 'Moneyline'], ['spread', 'Spread'], ['total', 'Total']], state.market, (v, id) => setState('market', v, id)));
+    if (!mlOnly()) row.append(seg('Bet type', [['all', 'All bets'], ['ml', 'Moneyline'], ['spread', 'Spread'], ['total', 'Total']], state.market, (v, id) => setState('market', v, id)));
     row.append(h('label', { class: 'toggle', for: 'plays-only' },
       h('input', { id: 'plays-only', type: 'checkbox', checked: state.playsOnly, onchange: (e) => setState('playsOnly', e.target.checked, 'plays-only') }), 'Plays only'));
+    row.append(h('label', { class: 'toggle', for: 'all-markets' },
+      h('input', { id: 'all-markets', type: 'checkbox', checked: state.allMarkets, onchange: (e) => setState('allMarkets', e.target.checked, 'all-markets') }), 'Spreads and totals too'));
     box.append(row);
     return box;
   }
@@ -447,14 +456,19 @@
 
     const fav = favHome ? g.home : g.away;
     const lines = h('dl', { class: 'lines' });
-    lines.append(h('dt', null, 'Model'), h('dd', null, fav.name + ' by ' + trim(Math.abs(pr.margin)) + (pr.total != null ? ' · total ' + trim(pr.total) : '')));
+    const totals = !mlOnly();
+    // Moneyline view: say who wins and how likely; the other view keeps the margin and total.
+    lines.append(h('dt', null, 'Model'), h('dd', null, totals
+      ? fav.name + ' by ' + trim(Math.abs(pr.margin)) + (pr.total != null ? ' · total ' + trim(pr.total) : '')
+      : fav.name + ' to win, ' + pct(favHome ? pr.p_home : pr.p_away) + ' · by ' + trim(Math.abs(pr.margin))));
     if (g.market.margin != null) {
-      const mFav = g.market.margin >= 0 ? g.home : g.away;
-      let text = Math.abs(g.market.margin) < 0.01 ? 'Pick’em' : mFav.name + ' by ' + trim(Math.abs(g.market.margin));
-      if (espn && espn.total != null) text += ' · total ' + trim(espn.total);
-      const moved = Math.abs(g.market.spread_move || 0) >= 1 || Math.abs(g.market.total_move || 0) >= 1;
+      const mFavKey = g.market.margin >= 0 ? 'home' : 'away', mFav = g[mFavKey];
+      const mChance = g.ml[mFavKey] ? g.ml[mFavKey].p_market : null;
+      let text = Math.abs(g.market.margin) < 0.01 ? 'Pick’em' : mFav.name + (!totals && mChance != null ? ' to win, ' + pct(mChance) + ' ·' : '') + ' by ' + trim(Math.abs(g.market.margin));
+      if (totals && espn && espn.total != null) text += ' · total ' + trim(espn.total);
+      const moved = Math.abs(g.market.spread_move || 0) >= 1 || (totals && Math.abs(g.market.total_move || 0) >= 1);
       if (espn && espn.spread_open != null && moved) {
-        text += ' · opened ' + (espn.spread_open === 0 ? 'PK' : g.home.abbr + ' ' + lineFmt(espn.spread_open)) + (espn.total_open != null ? ', ' + trim(espn.total_open) : '');
+        text += ' · opened ' + (espn.spread_open === 0 ? 'PK' : g.home.abbr + ' ' + lineFmt(espn.spread_open)) + (totals && espn.total_open != null ? ', ' + trim(espn.total_open) : '');
       }
       lines.append(h('dt', null, 'Market'), h('dd', null, text));
     }
@@ -470,7 +484,8 @@
     }
     if (markets.children.length) card.append(markets);
 
-    const notes = [...(g.alerts || []).map((a) => h('li', null, cap(a))), ...(g.price_notes || []).map((c) => h('li', { class: 'cmp' }, c))];
+    const alerts = (g.alerts || []).filter((a) => totals || !/^the total /.test(a));   // a moved total says nothing about who wins
+    const notes = [...alerts.map((a) => h('li', null, cap(a))), ...(g.price_notes || []).map((c) => h('li', { class: 'cmp' }, c))];
     if (notes.length) card.append(h('ul', { class: 'alerts' }, notes));
     if (g.notes) card.append(h('p', { class: 'note' }, b('Note: '), g.notes));
 
@@ -588,10 +603,10 @@
       h('p', { class: 'sub' }, 'Tap a side to add it to your ticket. One leg per game: the math multiplies each leg’s chance, which only works when the legs are independent.'));
     const row = h('div', { class: 'controls-row' });
     if (mineCount()) row.append(seg('Games', [['mine', 'My games'], ['all', 'All games']], useMine() ? 'mine' : 'all', (v, id) => setState('scope', v, id)));
-    row.append(seg('Market', [['ml', 'Moneyline'], ['spread', 'Spread'], ['total', 'Total']], state.parlayMarket, (v, id) => { state.parlayMarket = v; refocus = id; render(); }));
-    builder.append(row);
+    if (!mlOnly()) row.append(seg('Market', [['ml', 'Moneyline'], ['spread', 'Spread'], ['total', 'Total']], state.parlayMarket, (v, id) => { state.parlayMarket = v; refocus = id; render(); }));
+    if (row.children.length) builder.append(row);
     const list = h('div');
-    const market = state.parlayMarket;
+    const market = mlOnly() ? 'ml' : state.parlayMarket;
     for (const g of scopedGames().slice().sort((x, y) => x.date.localeCompare(y.date))) {
       const opts = h('div', { class: 'legopts' });
       for (const key of sideKeys(market)) {
@@ -718,12 +733,18 @@
     }
     const kpi = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'How the model has done in ' + B.season),
       h('p', { class: 'sub' }, 'Every week was predicted using only the games played before it, across ' + cur.n + ' games' +
-        (S().college ? ' between top-division teams' : '') + '. Nothing here was fitted after the fact.'));
-    kpi.append(h('div', { class: 'kv' },
-      kpiBox('Picked the winner', rate(cur.accuracy), mkt ? 'the market: ' + rate(mkt.accuracy) : ''),
-      kpiBox('When favored by ' + bigLabel(B), rate(cur.accuracy_big), plural(cur.n_big, 'game')),
-      kpiBox('Typical miss, margin', cur.mae_margin.toFixed(1) + ' pts', mkt ? 'the market: ' + mkt.mae_margin.toFixed(1) : ''),
-      kpiBox('Typical miss, total', cur.mae_total.toFixed(1) + ' pts', mkt ? 'the market: ' + mkt.mae_total.toFixed(1) : '')));
+        (S().college ? ' between top-division teams' : '') + '.' + (cur.wrong != null ? ' Its pick lost ' + cur.wrong + ' of them.' : '') + ' Nothing here was fitted after the fact.'));
+    const bigRight = cur.accuracy_big == null ? null : Math.round(cur.accuracy_big * cur.n_big);
+    const winner = kpiBox('Picked the winner', rate(cur.accuracy), cur.correct != null ? countText(cur.correct, cur.wrong, cur.ties) : '');
+    const clear = kpiBox('When favored by ' + bigLabel(B), rate(cur.accuracy_big), bigRight == null ? plural(cur.n_big, 'game') : countText(bigRight, cur.n_big - bigRight));
+    const margin = kpiBox('Typical miss, margin', cur.mae_margin.toFixed(1) + ' pts', mkt ? 'the market: ' + mkt.mae_margin.toFixed(1) : '');
+    if (mlOnly()) {
+      const favorite = kpiBox('The betting favorite won', mkt && mkt.accuracy != null ? rate(mkt.accuracy) : '–', mkt && mkt.correct != null ? countText(mkt.correct, mkt.wrong) : 'no closing lines yet');
+      kpi.append(h('div', { class: 'kv' }, winner, favorite, clear, margin));
+    } else {
+      kpi.append(h('div', { class: 'kv' }, winner, clear, margin,
+        kpiBox('Typical miss, total', cur.mae_total.toFixed(1) + ' pts', mkt ? 'the market: ' + mkt.mae_total.toFixed(1) : '')));
+    }
     out.push(kpi);
     out.push(bettingPanel(B));
     out.push(comparisonPanel(B, sel));
@@ -736,7 +757,7 @@
     const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null,
       ['Bet', 'W–L', 'Win %', 'ROI', 'Units'].map((t) => h('th', { class: t === 'Win %' ? 'opt' : null }, t)))));
     const body = h('tbody');
-    for (const market of ['ml', 'spread', 'total', 'all']) {
+    for (const market of (mlOnly() ? ['ml'] : ['ml', 'spread', 'total', 'all'])) {
       for (const label of ['PLAY', 'AVOID']) {
         const r = block[market] && block[market][label];
         if (!r || !r.n) continue;
@@ -752,8 +773,9 @@
   }
 
   function bettingPanel(B) {
-    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Would the plays have made money?'));
-    const cur = (B.bets.current || {}).all, hist = (B.bets.history || {}).all;
+    const ml = mlOnly(), kind = ml ? 'moneyline ' : '';
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Would the ' + kind + 'plays have made money?'));
+    const cur = (B.bets.current || {})[ml ? 'ml' : 'all'], hist = (B.bets.history || {})[ml ? 'ml' : 'all'];
     if (!cur || !cur.PLAY) {
       box.append(h('p', { class: 'empty' }, 'There are no closing lines yet to simulate against.'));
       return box;
@@ -762,26 +784,27 @@
     // Inside one standard error of zero, the honest answer is that it is too early to say.
     const even = j.roi_error != null && Math.abs(j.roi) <= j.roi_error;
     const verdict = !j.n
-      ? h('p', { class: 'verdict' }, 'No PLAY has been settled yet in ' + B.season + '.')
-      : h('p', { class: 'verdict' }, b(even ? 'Too few bets to say.' : j.roi >= 0 ? 'So far, yes.' : 'Not so far.'), ' Betting one unit on every PLAY in ' + B.season + ' at the closing line went ' + j.won + '–' + j.lost +
+      ? h('p', { class: 'verdict' }, 'No ' + kind + 'PLAY has been settled yet in ' + B.season + '.')
+      : h('p', { class: 'verdict' }, b(even ? 'Too few bets to say.' : j.roi >= 0 ? 'So far, yes.' : 'Not so far.'), ' Betting one unit on every ' + kind + 'PLAY in ' + B.season + ' at the closing line went ' + j.won + '–' + j.lost +
         ' for ', b(signed(j.units, 1, ' units')), ' (ROI ' + signed(j.roi * 100, 1, '%') + (j.roi_error == null ? '' : ' ± ' + trim(j.roi_error * 100, 0) + '%') + ').');
     if (hp && hp.n) {
       const read = hp.roi >= 0 ? '.' : hp.roi > -0.065 ? ', roughly the bookmaker’s cut.' : ', which is worse than the bookmaker’s cut alone (about ' + MINUS + '4.5%).';
       verdict.append(' Across every season with lines (' + B.bets.seasons_with_lines.join(', ') + ') the ROI is ', b(signed(hp.roi * 100, 1, '%')), ' on ' + hp.n + ' bets' + read);
     }
     box.append(verdict);
-    // College: the flag shows best on spreads. NFL: fewer games, so every market is pooled.
-    const flagged = B.bets.history && B.bets.history[S().college ? 'spread' : 'all'];
+    // Where the flag shows best: moneylines in the moneyline view, college spreads, everything pooled for the NFL.
+    const where = ml ? 'ml' : S().college ? 'spread' : 'all';
+    const flagged = B.bets.history && B.bets.history[where];
     if (flagged && flagged.AVOID.n && flagged.PLAY.n && flagged.AVOID.roi < flagged.PLAY.roi) {
-      box.append(h('p', { class: 'sub' }, 'The AVOID flag earns its keep: ' + (S().college ? 'spread ' : '') + 'picks it flagged returned ' + signed(flagged.AVOID.roi * 100, 1, '%') +
+      box.append(h('p', { class: 'sub' }, 'The AVOID flag earns its keep: ' + (where === 'all' ? '' : MARKET_NAME[where].toLowerCase() + ' ') + 'picks it flagged returned ' + signed(flagged.AVOID.roi * 100, 1, '%') +
         ', against ' + signed(flagged.PLAY.roi * 100, 1, '%') + ' for the plays.'));
     }
     const chart = h('div', { class: 'chart', id: 'chart-units' });
     box.append(h('h3', { class: 'h3' }, 'Running total in units, ' + B.season), chart);
-    const weeks = B.weeks.filter((w) => w.plays > 0);
+    const weeks = B.weeks.map((w) => (ml ? Object.assign({ week: w.week }, w.ml || { plays: 0 }) : w)).filter((w) => w.plays > 0);
     queueChart(() => drawUnits(chart, weeks));
     const two = h('div', { class: 'two' });
-    two.append(h('div', null, h('h3', { class: 'h3' }, B.season + ' by bet type'), h('div', { class: 'scroll' }, recordTable(B.bets.current))));
+    two.append(h('div', null, h('h3', { class: 'h3' }, B.season + (ml ? '' : ' by bet type')), h('div', { class: 'scroll' }, recordTable(B.bets.current))));
     two.append(h('div', null, h('h3', { class: 'h3' }, 'Seasons ' + B.bets.seasons_with_lines.join(', ')), h('div', { class: 'scroll' }, recordTable(B.bets.history))));
     box.append(two);
     box.append(h('p', { class: 'small' }, 'ROI is profit per unit staked; ± is one standard error. The closing line is the last price before kickoff, the hardest one to beat.' +
@@ -789,20 +812,26 @@
     return box;
   }
 
-  function comparisonPanel(B, sel) {
-    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Models compared'),
-      h('p', { class: 'sub' }, 'Average miss on the final margin in ' + B.season + ', in points. Lower is better. The lowest-error model is the one in use; the market’s closing line is there for reference.'));
-    const rows = B.comparison.map((c) => ({ name: c.label.replace(/\s*\(.*\)$/, ''), value: c.current.mae_margin, hl: c.selected }));
-    if (B.market) rows.push({ name: 'Market closing line', value: B.market.mae_margin, hl: false });
-    rows.sort((x, y) => y.value - x.value);
+  function barRows(rows) {
     const max = Math.max(...rows.map((r) => r.value));
     const bars = h('div', { class: 'bars' });
     for (const r of rows) {
       bars.append(h('span', { class: 'name' + (r.hl ? ' hl' : '') }, r.name + (r.hl ? ' (in use)' : '')),
         h('span', null, h('span', { class: 'bar' + (r.hl ? ' hl' : ''), style: 'width:' + ((r.value / max) * 100).toFixed(1) + '%' })),
-        h('span', { class: 'num' }, r.value.toFixed(2)));
+        h('span', { class: 'num' }, r.text));
     }
-    box.append(bars);
+    return bars;
+  }
+  const shortLabel = (label) => label.replace(/\s*\(.*\)$/, '');
+
+  function comparisonPanel(B, sel) {
+    if (mlOnly()) return winnersCompared(B);
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Models compared'),
+      h('p', { class: 'sub' }, 'Average miss on the final margin in ' + B.season + ', in points. Lower is better. The lowest-error model is the one in use; the market’s closing line is there for reference.'));
+    const rows = B.comparison.map((c) => ({ name: shortLabel(c.label), value: c.current.mae_margin, text: c.current.mae_margin.toFixed(2), hl: c.selected }));
+    if (B.market) rows.push({ name: 'Market closing line', value: B.market.mae_margin, text: B.market.mae_margin.toFixed(2), hl: false });
+    rows.sort((x, y) => y.value - x.value);
+    box.append(barRows(rows));
     const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null,
       ['Model', 'Winner', bigLabel(B) + ' pts', 'Margin miss', 'Total miss', B.tuned_on + ' miss'].map((t) => h('th', null, t)))));
     const body = h('tbody');
@@ -827,18 +856,46 @@
     return box;
   }
 
-  function weeksPanel(B) {
-    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Week by week'),
-      h('p', { class: 'sub' }, 'Margin and Total are the average miss in points. Plays is the record of that week’s PLAY picks against the closing line.'));
+  // The moneyline view compares the models on the only thing a moneyline cares about: who won.
+  function winnersCompared(B) {
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Who picks more winners'),
+      h('p', { class: 'sub' }, 'Share of winners each model picked in ' + B.season + '. Higher is better. The betting favorite is the bar to clear.'));
+    const rows = B.comparison.filter((c) => c.current.accuracy != null).map((c) => ({ name: shortLabel(c.label), value: c.current.accuracy, text: rate(c.current.accuracy), hl: c.selected }));
+    if (B.market && B.market.accuracy != null) rows.push({ name: 'Betting favorite', value: B.market.accuracy, text: rate(B.market.accuracy), hl: false });
+    rows.sort((x, y) => y.value - x.value);
+    box.append(barRows(rows));
     const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null,
-      ['Week', 'Winners', 'Margin', 'Total', 'Plays', 'Units'].map((t) => h('th', { class: t === 'Total' ? 'opt' : null }, t)))));
+      ['Model', 'Right–wrong', 'Winner', bigLabel(B) + ' pts', B.tuned_on + ' winner'].map((t) => h('th', null, t)))));
+    const body = h('tbody');
+    const line = (label, a, past, hl) => body.append(h('tr', { class: hl ? 'hl' : null },
+      h('td', { class: 'wrapcell' }, label), h('td', null, a.correct == null ? '–' : a.correct + '–' + a.wrong), h('td', null, rate(a.accuracy)),
+      h('td', null, a.accuracy_big == null ? '–' : rate(a.accuracy_big)), h('td', null, past == null ? '–' : rate(past))));
+    for (const c of B.comparison) line(c.label, c.current, (c.history || {}).accuracy, c.selected);
+    if (B.market && B.market.accuracy != null) line('Betting favorite', B.market, null, false);
+    table.append(body);
+    box.append(h('details', null, h('summary', { class: 'small' }, 'See the full table'), h('div', { class: 'scroll', style: 'margin-top:8px' }, table),
+      h('p', { class: 'small', style: 'margin-top:8px' }, 'The model in use was chosen for the smallest miss on the final margin, which is not always the one with the most winners.')));
+    return box;
+  }
+
+  function weeksPanel(B) {
+    const ml = mlOnly();
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Week by week'),
+      h('p', { class: 'sub' }, ml
+        ? 'Right–wrong counts the games where the model’s pick won or lost. Plays is the record of that week’s moneyline PLAY picks against the closing line.'
+        : 'Margin and Total are the average miss in points. Plays is the record of that week’s PLAY picks against the closing line.'));
+    const head = ml ? ['Week', 'Winners', 'Right–wrong', 'Plays', 'Units'] : ['Week', 'Winners', 'Margin', 'Total', 'Plays', 'Units'];
+    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null, head.map((t) => h('th', { class: t === 'Total' ? 'opt' : null }, t)))));
     const body = h('tbody');
     for (const w of B.weeks) {
-      body.append(h('tr', null, h('td', null, S().playoffs[w.week] ? S().playoffs[w.week][0] : String(w.week)),
-        h('td', null, h('span', { class: 'meter', 'aria-hidden': 'true' }, h('i', { style: 'width:' + ((w.accuracy || 0) * 100).toFixed(0) + '%' })), rate(w.accuracy, 0), h('span', { class: 'pm opt' }, ' of ' + w.n)),
-        h('td', null, w.mae_margin.toFixed(1)), h('td', { class: 'opt' }, w.mae_total == null ? '–' : w.mae_total.toFixed(1)),
-        h('td', null, w.plays ? w.won + '–' + w.lost : '–'),
-        h('td', { class: w.plays ? (w.units >= 0 ? 'pos' : 'neg') : null }, w.plays ? signed(w.units, 1, 'u') : '–')));
+      const bets = ml ? (w.ml || { plays: 0 }) : w;
+      const row = h('tr', null, h('td', null, S().playoffs[w.week] ? S().playoffs[w.week][0] : String(w.week)),
+        h('td', null, h('span', { class: 'meter', 'aria-hidden': 'true' }, h('i', { style: 'width:' + ((w.accuracy || 0) * 100).toFixed(0) + '%' })), rate(w.accuracy, 0), ml ? null : h('span', { class: 'pm opt' }, ' of ' + w.n)));
+      if (ml) row.append(h('td', null, w.correct == null ? '–' : w.correct + '–' + w.wrong));
+      else row.append(h('td', null, w.mae_margin.toFixed(1)), h('td', { class: 'opt' }, w.mae_total == null ? '–' : w.mae_total.toFixed(1)));
+      row.append(h('td', null, bets.plays ? bets.won + '–' + bets.lost : '–'),
+        h('td', { class: bets.plays ? (bets.units >= 0 ? 'pos' : 'neg') : null }, bets.plays ? signed(bets.units, 1, 'u') : '–'));
+      body.append(row);
     }
     table.append(body);
     box.append(h('div', { class: 'scroll' }, table));

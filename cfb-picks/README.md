@@ -13,7 +13,8 @@ at the top changes league; `#nfl-picks` links straight to the NFL).
 ## College football: how good it is, and how good it is not
 
 Walk-forward backtest of the 2026 season through week 12: 695 FBS vs FBS games
-the model never saw while it was being tuned.
+the model never saw while it was being tuned. Its pick won 491 of them and
+lost 204; the betting favorite went 518-177.
 
 | Model | Winner | When favored by 14+ | Margin miss | Total miss |
 |---|---|---|---|---|
@@ -136,7 +137,11 @@ site evaluates every week.
    - **PASS**: not enough edge.
    - Stake: quarter Kelly, capped at 2% of bankroll.
 6. **Site** (`site/`): plain HTML and JavaScript that read
-   `site/data/picks.json` and `site/data/backtest.json`. No backend.
+   `site/data/picks.json` and `site/data/backtest.json` (and the `nfl_` pair).
+   No backend. It opens on moneylines only: who wins, how likely, and how
+   many winners the model has called right and wrong this season. The
+   "Spreads and totals too" box brings the other two markets back and the
+   browser remembers the choice.
 
 ## NFL
 
@@ -151,7 +156,9 @@ college ones.
 ### How good it is, and how good it is not
 
 Walk-forward backtest of the 2026 season through week 10 plus Thursday of week
-11: 151 games the model never saw while it was being tuned (2022-2025).
+11: 151 games the model never saw while it was being tuned (2022-2025). Its
+pick won 95 of them and lost 55 (one game was a tie); the betting favorite
+went 103-47.
 
 | Model | Winner | When favored by 7+ | Margin miss | Total miss |
 |---|---|---|---|---|
@@ -159,7 +166,7 @@ Walk-forward backtest of the 2026 season through week 10 plus Thursday of week
 | **SRS (in use)** | **63.3%** | **85.2%** | **9.90** | **11.17** |
 | Elo with margin of victory | 63.3% | 88.5% | 9.93 | n/a |
 | SRS + Elo blend | 62.7% | 87.0% | 9.91 | 11.17 |
-| Market closing line | 68.2% | n/a | 9.55 | 10.40 |
+| Market closing line | 68.7% | n/a | 9.55 | 10.40 |
 
 - **The three real models are tied** (the gaps are far smaller than the noise
   of 151 games). SRS is used because it also projects totals.

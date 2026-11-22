@@ -107,6 +107,10 @@ def metrics(df: pd.DataFrame, sigma_margin: float | None = None, big: float = 14
     tot_err = tot["pred_total"] - tot["total"]
     return {
         "n": len(df),
+        # How many winners were called right and wrong: the plainest scoreboard there is.
+        "correct": int(correct.sum()),
+        "wrong": int(len(correct) - correct.sum()),
+        "ties": int(len(df) - len(correct)),
         "accuracy": float(correct.mean()) if len(correct) else None,
         "accuracy_big": float(correct[clear].mean()) if clear.any() else None,
         "n_big": int(clear.sum()),
