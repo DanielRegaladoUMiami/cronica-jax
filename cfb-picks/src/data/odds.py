@@ -79,21 +79,30 @@ def normalize_team(name: str) -> str:
 
 
 def team_lookup(teams: pd.DataFrame) -> dict[str, str]:
-    """Normalized name -> team_id. Accepts short name, full name and (if unique) abbreviation."""
+    """Normalized name -> team_id. Accepts the short name, the full name and, when
+    only one team has it, the abbreviation and the place ("Kansas City"; not "New York")."""
     lookup: dict[str, str] = {}
     abbr_count = teams["abbr"].str.lower().value_counts()
-    for row in teams.itertuples():
+    places = teams["location"] if "location" in teams.columns else pd.Series("", index=teams.index)
+    place_count = places.fillna("").str.lower().value_counts()
+    for row, place in zip(teams.itertuples(), places.fillna(""), strict=True):
         lookup[normalize_team(row.team)] = row.team_id
         lookup.setdefault(normalize_team(row.display_name), row.team_id)
         if abbr_count.get(str(row.abbr).lower(), 0) == 1:
             lookup.setdefault(normalize_team(row.abbr), row.team_id)
+        if place and place_count.get(place.lower(), 0) == 1:
+            lookup.setdefault(normalize_team(place), row.team_id)
     return lookup
 
 
 def load_manual_odds(
-    path: Path = config.ODDS_MANUAL_PATH, season: int | None = None, week: int | None = None
+    path: Path | None = None,
+    season: int | None = None,
+    week: int | None = None,
+    league: config.League = config.CFB,
 ) -> list[dict]:
-    """Read odds_manual.csv. Empty fields come back as None."""
+    """Read the league's odds_manual.csv. Empty fields come back as None."""
+    path = path or league.odds_manual_path
     if not Path(path).exists():
         return []
     rows = []

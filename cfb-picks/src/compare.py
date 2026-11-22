@@ -1,11 +1,12 @@
 """Model comparison table (walk-forward backtest) and selection of the best one.
 
 Usage:
-    python -m src.compare             # print the table
-    python -m src.compare --select    # also save the lowest-error model to params.json
+    python -m src.compare                 # print the table (college football)
+    python -m src.compare --league nfl    # the same for the NFL
+    python -m src.compare --select        # also save the lowest-error model to the params file
 
 Selection uses the mean absolute error of the margin in the current season
-(FBS vs FBS), which the models never saw while being tuned.
+(for college football, FBS vs FBS), which the models never saw while being tuned.
 """
 
 from __future__ import annotations
@@ -26,15 +27,19 @@ def _fmt(value, pct=False, nd=2) -> str:
     return f"{value:.1%}" if pct else f"{value:.{nd}f}"
 
 
-def print_table(backtest: dict) -> None:
+def print_table(backtest: dict, league: config.League = config.CFB) -> None:
     season = backtest["season"]
-    sections = (
-        ("current", f"{season} · FBS vs FBS (out of sample)"),
-        ("current_with_fcs", f"{season} · all games (FCS included)"),
-        ("history", f"{backtest.get('tuned_on')} · FBS vs FBS (used for tuning)"),
-    )
+    college = league.membership == "standings"
+    scope = " · FBS vs FBS" if college else ""
+    sections = [
+        ("current", f"{season}{scope} (out of sample)"),
+        ("history", f"{backtest.get('tuned_on')}{scope} (used for tuning)"),
+    ]
+    if college:
+        sections.insert(1, ("current_with_fcs", f"{season} · all games (FCS included)"))
+    big = f"{backtest['big_margin']:g}+ pts"
     header = (
-        f"{'model':40s} {'n':>5s} {'winner':>8s} {'14+ pts':>8s}"
+        f"{'model':40s} {'n':>5s} {'winner':>8s} {big:>8s}"
         f" {'margin MAE':>11s} {'total MAE':>10s} {'Brier':>7s}"
     )
     for key, title in sections:
@@ -46,7 +51,7 @@ def print_table(backtest: dict) -> None:
             mark = " <-" if row["selected"] else ""
             print(
                 f"{row['label'][:40]:40s} {m['n']:5d} {_fmt(m['accuracy'], True):>8s}"
-                f" {_fmt(m['accuracy_14'], True):>8s} {_fmt(m['mae_margin']):>11s}"
+                f" {_fmt(m['accuracy_big'], True):>8s} {_fmt(m['mae_margin']):>11s}"
                 f" {_fmt(m['mae_total']):>10s} {_fmt(m['brier'], nd=4):>7s}{mark}"
             )
     mkt = backtest.get("market")
@@ -58,11 +63,12 @@ def print_table(backtest: dict) -> None:
             f" (model {mkt['model_mae_total']:.2f})"
         )
     ref = backtest["prototype_reference"]
-    print(
-        f"Reference · original prototype: winner {ref['accuracy']:.0%},"
-        f" {ref['accuracy_14']:.0%} at 14+, margin MAE ~{ref['mae_margin']},"
-        f" total MAE ~{ref['mae_total']}"
-    )
+    if ref:
+        print(
+            f"Reference · original prototype: winner {ref['accuracy']:.0%},"
+            f" {ref['accuracy_big']:.0%} at {big}, margin MAE ~{ref['mae_margin']},"
+            f" total MAE ~{ref['mae_total']}"
+        )
     bets = backtest["bets"].get("history") or {}
     if bets:
         print(f"\nPLAY rule vs closing lines, seasons {backtest['bets']['seasons_with_lines']}:")
@@ -79,28 +85,33 @@ def print_table(backtest: dict) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Compare the models in the walk-forward backtest")
+    parser.add_argument("--league", choices=sorted(config.LEAGUES), default="cfb")
     parser.add_argument("--season", type=int, default=config.current_season())
     parser.add_argument(
         "--select", action="store_true", help="save the lowest-error model to params.json"
     )
     args = parser.parse_args(argv)
 
-    backtest, _ = build_backtest(load_games(), args.season, Rules(), log=lambda *_: None)
+    league = config.LEAGUES[args.league]
+    rules = Rules(**league.rules)
+    games = load_games(league=league)
+    backtest, _ = build_backtest(games, args.season, rules, league, log=lambda *_: None)
     if args.select:
         best = min(
             (r for r in backtest["comparison"] if r["current"].get("n")),
             key=lambda r: r["current"]["mae_margin"],
         )
-        params = load_params()
+        params = load_params(league)
         params["selected"] = best["model"]
+        scope = " (FBS vs FBS)" if league.membership == "standings" else ""
         params["selected_by"] = (
-            f"lowest margin MAE in the {args.season} walk-forward backtest (FBS vs FBS)"
+            f"lowest margin MAE in the {args.season} walk-forward backtest{scope}"
         )
-        config.PARAMS_PATH.write_text(json.dumps(params, indent=2, ensure_ascii=False) + "\n")
+        league.params_path.write_text(json.dumps(params, indent=2, ensure_ascii=False) + "\n")
         for row in backtest["comparison"]:
             row["selected"] = row["model"] == best["model"]
         print(f"Selected: {best['label']}")
-    print_table(backtest)
+    print_table(backtest, league)
     return 0
 
 

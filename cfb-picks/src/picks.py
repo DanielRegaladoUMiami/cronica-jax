@@ -1,16 +1,19 @@
 """Weekly picks.
 
 Usage:
-    python -m src.picks --week 12        # a specific week
-    python -m src.picks                  # the current week
+    python -m src.picks --week 12        # college football, a specific week
+    python -m src.picks                  # college football, the current week
+    python -m src.picks --league nfl     # the NFL, the current week
     python -m src.picks --skip-build     # do not download games again
 
 What it does:
-1. Updates games.parquet and the closing lines of games already played.
+1. Updates the league's games and the closing lines of games already played.
 2. Fits the selected model on everything played so far.
 3. For each game: projected score, probabilities, edge against your lines
-   (data/odds_manual.csv) or ESPN's, a stability check and a label.
-4. Exports site/data/picks.json and site/data/backtest.json.
+   (data/odds_manual.csv, or data/nfl_odds_manual.csv) or ESPN's, a stability
+   check and a label.
+4. Exports site/data/picks.json and backtest.json (nfl_picks.json and
+   nfl_backtest.json for the NFL).
 """
 
 from __future__ import annotations
@@ -27,6 +30,7 @@ import pandas as pd
 
 from . import config
 from .data import build as build_mod
+from .data.build import postseason_rounds
 from .data.espn import EspnClient, EspnError
 from .data.odds import (
     build_markets,
@@ -52,8 +56,6 @@ from .model.registry import build_models, load_params, selected_name
 from .model.rules import AVOID, PASS, PLAY, Rules, evaluate_game
 from .model.simulate import drop_last_games, record, simulate_bets
 
-PROTOTYPE_REFERENCE = {"accuracy": 0.73, "accuracy_14": 0.92, "mae_margin": 15.5, "mae_total": 20.0}
-MIN_POINTS = 3.0  # floor for a team's projected score
 LABELS = (PLAY, AVOID, PASS)
 NO_DATA_REASONS = {
     "in_progress": "already started",
@@ -81,15 +83,44 @@ def _clean(obj):
     return obj
 
 
-def week_for(calendar: dict, now: datetime) -> int:
-    """Current week as a week_index (postseason = last regular week + 1)."""
+def week_for(calendar: dict, now: datetime, league: config.League = config.CFB) -> int:
+    """Current week as a week_index. After the regular season: the bowl bucket for
+    college football (last week + 1), the current playoff round for the NFL."""
     regular = sorted(calendar["regular"], key=lambda w: w["week"])
     if not regular or now < regular[0]["start"]:
         return 1
     for entry in regular:
         if entry["start"] <= now < entry["end"]:
             return entry["week"]
-    return regular[-1]["week"] + 1
+    rounds = postseason_rounds(calendar, league)
+    for entry in rounds:
+        if now < entry["end"]:
+            return entry["week_index"]
+    return rounds[-1]["week_index"] if rounds else regular[-1]["week"] + 1
+
+
+def next_open_week(games: pd.DataFrame, season: int, week: int) -> int:
+    """`week`, or the following one when every game of `week` is already final.
+
+    A week on ESPN's calendar runs until midweek, so the day after its last game
+    there is nothing left in it to pick."""
+    this_season = games[games["season"] == season]
+    current = this_season[this_season["week_index"] == week]
+    following = this_season[this_season["week_index"] == week + 1]
+    if len(current) and current["completed"].all() and len(following):
+        return week + 1
+    return week
+
+
+def week_label(calendar: dict, week: int, league: config.League = config.CFB) -> str:
+    regular = [w["week"] for w in calendar["regular"]]
+    if not regular or week <= max(regular):
+        return f"Week {week}"
+    if league.playoff_rounds:
+        for entry in postseason_rounds(calendar, league):
+            if entry["week_index"] == week and entry["label"]:
+                return entry["label"]
+    return "Postseason"
 
 
 def _points(value) -> float:
@@ -115,8 +146,9 @@ def _week_rows(path, season: int, week: int) -> list[dict]:
     return rows
 
 
-def load_notes(season: int, week: int) -> list[dict]:
-    """data/notes.csv: a manual point adjustment and a note per game (injuries, weather, motivation)."""
+def load_notes(season: int, week: int, league: config.League = config.CFB) -> list[dict]:
+    """The league's notes.csv: a manual point adjustment and a note per game
+    (injuries, weather, motivation)."""
     return [
         {
             "away": (raw.get("away") or "").strip(),
@@ -125,36 +157,47 @@ def load_notes(season: int, week: int) -> list[dict]:
             "total_adj": _points(raw.get("total_adj")),
             "notes": (raw.get("notes") or "").strip(),
         }
-        for raw in _week_rows(config.NOTES_PATH, season, week)
+        for raw in _week_rows(league.notes_path, season, week)
     ]
 
 
-def load_parlays(season: int, week: int) -> dict[str, list[str]]:
-    """data/parlays.csv: saved moneyline parlays (one row per leg)."""
+def load_parlays(
+    season: int, week: int, league: config.League = config.CFB
+) -> dict[str, list[str]]:
+    """The league's parlays.csv: saved moneyline parlays (one row per leg)."""
     out: dict[str, list[str]] = {}
-    for raw in _week_rows(config.PARLAYS_PATH, season, week):
+    for raw in _week_rows(league.parlays_path, season, week):
         if (raw.get("team") or "").strip():
             out.setdefault((raw.get("name") or "Parlay").strip(), []).append(raw["team"].strip())
     return out
 
 
 def _records(games: pd.DataFrame, season: int) -> dict[str, str]:
+    """Each team's record: "7-3", or "7-3-1" once it has a tie."""
     done = games[(games["season"] == season) & games["completed"]]
-    wins: dict[str, int] = {}
-    losses: dict[str, int] = {}
+    tally: dict[str, list[int]] = {}
     for row in done.itertuples():
-        home_won = row.home_points > row.away_points
-        for tid, won in ((row.home_id, home_won), (row.away_id, not home_won)):
-            tally = wins if won else losses
-            tally[tid] = tally.get(tid, 0) + 1
-    return {tid: f"{wins.get(tid, 0)}-{losses.get(tid, 0)}" for tid in set(wins) | set(losses)}
+        diff = int(row.home_points) - int(row.away_points)
+        for tid, sign in ((row.home_id, 1), (row.away_id, -1)):
+            wlt = tally.setdefault(tid, [0, 0, 0])
+            wlt[0 if diff * sign > 0 else 1 if diff * sign < 0 else 2] += 1
+    return {
+        tid: f"{w}-{loss}" + (f"-{ties}" if ties else "") for tid, (w, loss, ties) in tally.items()
+    }
 
 
 # -------------------------------------------------------------- backtest.json
-def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) -> tuple[dict, dict]:
+def build_backtest(
+    games: pd.DataFrame,
+    season: int,
+    rules: Rules,
+    league: config.League = config.CFB,
+    log=print,
+) -> tuple[dict, dict]:
     """Run the walk-forward backtest for every model and the betting backtest for
     the selected one. Returns (backtest.json, context for the picks)."""
-    params = load_params()
+    params = load_params(league)
+    big = league.big_favorite
     seasons = make_seasons(games)
     years = sorted(seasons)
     eval_years = years[1:] if len(years) > 1 else years  # the first season only leaves the prior
@@ -178,9 +221,9 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
                 "model": name,
                 "label": model.label,
                 "selected": name == chosen,
-                "current": metrics(fbs_only(cur), sigma_hist),
-                "current_with_fcs": metrics(cur, sigma_hist),
-                "history": metrics(hist) if len(hist) else {"n": 0},
+                "current": metrics(fbs_only(cur), sigma_hist, big),
+                "current_with_fcs": metrics(cur, sigma_hist, big),
+                "history": metrics(hist, big=big) if len(hist) else {"n": 0},
             }
         )
 
@@ -189,7 +232,7 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
     sigma_m, sigma_t = residual_sigma(pool)
     cur = fbs_only(wf[wf["season"] == season])
     hist = fbs_only(wf[wf["season"] < season])
-    cur_metrics = metrics(cur, sigma_m)
+    cur_metrics = metrics(cur, sigma_m, big)
     cal_cur, cal_hist = calibration(cur, sigma_m), calibration(hist, sigma_m)
     cal_error = None
     if cal_hist:
@@ -197,7 +240,7 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
         cal_error = weighted / max(sum(b["n"] for b in cal_hist), 1)
 
     # ---- simulated bets against closing lines
-    odds = load_odds_history()
+    odds = load_odds_history(league=league)
     odds_seasons = sorted(int(s) for s in odds.loc[odds["has_odds"], "season"].unique())
     bets = pd.DataFrame()
     if odds_seasons:
@@ -216,7 +259,7 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
     cur_bets = bets[bets["season"] == season] if len(bets) else bets
     weekly = []
     cumulative = 0.0
-    for row in by_week(cur, sigma_m):
+    for row in by_week(cur, sigma_m, big):
         week = row["week"]
         if len(cur_bets):
             plays = cur_bets[(cur_bets["week"] == week) & (cur_bets["label"] == PLAY)]
@@ -260,8 +303,11 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
             }
 
     backtest = {
+        "sport": league.key,
+        "league": league.name,
         "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "season": season,
+        "big_margin": big,
         "selected": chosen,
         "selected_label": models[chosen].label,
         "tuned_on": params.get("tuned_on"),
@@ -278,7 +324,7 @@ def build_backtest(games: pd.DataFrame, season: int, rules: Rules, log=print) ->
             "note": "Flat one-unit bets against the DraftKings/consensus closing line from ESPN.",
         },
         "rules": rules.as_dict(),
-        "prototype_reference": PROTOTYPE_REFERENCE,
+        "prototype_reference": league.prototype,
     }
     context = {
         "model": models[chosen],
@@ -303,6 +349,7 @@ def build_picks(
     context: dict,
     rules: Rules,
     client: EspnClient,
+    league: config.League = config.CFB,
     log=print,
 ) -> dict:
     model, seasons = context["model"], context["seasons"]
@@ -327,18 +374,21 @@ def build_picks(
     n_regular = int(regular["week"].max())
     espn_odds: dict[str, dict] = {}
     live_status: dict[str, str] = {}
+    label = f"Week {week}" if week <= n_regular else "Postseason"
     try:
+        calendar = parse_calendar(client.scoreboard_week(season, 1))
+        label = week_label(calendar, week, league)
         if week <= n_regular:
             payloads = [client.scoreboard_week(season, week, max_age=300)]
         else:
-            first = client.scoreboard_week(season, 1)
             payloads = [
                 client.scoreboard_week(season, e["week"], seasontype=3, max_age=300)
-                for e in parse_calendar(first)["postseason"]
+                for e in postseason_rounds(calendar, league)
+                if e["week_index"] == week
             ]
         for payload in payloads:
             for event in payload.get("events") or []:
-                row = parse_event(event)
+                row = parse_event(event, league.nicknames)
                 if row is None:
                     continue
                 live_status[row["game_id"]] = row["status"]
@@ -350,19 +400,20 @@ def build_picks(
 
     week_games = games[(games["season"] == season) & (games["week_index"] == week)]
     week_games = week_games.sort_values(["date", "game_id"])
-    manual_rows = load_manual_odds(season=season, week=week)
+    manual_rows = load_manual_odds(season=season, week=week, league=league)
     manual_by_game, manual_warnings = match_manual(manual_rows, week_games, teams)
     warnings.extend(manual_warnings)
 
     lookup = team_lookup(teams)
     notes_by_game: dict[str, dict] = {}
     pair_to_game = {(g.away_id, g.home_id): g.game_id for g in week_games.itertuples()}
-    for note in load_notes(season, week):
+    for note in load_notes(season, week, league):
         pair = (lookup.get(normalize_team(note["away"])), lookup.get(normalize_team(note["home"])))
         gid = pair_to_game.get(pair)
         if gid is None:
             warnings.append(
-                f"notes.csv: could not find {note['away']} @ {note['home']} in week {week}"
+                f"{league.notes_path.name}: could not find {note['away']} @ {note['home']}"
+                f" in week {week}"
             )
         else:
             notes_by_game[gid] = note
@@ -471,7 +522,7 @@ def build_picks(
                 f"the model is {abs(ev['margin_gap']):.1f} pts away from the market spread"
             )
 
-        home_pts, away_pts = _scoreline(margin_f, total_f)
+        home_pts, away_pts = _scoreline(margin_f, total_f, league.min_points)
         p_home = float(norm_cdf(margin_f / sigma_m))
         espn_ref = None
         if espn:
@@ -531,24 +582,27 @@ def build_picks(
         )
 
     parlays = []
-    for name, legs in load_parlays(season, week).items():
+    for name, legs in load_parlays(season, week, league).items():
         parlay, parlay_warnings = evaluate_parlay(name, legs, out_games, lookup)
         warnings.extend(parlay_warnings)
         parlays.append(parlay)
 
     met = context["metrics"]
     return {
+        "sport": league.key,
+        "league": league.name,
         "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "season": season,
         "week": week,
-        "week_label": f"Week {week}" if week <= n_regular else "Postseason",
+        "week_label": label,
         "model": {
             "name": model.name,
             "label": model.label,
             "sigma_margin": sigma_m,
             "sigma_total": sigma_t,
             "accuracy": met.get("accuracy"),
-            "accuracy_14": met.get("accuracy_14"),
+            "accuracy_big": met.get("accuracy_big"),
+            "big_margin": league.big_favorite,
             "mae_margin": met.get("mae_margin"),
             "mae_total": met.get("mae_total"),
             "n_backtest": met.get("n"),
@@ -576,15 +630,17 @@ def _season_prior(model, seasons: dict, season: int) -> dict:
     return model.prior(prev_state, prev_sa, seasons[season])
 
 
-def _scoreline(margin: float, total: float | None) -> tuple[float | None, float | None]:
+def _scoreline(
+    margin: float, total: float | None, floor: float = 3.0
+) -> tuple[float | None, float | None]:
     """Projected score from margin and total, never leaving a team below a floor."""
     if total is None:
         return None, None
     home, away = (total + margin) / 2.0, (total - margin) / 2.0
-    if away < MIN_POINTS:
-        away, home = MIN_POINTS, MIN_POINTS + margin
-    elif home < MIN_POINTS:
-        home, away = MIN_POINTS, MIN_POINTS - margin
+    if away < floor:
+        away, home = floor, floor + margin
+    elif home < floor:
+        home, away = floor, floor - margin
     return home, away
 
 
@@ -653,6 +709,7 @@ def evaluate_parlay(
 # ------------------------------------------------------------------------ CLI
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate this week's picks and the site's JSON")
+    parser.add_argument("--league", choices=sorted(config.LEAGUES), default="cfb")
     parser.add_argument("--week", type=int, default=None, help="week (default: the current one)")
     parser.add_argument("--season", type=int, default=config.current_season())
     parser.add_argument(
@@ -661,20 +718,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--offline", action="store_true", help="use the cache only")
     args = parser.parse_args(argv)
 
-    rules = Rules()
-    client = EspnClient(offline=args.offline)
+    league = config.LEAGUES[args.league]
+    rules = Rules(**league.rules)
+    client = EspnClient(offline=args.offline, league=league)
     try:
         if not args.skip_build and not args.offline:
-            build_mod.build(args.season, [y for y in config.HISTORY_SEASONS if y < args.season])
-            fetch_odds_history(args.season)
-        games = build_mod.load_games()
-        teams = build_mod.load_teams()
+            history = [y for y in league.history_seasons if y < args.season]
+            build_mod.build(args.season, history, league=league)
+            fetch_odds_history(args.season, league=league)
+        games = build_mod.load_games(league=league)
+        teams = build_mod.load_teams(league=league)
         week = args.week
         if week is None:
             calendar = parse_calendar(client.scoreboard_week(args.season, 1))
-            week = week_for(calendar, datetime.now(timezone.utc))
-        backtest, context = build_backtest(games, args.season, rules)
-        picks = build_picks(games, teams, args.season, week, context, rules, client)
+            week = week_for(calendar, datetime.now(timezone.utc), league)
+            week = next_open_week(games, args.season, week)
+        backtest, context = build_backtest(games, args.season, rules, league)
+        picks = build_picks(games, teams, args.season, week, context, rules, client, league)
     except EspnError as exc:
         print(f"ERROR: the ESPN API failed and no data is made up: {exc}", file=sys.stderr)
         return 1
@@ -682,9 +742,9 @@ def main(argv: list[str] | None = None) -> int:
     config.SITE_DATA_DIR.mkdir(parents=True, exist_ok=True)
     for name, payload in (("picks.json", picks), ("backtest.json", backtest)):
         text = json.dumps(_clean(payload), ensure_ascii=False, indent=1) + "\n"
-        (config.SITE_DATA_DIR / name).write_text(text, encoding="utf-8")
+        league.site_json(name).write_text(text, encoding="utf-8")
 
-    print_summary(picks)
+    print_summary(picks, league)
     return 0
 
 
@@ -698,11 +758,11 @@ def _side_name(game: dict, market: str, key: str) -> str:
     return f"{team} {(home_line if key == 'home' else -home_line):+g}"
 
 
-def print_summary(picks: dict) -> None:
+def print_summary(picks: dict, league: config.League = config.CFB) -> None:
     games = [g for g in picks["games"] if not g.get("no_data")]
     print(
-        f"\n{picks['week_label']} {picks['season']}: {len(games)} games with a projection,"
-        f" {sum(g['on_my_list'] for g in games)} with your lines"
+        f"\n{league.name}, {picks['week_label']} {picks['season']}: {len(games)} games with a"
+        f" projection, {sum(g['on_my_list'] for g in games)} with your lines"
     )
     found = []
     for g in games:
@@ -738,8 +798,10 @@ def print_summary(picks: dict) -> None:
         print(f"\nParlay '{parlay['name']}': " + " · ".join(parts))
     for warning in picks["warnings"]:
         print(f"WARNING: {warning}")
-    out_dir = config.SITE_DATA_DIR.relative_to(config.ROOT)
-    print(f"\nExported: {out_dir}/picks.json and {out_dir}/backtest.json")
+    out = [
+        league.site_json(name).relative_to(config.ROOT) for name in ("picks.json", "backtest.json")
+    ]
+    print(f"\nExported: {out[0]} and {out[1]}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,55 @@
+{
+  "tuned_on": "2022-2025",
+  "srs": {
+    "cap": 28.0,
+    "k": 6.0,
+    "k_total": 13.0,
+    "rho": 0.6,
+    "rho_total": 0.7,
+    "half_life": 13.0,
+    "hfa0": 2.5,
+    "hfa_k": 40.0,
+    "newcomer": -8.0,
+    "fcs0": -22.0,
+    "base_total0": 53.0,
+    "base_total_k": 10.0
+  },
+  "elo": {
+    "k": 20.0,
+    "hfa": 50.0,
+    "carry": 0.5,
+    "scale": 22.587206666304553,
+    "newcomer": 1350.0,
+    "fcs0": 1150.0,
+    "fcs_k": 0.1
+  },
+  "srs_blend_weight": 0.3302422950510593,
+  "history": {
+    "srs": {
+      "margin": 12.898737680992689,
+      "total": 13.370359470612796,
+      "n": 1139,
+      "accuracy": 0.6329225352112676,
+      "mae_margin": 9.994423446307012,
+      "mae_total": 10.512966213307
+    },
+    "elo": {
+      "margin": 12.860129378725201,
+      "total": null,
+      "n": 1139,
+      "accuracy": 0.6408450704225352,
+      "mae_margin": 9.923936567319858,
+      "mae_total": null
+    },
+    "blend": {
+      "margin": 12.847702905130983,
+      "total": 13.370359470612796,
+      "n": 1139,
+      "accuracy": 0.6338028169014085,
+      "mae_margin": 9.92288426631512,
+      "mae_total": 10.512966213307
+    }
+  },
+  "selected": "srs",
+  "selected_by": "lowest margin MAE in the 2026 walk-forward backtest"
+}

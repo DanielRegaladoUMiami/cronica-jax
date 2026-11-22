@@ -1,7 +1,8 @@
-"""Tune the hyperparameters on past seasons and save them to params.json.
+"""Tune the hyperparameters on past seasons and save them to the league's params file.
 
 Usage:
-    python -m src.model.tune
+    python -m src.model.tune                 # college football -> src/model/params.json
+    python -m src.model.tune --league nfl    # NFL -> src/model/nfl_params.json
 
 Protocol (so the evaluation stays honest):
 - The first season is a warm-up: it only leaves the prior for the next one.
@@ -12,6 +13,7 @@ Protocol (so the evaluation stays honest):
 
 from __future__ import annotations
 
+import argparse
 import itertools
 import json
 from dataclasses import asdict, replace
@@ -26,14 +28,44 @@ from .data import make_seasons
 from .elo import EloModel, EloParams
 from .srs import SrsModel, SrsParams
 
+# Values tried for each setting. The NFL has closer games, more parity from one
+# season to the next and a smaller home edge, so its ranges sit lower.
+GRIDS = {
+    "cfb": {
+        "cap": (24.0, 28.0, 35.0, 45.0, 99.0),
+        "k": (1.0, 2.0, 3.0, 4.0, 6.0),
+        "rho": (0.55, 0.7, 0.85, 1.0),
+        "half_life": (5.0, 8.0, 12.0),
+        "hfa0": (),
+        "k_total": (2.0, 4.0, 6.0, 9.0, 13.0),
+        "rho_total": (0.3, 0.5, 0.7, 0.9),
+        "elo_k": (25.0, 32.0, 40.0, 50.0, 62.0),
+        "elo_hfa": (40.0, 55.0, 70.0),
+        "elo_carry": (0.6, 0.7, 0.8, 0.9, 1.0),
+    },
+    "nfl": {
+        "cap": (14.0, 17.0, 21.0, 24.0, 28.0, 99.0),
+        "k": (1.0, 2.0, 3.0, 4.0, 6.0, 9.0),
+        "rho": (0.3, 0.45, 0.6, 0.75, 0.9),
+        "half_life": (4.0, 6.0, 9.0, 13.0),
+        "hfa0": (1.0, 1.5, 2.0),
+        "k_total": (2.0, 4.0, 6.0, 9.0, 13.0, 20.0),
+        "rho_total": (0.3, 0.5, 0.7, 0.9),
+        "elo_k": (10.0, 14.0, 20.0, 28.0, 40.0),
+        "elo_hfa": (20.0, 35.0, 50.0, 65.0),
+        "elo_carry": (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+    },
+}
+
 
 def _rmse(df, col_pred="pred_margin", col_true="margin") -> float:
     return float(np.sqrt(np.mean((df[col_pred] - df[col_true]) ** 2)))
 
 
-def tune(current_season: int | None = None, log=print) -> dict:
+def tune(current_season: int | None = None, league: config.League = config.CFB, log=print) -> dict:
     current_season = current_season or config.current_season()
-    games = load_games()
+    grid_of = GRIDS[league.key]
+    games = load_games(league=league)
     seasons = {s: sa for s, sa in make_seasons(games).items() if s < current_season}
     years = sorted(seasons)
     eval_years = years[1:]  # the first one is the warm-up
@@ -45,9 +77,7 @@ def tune(current_season: int | None = None, log=print) -> dict:
 
     # 1) margin: blowout cap, shrinkage and weight of last season
     best, best_score = SrsParams(), float("inf")
-    grid = itertools.product(
-        (24.0, 28.0, 35.0, 45.0, 99.0), (1.0, 2.0, 3.0, 4.0, 6.0), (0.55, 0.7, 0.85, 1.0)
-    )
+    grid = itertools.product(grid_of["cap"], grid_of["k"], grid_of["rho"])
     for cap, k, rho in grid:
         params = replace(SrsParams(), cap=cap, k=k, rho=rho)
         s, _ = score_srs(params)
@@ -56,17 +86,26 @@ def tune(current_season: int | None = None, log=print) -> dict:
     log(f"  SRS margin: cap={best.cap:g} k={best.k:g} rho={best.rho:g} -> RMSE {best_score:.3f}")
 
     # 2) recency weighting
-    for half_life in (5.0, 8.0, 12.0):
+    for half_life in grid_of["half_life"]:
         params = replace(best, half_life=half_life)
         s, _ = score_srs(params)
         if s < best_score - 0.005:  # only if it clearly helps: fewer parameters is better
             best, best_score = params, s
     log(f"  SRS recency: half_life={best.half_life:g} -> RMSE {best_score:.3f}")
 
+    # 2b) where the home-field advantage starts from, for leagues where it is not the default
+    for hfa0 in grid_of["hfa0"]:
+        params = replace(best, hfa0=hfa0)
+        s, _ = score_srs(params)
+        if s < best_score:
+            best, best_score = params, s
+    if grid_of["hfa0"]:
+        log(f"  SRS home field: hfa0={best.hfa0:g} -> RMSE {best_score:.3f}")
+
     # 3) totals (a system independent from the margin one)
     best_total = float("inf")
     best_t = best
-    for k_total, rho_total in itertools.product((2.0, 4.0, 6.0, 9.0, 13.0), (0.3, 0.5, 0.7, 0.9)):
+    for k_total, rho_total in itertools.product(grid_of["k_total"], grid_of["rho_total"]):
         params = replace(best, k_total=k_total, rho_total=rho_total)
         _, t = score_srs(params)
         if t < best_total:
@@ -79,9 +118,7 @@ def tune(current_season: int | None = None, log=print) -> dict:
 
     # 4) Elo. The scale (Elo points per point of margin) has a closed-form solution.
     best_elo, best_elo_score = EloParams(), float("inf")
-    grid = itertools.product(
-        (25.0, 32.0, 40.0, 50.0, 62.0), (40.0, 55.0, 70.0), (0.6, 0.7, 0.8, 0.9, 1.0)
-    )
+    grid = itertools.product(grid_of["elo_k"], grid_of["elo_hfa"], grid_of["elo_carry"])
     for k, hfa, carry in grid:
         params = EloParams(k=k, hfa=hfa, carry=carry, scale=1.0)
         df = fbs_only(walk_forward(EloModel(params), seasons, eval_years))
@@ -123,14 +160,17 @@ def tune(current_season: int | None = None, log=print) -> dict:
         "srs_blend_weight": weight,
         "history": history,
     }
-    previous = json.loads(config.PARAMS_PATH.read_text()) if config.PARAMS_PATH.exists() else {}
+    path = league.params_path
+    previous = json.loads(path.read_text()) if path.exists() else {}
     for key in ("selected", "selected_by"):  # keep the model choice made by `src.compare --select`
         if key in previous:
             out[key] = previous[key]
-    config.PARAMS_PATH.write_text(json.dumps(out, indent=2) + "\n")
-    log(f"Saved to {config.PARAMS_PATH.relative_to(config.ROOT)}")
+    path.write_text(json.dumps(out, indent=2) + "\n")
+    log(f"Saved to {path.relative_to(config.ROOT)}")
     return out
 
 
 if __name__ == "__main__":
-    tune()
+    parser = argparse.ArgumentParser(description="Tune the models on past seasons")
+    parser.add_argument("--league", choices=sorted(config.LEAGUES), default="cfb")
+    tune(league=config.LEAGUES[parser.parse_args().league])

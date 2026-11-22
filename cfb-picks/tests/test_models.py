@@ -161,9 +161,9 @@ def test_metrics_and_calibration():
     assert m["n"] == 4 and m["accuracy"] == 0.75
     assert m["mae_margin"] == pytest.approx((3 + 7 + 8 + 7) / 4)
     assert m["mae_total"] == pytest.approx((5 + 7 + 0) / 3)  # no projected total, not counted
-    assert m["accuracy_14"] == 1.0 and m["n_14"] == 1
+    assert m["accuracy_big"] == 1.0 and m["n_big"] == 1 and m["big_margin"] == 14.0
     assert 0 < m["brier"] < 0.25
-    bins = calibration(df, sigma=16.0)
+    bins = calibration(df, sigma=16.0, min_n=1)
     assert sum(b["n"] for b in bins) == 4
     assert all(0.5 <= b["predicted"] <= 1 for b in bins)
     assert metrics(df.iloc[0:0]) == {"n": 0}

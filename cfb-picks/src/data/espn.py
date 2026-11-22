@@ -67,7 +67,9 @@ class EspnClient:
         timeout: float = 30.0,
         retries: int = 4,
         offline: bool = False,
+        league: config.League = config.CFB,
     ) -> None:
+        self.league = league
         self.cache_dir = Path(cache_dir)
         self.pause = pause
         self.timeout = timeout
@@ -182,17 +184,18 @@ class EspnClient:
         max_age: float = 900,
         refresh: bool = False,
     ) -> dict:
-        """All FBS games in a week (seasontype 2 = regular season, 3 = postseason)."""
+        """All the league's games in a week (seasontype 2 = regular season, 3 = postseason)."""
+        league = self.league
         params = {
             "dates": season,
             "seasontype": seasontype,
             "week": week,
-            "groups": config.FBS_GROUP,
-            "limit": config.SCOREBOARD_LIMIT,
+            **league.scoreboard_params,
+            "limit": league.scoreboard_limit,
         }
         return self.get(
-            f"scoreboard/{season}_t{seasontype}_w{week:02d}",
-            f"{config.ESPN_SITE}/scoreboard",
+            f"{league.cache_prefix}scoreboard/{season}_t{seasontype}_w{week:02d}",
+            f"{league.site_url}/scoreboard",
             params,
             max_age=max_age,
             settled=scoreboard_is_settled,
@@ -202,11 +205,12 @@ class EspnClient:
     def scoreboard_date(
         self, yyyymmdd: str, *, max_age: float = 900, refresh: bool = False
     ) -> dict:
-        """FBS games on a specific day (YYYYMMDD)."""
-        params = {"dates": yyyymmdd, "groups": config.FBS_GROUP, "limit": config.SCOREBOARD_LIMIT}
+        """The league's games on a specific day (YYYYMMDD)."""
+        league = self.league
+        params = {"dates": yyyymmdd, **league.scoreboard_params, "limit": league.scoreboard_limit}
         return self.get(
-            f"scoreboard_day/{yyyymmdd}",
-            f"{config.ESPN_SITE}/scoreboard",
+            f"{league.cache_prefix}scoreboard_day/{yyyymmdd}",
+            f"{league.site_url}/scoreboard",
             params,
             max_age=max_age,
             settled=scoreboard_is_settled,
@@ -214,12 +218,13 @@ class EspnClient:
         )
 
     def standings(self, season: int, *, refresh: bool = False) -> dict:
-        """FBS standings for the season: the source for which teams are FBS that year."""
+        """Standings for the season. For college football: the source for which teams are FBS."""
+        league = self.league
         past = season < config.current_season()
         return self.get(
-            f"standings/{season}",
-            config.ESPN_STANDINGS,
-            {"season": season, "group": config.FBS_GROUP},
+            f"{league.cache_prefix}standings/{season}",
+            league.standings_url,
+            {"season": season, **league.standings_params},
             max_age=None if past else 7 * 86400,
             refresh=refresh,
         )
@@ -227,8 +232,8 @@ class EspnClient:
     def pickcenter(self, event_id: str, *, refresh: bool = False) -> list:
         """Lines (opening and closing) for a game. Only the `pickcenter` block is stored."""
         payload = self.get(
-            f"pickcenter/{event_id}",
-            f"{config.ESPN_SITE}/summary",
+            f"{self.league.cache_prefix}pickcenter/{event_id}",
+            f"{self.league.site_url}/summary",
             {"event": event_id},
             max_age=None,
             refresh=refresh,

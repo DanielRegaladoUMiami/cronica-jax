@@ -1,0 +1,497 @@
+{
+ "leagues": [
+  {
+   "calendar": [
+    {
+     "label": "Regular Season",
+     "value": "2",
+     "entries": [
+      {
+       "label": "Week 1",
+       "value": "1",
+       "startDate": "2026-09-06T07:00Z",
+       "endDate": "2026-09-16T06:59Z"
+      },
+      {
+       "label": "Week 2",
+       "value": "2",
+       "startDate": "2026-09-16T07:00Z",
+       "endDate": "2026-09-23T06:59Z"
+      },
+      {
+       "label": "Week 18",
+       "value": "18",
+       "startDate": "2027-01-06T08:00Z",
+       "endDate": "2027-01-13T07:59Z"
+      }
+     ]
+    },
+    {
+     "label": "Postseason",
+     "value": "3",
+     "entries": [
+      {
+       "label": "Wild Card",
+       "value": "1",
+       "startDate": "2027-01-13T08:00Z",
+       "endDate": "2027-01-20T07:59Z"
+      },
+      {
+       "label": "Divisional Round",
+       "value": "2",
+       "startDate": "2027-01-20T08:00Z",
+       "endDate": "2027-01-27T07:59Z"
+      },
+      {
+       "label": "Conference Championships",
+       "value": "3",
+       "startDate": "2027-01-27T08:00Z",
+       "endDate": "2027-02-03T07:59Z"
+      },
+      {
+       "label": "Super Bowl",
+       "value": "4",
+       "startDate": "2027-02-03T08:00Z",
+       "endDate": "2027-02-16T07:59Z"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "events": [
+  {
+   "id": "401873066",
+   "date": "2026-11-20T01:15Z",
+   "season": {
+    "year": 2026,
+    "type": 2,
+    "slug": "regular-season"
+   },
+   "week": {
+    "number": 11
+   },
+   "status": {
+    "type": {
+     "name": "STATUS_FINAL",
+     "state": "post",
+     "completed": true
+    }
+   },
+   "competitions": [
+    {
+     "neutralSite": false,
+     "conferenceCompetition": false,
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "26",
+       "curatedRank": {
+        "current": 99
+       },
+       "team": {
+        "id": "34",
+        "location": "Houston",
+        "name": "Texans",
+        "abbreviation": "HOU",
+        "displayName": "Houston Texans",
+        "shortDisplayName": "Texans",
+        "color": "021018",
+        "alternateColor": "eb0028"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "3",
+       "curatedRank": {
+        "current": 99
+       },
+       "team": {
+        "id": "11",
+        "location": "Indianapolis",
+        "name": "Colts",
+        "abbreviation": "IND",
+        "displayName": "Indianapolis Colts",
+        "shortDisplayName": "Colts",
+        "color": "003b75",
+        "alternateColor": "ffffff"
+       }
+      }
+     ],
+     "odds": []
+    }
+   ]
+  },
+  {
+   "id": "401873070",
+   "date": "2026-11-22T18:00Z",
+   "season": {
+    "year": 2026,
+    "type": 2,
+    "slug": "regular-season"
+   },
+   "week": {
+    "number": 11
+   },
+   "status": {
+    "type": {
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false
+    }
+   },
+   "competitions": [
+    {
+     "neutralSite": false,
+     "conferenceCompetition": false,
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "curatedRank": {
+        "current": 99
+       },
+       "team": {
+        "id": "2",
+        "location": "Buffalo",
+        "name": "Bills",
+        "abbreviation": "BUF",
+        "displayName": "Buffalo Bills",
+        "shortDisplayName": "Bills",
+        "color": "00338d",
+        "alternateColor": "d50a0a"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "curatedRank": {
+        "current": 99
+       },
+       "team": {
+        "id": "15",
+        "location": "Miami",
+        "name": "Dolphins",
+        "abbreviation": "MIA",
+        "displayName": "Miami Dolphins",
+        "shortDisplayName": "Dolphins",
+        "color": "008e97",
+        "alternateColor": "fc4c02"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "id": "100",
+        "name": "DraftKings",
+        "priority": 1,
+        "displayName": "DraftKings"
+       },
+       "details": "BUF -16.5",
+       "overUnder": 45.5,
+       "spread": -16.5,
+       "awayTeamOdds": {
+        "favorite": false,
+        "underdog": true,
+        "team": {
+         "id": "15",
+         "abbreviation": "MIA",
+         "name": "Dolphins",
+         "displayName": "Miami Dolphins"
+        },
+        "favoriteAtOpen": false
+       },
+       "homeTeamOdds": {
+        "favorite": true,
+        "underdog": false,
+        "team": {
+         "id": "2",
+         "abbreviation": "BUF",
+         "name": "Bills",
+         "displayName": "Buffalo Bills"
+        },
+        "favoriteAtOpen": true
+       },
+       "moneyline": {
+        "displayName": "Moneyline",
+        "shortDisplayName": "ML",
+        "home": {
+         "close": {
+          "odds": "-1680"
+         },
+         "open": {
+          "odds": "-600"
+         }
+        },
+        "away": {
+         "close": {
+          "odds": "+930"
+         },
+         "open": {
+          "odds": "+440"
+         }
+        }
+       },
+       "pointSpread": {
+        "displayName": "Spread",
+        "shortDisplayName": "Spread",
+        "home": {
+         "close": {
+          "line": "-16.5",
+          "odds": "-111"
+         },
+         "open": {
+          "line": "-11.5",
+          "odds": "-110"
+         }
+        },
+        "away": {
+         "close": {
+          "line": "+16.5",
+          "odds": "-108"
+         },
+         "open": {
+          "line": "+11.5",
+          "odds": "-110"
+         }
+        }
+       },
+       "total": {
+        "displayName": "Total",
+        "shortDisplayName": "Total",
+        "over": {
+         "close": {
+          "line": "o45.5",
+          "odds": "-105"
+         },
+         "open": {
+          "line": "o47.5",
+          "odds": "-110"
+         }
+        },
+        "under": {
+         "close": {
+          "line": "u45.5",
+          "odds": "-114"
+         },
+         "open": {
+          "line": "u47.5",
+          "odds": "-110"
+         }
+        }
+       },
+       "header": {
+        "text": "Game Odds"
+       },
+       "footer": {
+        "disclaimer": "GAMBLING PROBLEM? CALL 1-800-GAMBLER or 1-800-MY-RESET, (800) 327-5050 or visit gamblinghelplinema.org (MA). Call 877-8-HOPENY/text HOPENY (467369) (NY). Call 888-789-7777/visit ccpg.org (CT), or visit www.mdgamblinghelp.org (MD), 1-800-981-0023 (PR). 21+ and present in most states. (18+ DC/KY/NH/PR/WY). Void in ONT. Eligibility restrictions apply. Terms: draftkings.com/sportsbook. On behalf of Boot Hill Casino (KS). Pass-thru of per wager tax may apply in IL."
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "401873077",
+   "date": "2026-11-23T01:20Z",
+   "season": {
+    "year": 2026,
+    "type": 2,
+    "slug": "regular-season"
+   },
+   "week": {
+    "number": 11
+   },
+   "status": {
+    "type": {
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false
+    }
+   },
+   "competitions": [
+    {
+     "neutralSite": true,
+     "conferenceCompetition": false,
+     "competitors": [
+      {
+       "homeAway": "home",
+       "score": "0",
+       "curatedRank": {
+        "current": 99
+       },
+       "team": {
+        "id": "25",
+        "location": "San Francisco",
+        "name": "49ers",
+        "abbreviation": "SF",
+        "displayName": "San Francisco 49ers",
+        "shortDisplayName": "49ers",
+        "color": "aa0000",
+        "alternateColor": "b3995d"
+       }
+      },
+      {
+       "homeAway": "away",
+       "score": "0",
+       "curatedRank": {
+        "current": 99
+       },
+       "team": {
+        "id": "16",
+        "location": "Minnesota",
+        "name": "Vikings",
+        "abbreviation": "MIN",
+        "displayName": "Minnesota Vikings",
+        "shortDisplayName": "Vikings",
+        "color": "4f2683",
+        "alternateColor": "ffc62f"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "id": "100",
+        "name": "DraftKings",
+        "priority": 1
+       },
+       "details": "SF -3.5",
+       "overUnder": 46.5,
+       "spread": -3.5,
+       "awayTeamOdds": {
+        "favorite": false,
+        "underdog": true,
+        "team": {
+         "id": "16",
+         "abbreviation": "MIN",
+         "name": "Vikings",
+         "displayName": "Minnesota Vikings"
+        },
+        "favoriteAtOpen": false
+       },
+       "homeTeamOdds": {
+        "favorite": true,
+        "underdog": false,
+        "team": {
+         "id": "25",
+         "abbreviation": "SF",
+         "name": "49ers",
+         "displayName": "San Francisco 49ers"
+        },
+        "favoriteAtOpen": true
+       },
+       "moneyline": {
+        "displayName": "Moneyline",
+        "shortDisplayName": "ML",
+        "home": {
+         "close": {
+          "odds": "-176"
+         },
+         "open": {
+          "odds": "-205"
+         }
+        },
+        "away": {
+         "close": {
+          "odds": "+148"
+         },
+         "open": {
+          "odds": "+170"
+         }
+        }
+       },
+       "pointSpread": {
+        "displayName": "Spread",
+        "shortDisplayName": "Spread",
+        "home": {
+         "close": {
+          "line": "-3.5",
+          "odds": "-105"
+         },
+         "open": {
+          "line": "-3.5",
+          "odds": "-110"
+         }
+        },
+        "away": {
+         "close": {
+          "line": "+3.5",
+          "odds": "-114"
+         },
+         "open": {
+          "line": "+3.5",
+          "odds": "-110"
+         }
+        }
+       },
+       "total": {
+        "displayName": "Total",
+        "shortDisplayName": "Total",
+        "over": {
+         "close": {
+          "line": "o46.5",
+          "odds": "-105"
+         },
+         "open": {
+          "line": "o46.5",
+          "odds": "-110"
+         }
+        },
+        "under": {
+         "close": {
+          "line": "u46.5",
+          "odds": "-114"
+         },
+         "open": {
+          "line": "u46.5",
+          "odds": "-110"
+         }
+        }
+       },
+       "header": {
+        "text": "Game Odds"
+       },
+       "footer": {
+        "disclaimer": "GAMBLING PROBLEM? CALL 1-800-GAMBLER or 1-800-MY-RESET, (800) 327-5050 or visit gamblinghelplinema.org (MA). Call 877-8-HOPENY/text HOPENY (467369) (NY). Call 888-789-7777/visit ccpg.org (CT), or visit www.mdgamblinghelp.org (MD), 1-800-981-0023 (PR). 21+ and present in most states. (18+ DC/KY/NH/PR/WY). Void in ONT. Eligibility restrictions apply. Terms: draftkings.com/sportsbook. On behalf of Boot Hill Casino (KS). Pass-thru of per wager tax may apply in IL."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "postseason_2025": [
+  {
+   "label": "Wild Card",
+   "value": "1",
+   "startDate": "2026-01-07T08:00Z",
+   "endDate": "2026-01-14T07:59Z"
+  },
+  {
+   "label": "Divisional Round",
+   "value": "2",
+   "startDate": "2026-01-14T08:00Z",
+   "endDate": "2026-01-21T07:59Z"
+  },
+  {
+   "label": "Conference Championships",
+   "value": "3",
+   "startDate": "2026-01-21T08:00Z",
+   "endDate": "2026-01-28T07:59Z"
+  },
+  {
+   "label": "Pro Bowl",
+   "value": "4",
+   "startDate": "2026-01-28T08:00Z",
+   "endDate": "2026-02-04T07:59Z"
+  },
+  {
+   "label": "Super Bowl",
+   "value": "5",
+   "startDate": "2026-02-04T08:00Z",
+   "endDate": "2026-02-12T07:59Z"
+  }
+ ]
+}

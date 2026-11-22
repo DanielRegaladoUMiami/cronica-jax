@@ -11,9 +11,9 @@ from .elo import EloModel, EloParams
 from .srs import SrsModel, SrsParams
 
 
-def load_params() -> dict:
-    if config.PARAMS_PATH.exists():
-        return json.loads(config.PARAMS_PATH.read_text())
+def load_params(league: config.League = config.CFB) -> dict:
+    if league.params_path.exists():
+        return json.loads(league.params_path.read_text())
     return {}
 
 

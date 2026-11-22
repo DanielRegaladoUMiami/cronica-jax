@@ -110,12 +110,17 @@ def _rank(competitor: dict) -> int | None:
     return int(rank) if isinstance(rank, (int, float)) and 0 < rank <= 25 else None
 
 
-def parse_team(competitor: dict) -> dict | None:
+def parse_team(competitor: dict, nicknames: bool = False) -> dict | None:
+    """`nicknames=True` names a team by its nickname ("Bills") instead of its place
+    ("Buffalo"): the NFL has two teams in New York and two in Los Angeles."""
     team = competitor.get("team") or {}
     tid = _team_id(competitor)
     if tid is None:
         return None
-    name = team.get("location") or team.get("shortDisplayName") or team.get("displayName")
+    place = team.get("location")
+    nick = team.get("shortDisplayName") or team.get("name")
+    name = (nick or place) if nicknames else (place or nick)
+    name = name or team.get("displayName")
     if not name or str(name).upper() == "TBD":
         return None
     return {
@@ -123,13 +128,14 @@ def parse_team(competitor: dict) -> dict | None:
         "team": str(name),
         "abbr": str(team.get("abbreviation") or name),
         "display_name": str(team.get("displayName") or name),
+        "location": str(place or ""),
         "color": str(team.get("color") or ""),
         "alt_color": str(team.get("alternateColor") or ""),
         "conference_id": str(team.get("conferenceId") or ""),
     }
 
 
-def parse_event(event: dict) -> dict | None:
+def parse_event(event: dict, nicknames: bool = False) -> dict | None:
     """A scoreboard event -> flat row. None if the game is not usable
     (a team is missing, team to be determined, unexpected structure)."""
     comp = dig(event, "competitions", 0)
@@ -138,7 +144,7 @@ def parse_event(event: dict) -> dict | None:
     sides: dict[str, dict] = {}
     for competitor in comp.get("competitors") or []:
         side = competitor.get("homeAway")
-        team = parse_team(competitor)
+        team = parse_team(competitor, nicknames)
         if side in ("home", "away") and team is not None:
             sides[side] = {**team, "points": _score(competitor), "rank": _rank(competitor)}
     if set(sides) != {"home", "away"}:
@@ -181,10 +187,10 @@ def parse_event(event: dict) -> dict | None:
     }
 
 
-def parse_event_teams(event: dict) -> list[dict]:
+def parse_event_teams(event: dict, nicknames: bool = False) -> list[dict]:
     out = []
     for competitor in dig(event, "competitions", 0, "competitors", default=[]) or []:
-        team = parse_team(competitor)
+        team = parse_team(competitor, nicknames)
         if team is not None:
             out.append(team)
     return out

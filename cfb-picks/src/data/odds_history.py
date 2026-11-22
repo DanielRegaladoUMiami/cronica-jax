@@ -6,9 +6,10 @@ model would have said before each game against the actual closing line.
 Usage:
     python -m src.data.odds_history              # current season
     python -m src.data.odds_history --season 2025
+    python -m src.data.odds_history --league nfl --season 2025
 
-It is incremental: it only requests the games that are not yet in
-data/odds_history.parquet.
+It is incremental: it only requests the games that are not yet in the
+league's odds_history parquet.
 """
 
 from __future__ import annotations
@@ -41,26 +42,33 @@ ODDS_COLUMNS = [
 ]
 
 
-def load_odds_history(path=config.ODDS_HISTORY_PATH) -> pd.DataFrame:
+def load_odds_history(path=None, league: config.League = config.CFB) -> pd.DataFrame:
+    path = path or league.odds_history_path
     if not path.exists():
         return pd.DataFrame(columns=["game_id", "season", "has_odds", *ODDS_COLUMNS])
     return pd.read_parquet(path)
 
 
 def fetch_odds_history(
-    season: int, *, workers: int = 6, include_fcs: bool = False, offline: bool = False, log=print
+    season: int,
+    *,
+    league: config.League = config.CFB,
+    workers: int = 6,
+    include_fcs: bool = False,
+    offline: bool = False,
+    log=print,
 ) -> pd.DataFrame:
-    games = load_games()
+    games = load_games(league=league)
     games = games[(games["season"] == season) & games["completed"]]
     if not include_fcs:
         games = games[~games["fcs_game"]]
-    existing = load_odds_history()
+    existing = load_odds_history(league=league)
     todo = games[~games["game_id"].isin(existing["game_id"])]
     log(f"{season}: {len(games)} games played, {len(todo)} without saved lines")
     if todo.empty:
         return existing
 
-    client = EspnClient(offline=offline, pause=0.03)
+    client = EspnClient(offline=offline, pause=0.03, league=league)
     failed = 0
 
     def one(game_id: str) -> dict | None:
@@ -95,7 +103,7 @@ def fetch_odds_history(
         out[col] = pd.to_numeric(out[col], errors="coerce")
     out["has_odds"] = out["has_odds"].astype(bool)
     out["season"] = out["season"].astype("int64")
-    out.to_parquet(config.ODDS_HISTORY_PATH, index=False)
+    out.to_parquet(league.odds_history_path, index=False)
     got = int(new["has_odds"].sum()) if len(new) else 0
     log(
         f"{season}: {len(new)} queried, {got} with lines, {failed} failed · "
@@ -108,6 +116,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Download historical closing lines (ESPN pickcenter)"
     )
+    parser.add_argument("--league", choices=sorted(config.LEAGUES), default="cfb")
     parser.add_argument("--season", type=int, default=config.current_season())
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--include-fcs", action="store_true")
@@ -115,7 +124,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         out = fetch_odds_history(
-            args.season, workers=args.workers, include_fcs=args.include_fcs, offline=args.offline
+            args.season,
+            league=config.LEAGUES[args.league],
+            workers=args.workers,
+            include_fcs=args.include_fcs,
+            offline=args.offline,
         )
     except EspnError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
