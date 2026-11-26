@@ -21,6 +21,24 @@ def norm_cdf(x):
     return 0.5 * (1.0 + np.vectorize(math.erf, otypes=[float])(arr / _SQRT2))
 
 
+def anchored(p_model: float, p_market: float, trust: float) -> float:
+    """The market's probability, moved toward the model's by `trust`, in log-odds.
+
+    trust = 1 returns the model's number, trust = 0 the market's. Anything in
+    between is how much of their disagreement is believed.
+    """
+    if trust >= 1.0:
+        return p_model
+    if trust <= 0.0:
+        return p_market
+
+    def logit(p: float) -> float:
+        p = min(max(p, 1e-6), 1.0 - 1e-6)
+        return math.log(p / (1.0 - p))
+
+    return 1.0 / (1.0 + math.exp(-(logit(p_market) + trust * (logit(p_model) - logit(p_market)))))
+
+
 # -------------------------------------------------------- from the model
 def p_home_win(margin: float, sigma: float) -> float:
     """P(home team wins) if the actual margin ~ Normal(projected margin, sigma)."""

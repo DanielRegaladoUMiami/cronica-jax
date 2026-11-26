@@ -13,9 +13,18 @@ What comes out (site/data/nfl_players.json), per game and team:
 - the DraftKings line and Kalshi's ladder of prices, with the model's probability
   for every rung and what that leaves after Kalshi's fee.
 
-A contract is flagged PLAY only if the model gives it 5+ points of edge after the
-fee, the market does not flatly disagree, the player is not questionable and the
-book is liquid. There is no betting record for these yet: it starts being kept now.
+Which contracts get flagged follows two things the evidence says:
+
+- Only likely things. A cheap contract is a lottery ticket: on Kalshi those win
+  less often than their price implies, and a few points of model error is a third
+  of what it is worth. Nothing under 30 cents, and nothing the model gives less
+  than 55%, is ever flagged.
+- The model is not enough on its own. In the team markets, whenever the model
+  disagreed with the market the market was right. So a PLAY needs a second
+  market on its side: the DraftKings line has to say, too, that Kalshi's price
+  is low.
+
+There is no betting record for these yet: it starts being kept now.
 """
 
 from __future__ import annotations
@@ -76,9 +85,11 @@ DEPTH_SLOTS = ("qb", "rb", "fb", "wr1", "wr2", "wr3", "wr", "te")
 RECENT_GAMES = 2  # touched the ball in one of the team's last two games: part of the plan
 
 # The rule for flagging a contract.
-EDGE_PLAY = 0.05
-EDGE_LEAN = 0.03
-PRICE_RANGE = (0.15, 0.85)  # outside it one tick of price is a large share of the bet
+MIN_PROB = 0.55  # the side has to be likely: by the model, and by DraftKings for a PLAY
+MIN_PRICE = 0.30  # nothing cheaper than this is flagged: long shots lose more than they say
+MAX_PRICE = 0.90  # above it there is too little left to win
+EDGE_PLAY = 0.04  # points left after the fee, by the model AND by the DraftKings line
+EDGE_LEAN = 0.04  # the same, by the model alone
 MAX_SPREAD = 0.05  # bid/ask further apart than this: the book is too thin to trust the price
 MAX_GAP = 0.12  # model this far from the market: assume the market knows something
 MIN_GAMES = 4  # fewer games than this on record: the role is not established
@@ -228,26 +239,37 @@ def ladder_view(
 
 
 def best_contract(ladder: list[dict], flags: dict) -> dict | None:
-    """The rung and side where the model sees most value, with its label and the reason."""
+    """The contract of a ladder worth pointing at, if any, with its label and the reasons.
+
+    Only a likely side at a real price is considered. Among those, the one where the
+    model and the DraftKings line (when there is one) both leave the most after the fee.
+    """
     best = None
     for rung in ladder:
         for side in ("yes", "no"):
-            price = rung[f"{side}_ask"]
-            bid = rung[f"{side}_bid"]
+            price, bid = rung[f"{side}_ask"], rung[f"{side}_bid"]
             if price is None or bid is None:
                 continue
-            if not PRICE_RANGE[0] <= price <= PRICE_RANGE[1] or price - bid > MAX_SPREAD:
+            if not MIN_PRICE <= price <= MAX_PRICE or price - bid > MAX_SPREAD:
                 continue
-            edge = rung[f"edge_{side}"]
-            if best is None or edge > best["edge"]:
-                p_model = rung["p"] if side == "yes" else 1.0 - rung["p"]
+            p_model = rung["p"] if side == "yes" else 1.0 - rung["p"]
+            if p_model < MIN_PROB:
+                continue
+            edge, edge_dk = rung[f"edge_{side}"], rung.get(f"edge_{side}_dk")
+            p_dk = rung.get("p_dk")
+            if p_dk is not None and side == "no":
+                p_dk = 1.0 - p_dk
+            support = edge if edge_dk is None else min(edge, edge_dk)
+            if best is None or support > best["support"]:
                 best = {
                     "t": rung["t"],
                     "side": side,
                     "price": price,
                     "p": round(p_model, 4),
+                    "p_dk": None if p_dk is None else round(p_dk, 4),
                     "edge": edge,
-                    "edge_dk": rung.get(f"edge_{side}_dk"),
+                    "edge_dk": edge_dk,
+                    "support": support,
                     "gap": round(abs(rung["p"] - (rung["yes_bid"] + rung["yes_ask"]) / 2.0), 4),
                     "volume": rung["volume"],
                     "ticker": rung["ticker"],
@@ -267,13 +289,15 @@ def best_contract(ladder: list[dict], flags: dict) -> dict | None:
     if flags.get("returning"):
         reasons.append("he has not played in the last two games")
     if best["edge_dk"] is not None and best["edge_dk"] < 0:
-        reasons.append("the DraftKings line does not back it")
+        reasons.append("the DraftKings line says the price is not low")
     # Reasons it is only a lean: the model is alone, or the price is thin.
     soft = []
     if best["edge_dk"] is None:
         soft.append("no DraftKings line to confirm it")
-    elif 0 <= best["edge_dk"] < DK_MARGIN:
-        soft.append("the DraftKings line barely backs it")
+    elif 0 <= best["edge_dk"] < EDGE_PLAY:
+        soft.append("the DraftKings line backs it only in part")
+    if best["p_dk"] is not None and best["p_dk"] < MIN_PROB:
+        soft.append("DraftKings makes it less likely than the model does")
     if (best["volume"] or 0) < MIN_VOLUME:
         soft.append("few contracts traded: the price may not be real")
     if reasons:
@@ -362,9 +386,20 @@ def build(
         warnings.append(
             f"ESPN did not return {len(roster_failed)} rosters: no injury data for those teams."
         )
+    winners: dict[str, dict] = {}
     if use_kalshi:
+        market_client = kalshi.KalshiClient()
         try:
-            ladders = markets.kalshi_ladders(kalshi.KalshiClient(), known, log=log)
+            ladders = markets.kalshi_ladders(market_client, known, log=log)
+            # Who wins each game, in Kalshi's prices: shown beside the team picks.
+            for (away, home), sides in markets.kalshi_games(market_client, known).items():
+                if all(m["quoted"] for m in sides.values()):
+                    winners[f"{away}@{home}"] = {
+                        side: {
+                            k: m[k] for k in ("yes_bid", "yes_ask", "no_bid", "no_ask", "volume")
+                        }
+                        for side, m in sides.items()
+                    }
         except kalshi.KalshiError as exc:
             warnings.append(f"Kalshi did not answer ({exc}): no prices shown.")
 
@@ -569,7 +604,9 @@ def build(
         "rule": {
             "edge_play": EDGE_PLAY,
             "edge_lean": EDGE_LEAN,
-            "price_range": PRICE_RANGE,
+            "min_prob": MIN_PROB,
+            "min_price": MIN_PRICE,
+            "max_price": MAX_PRICE,
             "max_spread": MAX_SPREAD,
             "max_gap": MAX_GAP,
             "min_games": MIN_GAMES,
@@ -588,6 +625,7 @@ def build(
         "record": record,
         "flagged": flagged,
         "games": out_games,
+        "kalshi_winners": winners,
         "warnings": warnings,
     }
 
@@ -758,11 +796,14 @@ def _record(frame: pd.DataFrame) -> dict:
 
 
 def annotate_team_picks(data: dict, path=None, log=print) -> int:
-    """Tell the team picks which teams start a different quarterback than usual.
+    """Give the team picks two things only this step knows.
 
-    The team model rates a team by its season: it does not know that the starter is
-    out. A pick on such a team (or on the total of its game) is moved to AVOID with
-    the reason spelled out. Returns how many picks were changed.
+    Quarterback changes: the team model rates a team by its season and does not know
+    that the starter is out. A pick on such a team (or on the total of its game) is
+    moved to AVOID with the reason spelled out. Returns how many picks were changed.
+
+    Kalshi's price for each team to win, so the likely winners can be shown with what
+    they cost there.
     """
     path = path or LEAGUE.site_json("picks.json")
     if not path.exists():
@@ -774,7 +815,11 @@ def annotate_team_picks(data: dict, path=None, log=print) -> int:
         g["game_id"]: {t["side"]: t for t in g["teams"] if t["qb_change"]} for g in data["games"]
     }
     changed = 0
+    winners = data.get("kalshi_winners") or {}
     for game in picks.get("games") or []:
+        matchup = f"{(game.get('away') or {}).get('abbr')}@{(game.get('home') or {}).get('abbr')}"
+        if matchup in winners:
+            game["kalshi"] = winners[matchup]
         sides = changes.get(str(game.get("id"))) or {}
         if not sides:
             continue

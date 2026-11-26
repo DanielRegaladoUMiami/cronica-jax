@@ -1,6 +1,6 @@
 {
  "sport": "soccer",
- "generated_at": "2026-11-26T01:45:36+00:00",
+ "generated_at": "2026-11-26T02:28:58+00:00",
  "fee": {
   "taker_rate": 0.07,
   "maker_rate": 0.0175
@@ -430,7 +430,7 @@
       "yes_ask": 0.45,
       "no_bid": 0.55,
       "no_ask": 0.56,
-      "volume": 657.4,
+      "volume": 702.32,
       "quoted": true
      },
      "draw": {
@@ -443,7 +443,7 @@
       "yes_ask": 0.28,
       "no_bid": 0.72,
       "no_ask": 0.73,
-      "volume": 275.06,
+      "volume": 356.4,
       "quoted": true
      },
      "away": {
@@ -456,7 +456,7 @@
       "yes_ask": 0.28,
       "no_bid": 0.72,
       "no_ask": 0.73,
-      "volume": 366.43,
+      "volume": 449.15,
       "quoted": true
      }
     }
@@ -472,7 +472,7 @@
      "fee": 0.017325000000000007,
      "edge": -0.020050699367174712,
      "edge_rest": 0.0072743006328253035,
-     "volume": 657.4,
+     "volume": 702.32,
      "ticker": "KXUECLGAME-26NOV26ALMMJA-ALM"
     },
     {
@@ -485,7 +485,7 @@
      "fee": 0.017248,
      "edge": -0.024522300632825303,
      "edge_rest": 0.0027256993671747054,
-     "volume": 657.4,
+     "volume": 702.32,
      "ticker": "KXUECLGAME-26NOV26ALMMJA-ALM"
     },
     {
@@ -498,7 +498,7 @@
      "fee": 0.014112000000000001,
      "edge": -0.024066063144385738,
      "edge_rest": 4.59368556142703e-05,
-     "volume": 275.06,
+     "volume": 356.4,
      "ticker": "KXUECLGAME-26NOV26ALMMJA-TIE"
     },
     {
@@ -511,7 +511,7 @@
      "fee": 0.013797000000000002,
      "edge": -0.013842936855614272,
      "edge_rest": 0.009954063144385739,
-     "volume": 275.06,
+     "volume": 356.4,
      "ticker": "KXUECLGAME-26NOV26ALMMJA-TIE"
     },
     {
@@ -524,7 +524,7 @@
      "fee": 0.014112000000000001,
      "edge": -0.01143223748843951,
      "edge_rest": 0.0126797625115605,
-     "volume": 366.43,
+     "volume": 449.15,
      "ticker": "KXUECLGAME-26NOV26ALMMJA-MJA"
     },
     {
@@ -537,7 +537,7 @@
      "fee": 0.013797000000000002,
      "edge": -0.026476762511560448,
      "edge_rest": -0.002679762511560435,
-     "volume": 366.43,
+     "volume": 449.15,
      "ticker": "KXUECLGAME-26NOV26ALMMJA-MJA"
     }
    ],
@@ -634,7 +634,7 @@
       "yes_ask": 0.45,
       "no_bid": 0.55,
       "no_ask": 0.56,
-      "volume": 41.25,
+      "volume": 84.04,
       "quoted": true
      }
     }
@@ -702,7 +702,7 @@
      "fee": 0.017325000000000007,
      "edge": -0.018481364769252412,
      "edge_rest": 0.008843635230747604,
-     "volume": 41.25,
+     "volume": 84.04,
      "ticker": "KXUECLGAME-26NOV26KAZRFC-RFC"
     },
     {
@@ -715,7 +715,7 @@
      "fee": 0.017248,
      "edge": -0.026091635230747715,
      "edge_rest": 0.0011563647692522938,
-     "volume": 41.25,
+     "volume": 84.04,
      "ticker": "KXUECLGAME-26NOV26KAZRFC-RFC"
     }
    ],
@@ -782,11 +782,11 @@
       "label": "Brann",
       "status": "active",
       "strike": null,
-      "yes_bid": 0.44,
+      "yes_bid": 0.45,
       "yes_ask": 0.46,
       "no_bid": 0.54,
-      "no_ask": 0.56,
-      "volume": 501.99,
+      "no_ask": 0.55,
+      "volume": 543.88,
       "quoted": true
      },
      "draw": {
@@ -823,25 +823,25 @@
      "side": "yes",
      "text": "SK Brann win",
      "price": 0.46,
-     "bid": 0.44,
+     "bid": 0.45,
      "fair": 0.4464588208270517,
      "fee": 0.017388000000000004,
      "edge": -0.03092917917294834,
-     "edge_rest": 0.006458820827051681,
-     "volume": 501.99,
+     "edge_rest": -0.0035411791729483277,
+     "volume": 543.88,
      "ticker": "KXUECLGAME-26NOV26SKBAGF-SKB"
     },
     {
      "outcome": "home",
      "side": "no",
      "text": "SK Brann do not win",
-     "price": 0.56,
+     "price": 0.55,
      "bid": 0.54,
      "fair": 0.5535411791729483,
-     "fee": 0.017248,
-     "edge": -0.023706820827051736,
+     "fee": 0.017325,
+     "edge": -0.013783820827051728,
      "edge_rest": 0.013541179172948281,
-     "volume": 501.99,
+     "volume": 543.88,
      "ticker": "KXUECLGAME-26NOV26SKBAGF-SKB"
     },
     {
@@ -972,7 +972,7 @@
       "yes_ask": 0.42,
       "no_bid": 0.58,
       "no_ask": 0.59,
-      "volume": 49.05,
+      "volume": 152.01,
       "quoted": true
      }
     }
@@ -1249,7 +1249,7 @@
       "yes_ask": 0.63,
       "no_bid": 0.37,
       "no_ask": 0.38,
-      "volume": 595.72,
+      "volume": 676.15,
       "quoted": true
      }
     }
@@ -1317,7 +1317,7 @@
      "fee": 0.016317,
      "edge": -0.02245975659642172,
      "edge_rest": 0.003857243403578292,
-     "volume": 595.72,
+     "volume": 676.15,
      "ticker": "KXUECLGAME-26NOV26HOMASM-ASM"
     },
     {
@@ -1330,7 +1330,7 @@
      "fee": 0.016492,
      "edge": -0.020349243403578292,
      "edge_rest": 0.006142756596421717,
-     "volume": 595.72,
+     "volume": 676.15,
      "ticker": "KXUECLGAME-26NOV26HOMASM-ASM"
     }
    ],
@@ -1427,7 +1427,7 @@
       "yes_ask": 0.45,
       "no_bid": 0.55,
       "no_ask": 0.56,
-      "volume": 2726.61,
+      "volume": 2876.39,
       "quoted": true
      }
     }
@@ -1495,7 +1495,7 @@
      "fee": 0.017325000000000007,
      "edge": -0.02085466079040213,
      "edge_rest": 0.006470339209597886,
-     "volume": 2726.61,
+     "volume": 2876.39,
      "ticker": "KXUECLGAME-26NOV26FKJLUG-LUG"
     },
     {
@@ -1508,7 +1508,7 @@
      "fee": 0.017248,
      "edge": -0.02371833920959794,
      "edge_rest": 0.003529660790402067,
-     "volume": 2726.61,
+     "volume": 2876.39,
      "ticker": "KXUECLGAME-26NOV26FKJLUG-LUG"
     }
    ],
@@ -1579,7 +1579,7 @@
       "yes_ask": 0.12,
       "no_bid": 0.88,
       "no_ask": 0.89,
-      "volume": 3305.51,
+      "volume": 3501.75,
       "quoted": true
      },
      "draw": {
@@ -1621,7 +1621,7 @@
      "fee": 0.007392000000000001,
      "edge": 0.000670375561266626,
      "edge_rest": 0.018062375561266622,
-     "volume": 3305.51,
+     "volume": 3501.75,
      "ticker": "KXUECLGAME-26NOV26IBEGET-IBE"
     },
     {
@@ -1634,7 +1634,7 @@
      "fee": 0.006853,
      "edge": -0.02491537556126666,
      "edge_rest": -0.008062375561266655,
-     "volume": 3305.51,
+     "volume": 3501.75,
      "ticker": "KXUECLGAME-26NOV26IBEGET-IBE"
     },
     {
@@ -1783,7 +1783,7 @@
       "yes_ask": 0.04,
       "no_bid": 0.96,
       "no_ask": 0.97,
-      "volume": 4588.28,
+      "volume": 4827.21,
       "quoted": true
      }
     }
@@ -1851,7 +1851,7 @@
      "fee": 0.0026880000000000003,
      "edge": -0.0019142356032387344,
      "edge_rest": 0.010773764396761268,
-     "volume": 4588.28,
+     "volume": 4827.21,
      "ticker": "KXUECLGAME-26NOV26BRICSU-CSU"
     },
     {
@@ -1864,7 +1864,7 @@
      "fee": 0.002037000000000002,
      "edge": -0.012810764396761256,
      "edge_rest": -0.0007737643967612451,
-     "volume": 4588.28,
+     "volume": 4827.21,
      "ticker": "KXUECLGAME-26NOV26BRICSU-CSU"
     }
    ],
@@ -1935,7 +1935,7 @@
       "yes_ask": 0.84,
       "no_bid": 0.16,
       "no_ask": 0.17,
-      "volume": 474.76,
+      "volume": 770.32,
       "quoted": true
      },
      "draw": {
@@ -1977,7 +1977,7 @@
      "fee": 0.009408000000000003,
      "edge": -0.01872194944369868,
      "edge_rest": 0.0006860505563013319,
-     "volume": 474.76,
+     "volume": 770.32,
      "ticker": "KXUECLGAME-26NOV26AJATHU-AJA"
     },
     {
@@ -1990,7 +1990,7 @@
      "fee": 0.009877000000000002,
      "edge": -0.010563050556301306,
      "edge_rest": 0.009313949443698705,
-     "volume": 474.76,
+     "volume": 770.32,
      "ticker": "KXUECLGAME-26NOV26AJATHU-AJA"
     },
     {
@@ -2113,7 +2113,7 @@
       "yes_ask": 0.78,
       "no_bid": 0.22,
       "no_ask": 0.23,
-      "volume": 5915.33,
+      "volume": 5942.81,
       "quoted": true
      },
      "draw": {
@@ -2139,7 +2139,7 @@
       "yes_ask": 0.09,
       "no_bid": 0.91,
       "no_ask": 0.92,
-      "volume": 2820.86,
+      "volume": 2959.43,
       "quoted": true
      }
     }
@@ -2155,7 +2155,7 @@
      "fee": 0.012012,
      "edge": -0.008514578528660421,
      "edge_rest": 0.013497421471339588,
-     "volume": 5915.33,
+     "volume": 5942.81,
      "ticker": "KXUELGAME-26NOV26BESHBS-BES"
     },
     {
@@ -2168,7 +2168,7 @@
      "fee": 0.012397000000000004,
      "edge": -0.02589442147133962,
      "edge_rest": -0.003497421471339607,
-     "volume": 5915.33,
+     "volume": 5942.81,
      "ticker": "KXUELGAME-26NOV26BESHBS-BES"
     },
     {
@@ -2207,7 +2207,7 @@
      "fee": 0.005733,
      "edge": -0.016160286959748457,
      "edge_rest": -0.0004272869597484602,
-     "volume": 2820.86,
+     "volume": 2959.43,
      "ticker": "KXUELGAME-26NOV26BESHBS-HBS"
     },
     {
@@ -2220,7 +2220,7 @@
      "fee": 0.005151999999999999,
      "edge": -0.0047247130402515245,
      "edge_rest": 0.010427286959748483,
-     "volume": 2820.86,
+     "volume": 2959.43,
      "ticker": "KXUELGAME-26NOV26BESHBS-HBS"
     }
    ],
@@ -2291,7 +2291,7 @@
       "yes_ask": 0.74,
       "no_bid": 0.26,
       "no_ask": 0.27,
-      "volume": 1832.87,
+      "volume": 1861.1,
       "quoted": true
      },
      "draw": {
@@ -2333,7 +2333,7 @@
      "fee": 0.013468000000000003,
      "edge": -0.030281477308287195,
      "edge_rest": -0.006813477308287186,
-     "volume": 1832.87,
+     "volume": 1861.1,
      "ticker": "KXUELGAME-26NOV26OLMLEV-OLM"
     },
     {
@@ -2346,7 +2346,7 @@
      "fee": 0.013797000000000002,
      "edge": -0.006983522691712816,
      "edge_rest": 0.016813477308287195,
-     "volume": 1832.87,
+     "volume": 1861.1,
      "ticker": "KXUELGAME-26NOV26OLMLEV-OLM"
     },
     {
@@ -2469,7 +2469,7 @@
       "yes_ask": 0.73,
       "no_bid": 0.27,
       "no_ask": 0.28,
-      "volume": 7461.62,
+      "volume": 8928.65,
       "quoted": true
      },
      "draw": {
@@ -2482,7 +2482,7 @@
       "yes_ask": 0.16,
       "no_bid": 0.84,
       "no_ask": 0.85,
-      "volume": 233.79,
+      "volume": 245.59,
       "quoted": true
      },
      "away": {
@@ -2511,7 +2511,7 @@
      "fee": 0.013797000000000002,
      "edge": -0.029172423360055932,
      "edge_rest": -0.00537542336005592,
-     "volume": 7461.62,
+     "volume": 8928.65,
      "ticker": "KXUELGAME-26NOV26USGLPO-USG"
     },
     {
@@ -2524,7 +2524,7 @@
      "fee": 0.014112000000000001,
      "edge": -0.008736576639944081,
      "edge_rest": 0.015375423360055929,
-     "volume": 7461.62,
+     "volume": 8928.65,
      "ticker": "KXUELGAME-26NOV26USGLPO-USG"
     },
     {
@@ -2537,7 +2537,7 @@
      "fee": 0.009408000000000001,
      "edge": -0.0028579204411673404,
      "edge_rest": 0.01655007955883267,
-     "volume": 233.79,
+     "volume": 245.59,
      "ticker": "KXUELGAME-26NOV26USGLPO-TIE"
     },
     {
@@ -2550,7 +2550,7 @@
      "fee": 0.008925000000000002,
      "edge": -0.02547507955883259,
      "edge_rest": -0.006550079558832578,
-     "volume": 233.79,
+     "volume": 245.59,
      "ticker": "KXUELGAME-26NOV26USGLPO-TIE"
     },
     {
@@ -2647,7 +2647,7 @@
       "yes_ask": 0.21,
       "no_bid": 0.79,
       "no_ask": 0.8,
-      "volume": 1756.79,
+      "volume": 3155.62,
       "quoted": true
      },
      "draw": {
@@ -2673,7 +2673,7 @@
       "yes_ask": 0.58,
       "no_bid": 0.42,
       "no_ask": 0.43,
-      "volume": 3138.48,
+      "volume": 3361.73,
       "quoted": true
      }
     }
@@ -2689,7 +2689,7 @@
      "fee": 0.011613000000000002,
      "edge": -0.014344340574221421,
      "edge_rest": 0.007268659425778562,
-     "volume": 1756.79,
+     "volume": 3155.62,
      "ticker": "KXUELGAME-26NOV26DINLEV-DIN"
     },
     {
@@ -2702,7 +2702,7 @@
      "fee": 0.0112,
      "edge": -0.01846865942577859,
      "edge_rest": 0.002731340574221419,
-     "volume": 1756.79,
+     "volume": 3155.62,
      "ticker": "KXUELGAME-26NOV26DINLEV-DIN"
     },
     {
@@ -2741,7 +2741,7 @@
      "fee": 0.017052000000000005,
      "edge": -0.01657364181192849,
      "edge_rest": 0.010478358188071524,
-     "volume": 3138.48,
+     "volume": 3361.73,
      "ticker": "KXUELGAME-26NOV26DINLEV-LEV"
     },
     {
@@ -2754,7 +2754,7 @@
      "fee": 0.017157000000000002,
      "edge": -0.02763535818807147,
      "edge_rest": -0.00047835818807145936,
-     "volume": 3138.48,
+     "volume": 3361.73,
      "ticker": "KXUELGAME-26NOV26DINLEV-LEV"
     }
    ],
@@ -2825,7 +2825,7 @@
       "yes_ask": 0.16,
       "no_bid": 0.84,
       "no_ask": 0.85,
-      "volume": 671.18,
+      "volume": 730.2,
       "quoted": true
      },
      "draw": {
@@ -2851,7 +2851,7 @@
       "yes_ask": 0.66,
       "no_bid": 0.34,
       "no_ask": 0.35,
-      "volume": 4329.76,
+      "volume": 4875.88,
       "quoted": true
      }
     }
@@ -2867,7 +2867,7 @@
      "fee": 0.009408000000000001,
      "edge": -0.00885846786291278,
      "edge_rest": 0.01054953213708723,
-     "volume": 671.18,
+     "volume": 730.2,
      "ticker": "KXUELGAME-26NOV26VIKBEN-VIK"
     },
     {
@@ -2880,7 +2880,7 @@
      "fee": 0.008925000000000002,
      "edge": -0.019474532137087205,
      "edge_rest": -0.0005495321370871942,
-     "volume": 671.18,
+     "volume": 730.2,
      "ticker": "KXUELGAME-26NOV26VIKBEN-VIK"
     },
     {
@@ -2919,7 +2919,7 @@
      "fee": 0.015708,
      "edge": -0.02256198066125098,
      "edge_rest": 0.0031460193387490287,
-     "volume": 4329.76,
+     "volume": 4875.88,
      "ticker": "KXUELGAME-26NOV26VIKBEN-BEN"
     },
     {
@@ -2932,7 +2932,7 @@
      "fee": 0.015925,
      "edge": -0.01907101933874903,
      "edge_rest": 0.006853980661250925,
-     "volume": 4329.76,
+     "volume": 4875.88,
      "ticker": "KXUELGAME-26NOV26VIKBEN-BEN"
     }
    ],
@@ -3003,7 +3003,7 @@
       "yes_ask": 0.27,
       "no_bid": 0.73,
       "no_ask": 0.74,
-      "volume": 1929.95,
+      "volume": 1984.58,
       "quoted": true
      },
      "draw": {
@@ -3029,7 +3029,7 @@
       "yes_ask": 0.47,
       "no_bid": 0.53,
       "no_ask": 0.54,
-      "volume": 51216.68,
+      "volume": 57964.49,
       "quoted": true
      }
     }
@@ -3045,7 +3045,7 @@
      "fee": 0.013797000000000002,
      "edge": -0.010426039610261171,
      "edge_rest": 0.01337096038973884,
-     "volume": 1929.95,
+     "volume": 1984.58,
      "ticker": "KXUELGAME-26NOV26RCCBOU-RCC"
     },
     {
@@ -3058,7 +3058,7 @@
      "fee": 0.013468000000000003,
      "edge": -0.02683896038973884,
      "edge_rest": -0.0033709603897388307,
-     "volume": 1929.95,
+     "volume": 1984.58,
      "ticker": "KXUELGAME-26NOV26RCCBOU-RCC"
     },
     {
@@ -3097,7 +3097,7 @@
      "fee": 0.017437,
      "edge": -0.030092405713290825,
      "edge_rest": -0.0026554057132908704,
-     "volume": 51216.68,
+     "volume": 57964.49,
      "ticker": "KXUELGAME-26NOV26RCCBOU-BOU"
     },
     {
@@ -3110,7 +3110,7 @@
      "fee": 0.017388,
      "edge": -0.014732594286709186,
      "edge_rest": 0.012655405713290824,
-     "volume": 51216.68,
+     "volume": 57964.49,
      "ticker": "KXUELGAME-26NOV26RCCBOU-BOU"
     }
    ],
@@ -3181,7 +3181,7 @@
       "yes_ask": 0.86,
       "no_bid": 0.14,
       "no_ask": 0.15,
-      "volume": 842.02,
+      "volume": 917.64,
       "quoted": true
      },
      "draw": {
@@ -3194,7 +3194,7 @@
       "yes_ask": 0.1,
       "no_bid": 0.9,
       "no_ask": 0.91,
-      "volume": 247.6,
+      "volume": 266.41,
       "quoted": true
      },
      "away": {
@@ -3207,7 +3207,7 @@
       "yes_ask": 0.06,
       "no_bid": 0.94,
       "no_ask": 0.95,
-      "volume": 7331.78,
+      "volume": 7334.9,
       "quoted": true
      }
     }
@@ -3223,7 +3223,7 @@
      "fee": 0.008428000000000001,
      "edge": -0.025160871886634417,
      "edge_rest": -0.006732871886634406,
-     "volume": 842.02,
+     "volume": 917.64,
      "ticker": "KXUELGAME-26NOV26RBSARA-RBS"
     },
     {
@@ -3236,7 +3236,7 @@
      "fee": 0.008925,
      "edge": -0.0021921281133655667,
      "edge_rest": 0.016732871886634415,
-     "volume": 842.02,
+     "volume": 917.64,
      "ticker": "KXUELGAME-26NOV26RBSARA-RBS"
     },
     {
@@ -3249,7 +3249,7 @@
      "fee": 0.006300000000000001,
      "edge": -0.003037206841664448,
      "edge_rest": 0.013262793158335562,
-     "volume": 247.6,
+     "volume": 266.41,
      "ticker": "KXUELGAME-26NOV26RBSARA-TIE"
     },
     {
@@ -3262,7 +3262,7 @@
      "fee": 0.0057329999999999985,
      "edge": -0.01899579315833556,
      "edge_rest": -0.003262793158335553,
-     "volume": 247.6,
+     "volume": 266.41,
      "ticker": "KXUELGAME-26NOV26RBSARA-TIE"
     },
     {
@@ -3275,7 +3275,7 @@
      "fee": 0.003948,
      "edge": -0.010477921271701017,
      "edge_rest": 0.003470078728298978,
-     "volume": 7331.78,
+     "volume": 7334.9,
      "ticker": "KXUELGAME-26NOV26RBSARA-ARA"
     },
     {
@@ -3288,7 +3288,7 @@
      "fee": 0.0033250000000000033,
      "edge": -0.0067950787282989675,
      "edge_rest": 0.006529921271701045,
-     "volume": 7331.78,
+     "volume": 7334.9,
      "ticker": "KXUELGAME-26NOV26RBSARA-ARA"
     }
    ],
@@ -3359,7 +3359,7 @@
       "yes_ask": 0.34,
       "no_bid": 0.66,
       "no_ask": 0.67,
-      "volume": 4048.38,
+      "volume": 4244.73,
       "quoted": true
      },
      "draw": {
@@ -3372,7 +3372,7 @@
       "yes_ask": 0.28,
       "no_bid": 0.72,
       "no_ask": 0.73,
-      "volume": 17662.82,
+      "volume": 17703.25,
       "quoted": true
      },
      "away": {
@@ -3385,7 +3385,7 @@
       "yes_ask": 0.39,
       "no_bid": 0.61,
       "no_ask": 0.62,
-      "volume": 32185.21,
+      "volume": 33792.3,
       "quoted": true
      }
     }
@@ -3401,7 +3401,7 @@
      "fee": 0.015708000000000003,
      "edge": -0.021148829619067448,
      "edge_rest": 0.0045591703809325645,
-     "volume": 4048.38,
+     "volume": 4244.73,
      "ticker": "KXUELGAME-26NOV26OLYACM-OLY"
     },
     {
@@ -3414,7 +3414,7 @@
      "fee": 0.015477,
      "edge": -0.020036170380932562,
      "edge_rest": 0.005440829619067444,
-     "volume": 4048.38,
+     "volume": 4244.73,
      "ticker": "KXUELGAME-26NOV26OLYACM-OLY"
     },
     {
@@ -3427,7 +3427,7 @@
      "fee": 0.014112000000000001,
      "edge": -0.019830410523979033,
      "edge_rest": 0.004281589476020975,
-     "volume": 17662.82,
+     "volume": 17703.25,
      "ticker": "KXUELGAME-26NOV26OLYACM-TIE"
     },
     {
@@ -3440,7 +3440,7 @@
      "fee": 0.013797000000000002,
      "edge": -0.01807858947602098,
      "edge_rest": 0.005718410523979034,
-     "volume": 17662.82,
+     "volume": 17703.25,
      "ticker": "KXUELGAME-26NOV26OLYACM-TIE"
     },
     {
@@ -3453,7 +3453,7 @@
      "fee": 0.016653,
      "edge": -0.015493759856953476,
      "edge_rest": 0.011159240143046534,
-     "volume": 32185.21,
+     "volume": 33792.3,
      "ticker": "KXUELGAME-26NOV26OLYACM-ACM"
     },
     {
@@ -3466,7 +3466,7 @@
      "fee": 0.016492,
      "edge": -0.02765124014304659,
      "edge_rest": -0.0011592401430465804,
-     "volume": 32185.21,
+     "volume": 33792.3,
      "ticker": "KXUELGAME-26NOV26OLYACM-ACM"
     }
    ],
@@ -3537,7 +3537,7 @@
       "yes_ask": 0.07,
       "no_bid": 0.93,
       "no_ask": 0.94,
-      "volume": 1627.69,
+      "volume": 1708.16,
       "quoted": true
      },
      "draw": {
@@ -3579,7 +3579,7 @@
      "fee": 0.004557,
      "edge": -0.00358235440724706,
      "edge_rest": 0.010974645592752949,
-     "volume": 1627.69,
+     "volume": 1708.16,
      "ticker": "KXUECLGAME-26NOV26ESCFCC-ESC"
     },
     {
@@ -3592,7 +3592,7 @@
      "fee": 0.003948000000000004,
      "edge": -0.014922645592752855,
      "edge_rest": -0.000974645592752954,
-     "volume": 1627.69,
+     "volume": 1708.16,
      "ticker": "KXUECLGAME-26NOV26ESCFCC-ESC"
     },
     {
@@ -3919,7 +3919,7 @@
       "yes_ask": 0.05,
       "no_bid": 0.95,
       "no_ask": 0.96,
-      "volume": 705.62,
+      "volume": 799.38,
       "quoted": true
      }
     }
@@ -3987,7 +3987,7 @@
      "fee": 0.0033250000000000003,
      "edge": -0.010228736058529328,
      "edge_rest": 0.003096263941470674,
-     "volume": 705.62,
+     "volume": 799.38,
      "ticker": "KXUECLGAME-26NOV26BRAKUPS-KUPS"
     },
     {
@@ -4000,7 +4000,7 @@
      "fee": 0.002688000000000003,
      "edge": -0.00578426394147067,
      "edge_rest": 0.006903736058529342,
-     "volume": 705.62,
+     "volume": 799.38,
      "ticker": "KXUECLGAME-26NOV26BRAKUPS-KUPS"
     }
    ],
@@ -4961,7 +4961,7 @@
       "yes_ask": 0.81,
       "no_bid": 0.19,
       "no_ask": 0.2,
-      "volume": 222.56,
+      "volume": 308.14,
       "quoted": true
      },
      "draw": {
@@ -4987,7 +4987,7 @@
       "yes_ask": 0.08,
       "no_bid": 0.92,
       "no_ask": 0.93,
-      "volume": 1447.21,
+      "volume": 1564.64,
       "quoted": true
      }
     }
@@ -5003,7 +5003,7 @@
      "fee": 0.010772999999999998,
      "edge": -0.01815790569893757,
      "edge_rest": 0.0026150943010624372,
-     "volume": 222.56,
+     "volume": 308.14,
      "ticker": "KXUELGAME-26NOV26OLLSK-OL"
     },
     {
@@ -5016,7 +5016,7 @@
      "fee": 0.011200000000000002,
      "edge": -0.013815094301062494,
      "edge_rest": 0.007384905698937516,
-     "volume": 222.56,
+     "volume": 308.14,
      "ticker": "KXUELGAME-26NOV26OLLSK-OL"
     },
     {
@@ -5055,7 +5055,7 @@
      "fee": 0.005152000000000001,
      "edge": -0.015631432457700777,
      "edge_rest": -0.0004794324577007819,
-     "volume": 1447.21,
+     "volume": 1564.64,
      "ticker": "KXUELGAME-26NOV26OLLSK-LSK"
     },
     {
@@ -5068,7 +5068,7 @@
      "fee": 0.004556999999999997,
      "edge": -0.004077567542299229,
      "edge_rest": 0.010479432457700777,
-     "volume": 1447.21,
+     "volume": 1564.64,
      "ticker": "KXUELGAME-26NOV26OLLSK-LSK"
     }
    ],
@@ -5139,7 +5139,7 @@
       "yes_ask": 0.84,
       "no_bid": 0.16,
       "no_ask": 0.17,
-      "volume": 3710.43,
+      "volume": 3741.03,
       "quoted": true
      },
      "draw": {
@@ -5152,7 +5152,7 @@
       "yes_ask": 0.11,
       "no_bid": 0.89,
       "no_ask": 0.9,
-      "volume": 194.68,
+      "volume": 198.95,
       "quoted": true
      },
      "away": {
@@ -5165,7 +5165,7 @@
       "yes_ask": 0.06,
       "no_bid": 0.94,
       "no_ask": 0.95,
-      "volume": 10785.22,
+      "volume": 10941.59,
       "quoted": true
      }
     }
@@ -5181,7 +5181,7 @@
      "fee": 0.009408000000000003,
      "edge": -0.01742395451742854,
      "edge_rest": 0.0019840454825714726,
-     "volume": 3710.43,
+     "volume": 3741.03,
      "ticker": "KXUELGAME-26NOV26JUVOMO-JUV"
     },
     {
@@ -5194,7 +5194,7 @@
      "fee": 0.009877000000000002,
      "edge": -0.011861045482571447,
      "edge_rest": 0.008015954517428564,
-     "volume": 3710.43,
+     "volume": 3741.03,
      "ticker": "KXUELGAME-26NOV26JUVOMO-JUV"
     },
     {
@@ -5207,7 +5207,7 @@
      "fee": 0.0068530000000000015,
      "edge": -0.004199198827860313,
      "edge_rest": 0.012653801172139684,
-     "volume": 194.68,
+     "volume": 198.95,
      "ticker": "KXUELGAME-26NOV26JUVOMO-TIE"
     },
     {
@@ -5220,7 +5220,7 @@
      "fee": 0.0063,
      "edge": -0.018953801172139656,
      "edge_rest": -0.002653801172139647,
-     "volume": 194.68,
+     "volume": 198.95,
      "ticker": "KXUELGAME-26NOV26JUVOMO-TIE"
     },
     {
@@ -5233,7 +5233,7 @@
      "fee": 0.003948,
      "edge": -0.008585846654711203,
      "edge_rest": 0.005362153345288792,
-     "volume": 10785.22,
+     "volume": 10941.59,
      "ticker": "KXUELGAME-26NOV26JUVOMO-OMO"
     },
     {
@@ -5246,7 +5246,7 @@
      "fee": 0.0033250000000000033,
      "edge": -0.008687153345288781,
      "edge_rest": 0.004637846654711231,
-     "volume": 10785.22,
+     "volume": 10941.59,
      "ticker": "KXUELGAME-26NOV26JUVOMO-OMO"
     }
    ],
@@ -5343,7 +5343,7 @@
       "yes_ask": 0.54,
       "no_bid": 0.46,
       "no_ask": 0.47,
-      "volume": 564.9,
+      "volume": 690.48,
       "quoted": true
      }
     }
@@ -5411,7 +5411,7 @@
      "fee": 0.017388,
      "edge": -0.011048512659676699,
      "edge_rest": 0.01633948734032331,
-     "volume": 564.9,
+     "volume": 690.48,
      "ticker": "KXUELGAME-26NOV26OFIRSC-RSC"
     },
     {
@@ -5424,7 +5424,7 @@
      "fee": 0.017437,
      "edge": -0.03377648734032331,
      "edge_rest": -0.006339487340323358,
-     "volume": 564.9,
+     "volume": 690.48,
      "ticker": "KXUELGAME-26NOV26OFIRSC-RSC"
     }
    ],
@@ -5495,7 +5495,7 @@
       "yes_ask": 0.47,
       "no_bid": 0.53,
       "no_ask": 0.54,
-      "volume": 2491.96,
+      "volume": 2840.7,
       "quoted": true
      },
      "draw": {
@@ -5521,7 +5521,7 @@
       "yes_ask": 0.3,
       "no_bid": 0.7,
       "no_ask": 0.71,
-      "volume": 3114.9,
+      "volume": 3458.06,
       "quoted": true
      }
     }
@@ -5537,7 +5537,7 @@
      "fee": 0.017437,
      "edge": -0.019245121682103315,
      "edge_rest": 0.00819187831789664,
-     "volume": 2491.96,
+     "volume": 2840.7,
      "ticker": "KXUELGAME-26NOV26CRYRSO-CRY"
     },
     {
@@ -5550,7 +5550,7 @@
      "fee": 0.017388,
      "edge": -0.025579878317896695,
      "edge_rest": 0.0018081216821033141,
-     "volume": 2491.96,
+     "volume": 2840.7,
      "ticker": "KXUELGAME-26NOV26CRYRSO-CRY"
     },
     {
@@ -5589,7 +5589,7 @@
      "fee": 0.0147,
      "edge": -0.01953157713693516,
      "edge_rest": 0.005168422863064848,
-     "volume": 3114.9,
+     "volume": 3458.06,
      "ticker": "KXUELGAME-26NOV26CRYRSO-RSO"
     },
     {
@@ -5602,7 +5602,7 @@
      "fee": 0.014413000000000002,
      "edge": -0.01958142286306485,
      "edge_rest": 0.004831577136935161,
-     "volume": 3114.9,
+     "volume": 3458.06,
      "ticker": "KXUELGAME-26NOV26CRYRSO-RSO"
     }
    ],
@@ -5682,10 +5682,10 @@
       "label": "Tie",
       "status": "active",
       "strike": null,
-      "yes_bid": 0.24,
+      "yes_bid": 0.23,
       "yes_ask": 0.25,
       "no_bid": 0.75,
-      "no_ask": 0.76,
+      "no_ask": 0.77,
       "volume": 230.29,
       "quoted": true
      },
@@ -5736,11 +5736,11 @@
      "side": "yes",
      "text": "Draw",
      "price": 0.25,
-     "bid": 0.24,
+     "bid": 0.23,
      "fair": 0.23710938708144746,
      "fee": 0.013125000000000001,
      "edge": -0.026015612918552537,
-     "edge_rest": -0.0028906129185525264,
+     "edge_rest": 0.007109387081447455,
      "volume": 230.29,
      "ticker": "KXUELGAME-26NOV26NIJREN-TIE"
     },
@@ -5748,11 +5748,11 @@
      "outcome": "draw",
      "side": "no",
      "text": "No draw (either team wins)",
-     "price": 0.76,
+     "price": 0.77,
      "bid": 0.75,
      "fair": 0.7628906129185525,
-     "fee": 0.012768,
-     "edge": -0.009877387081447473,
+     "fee": 0.012397,
+     "edge": -0.01950638708144748,
      "edge_rest": 0.012890612918552535,
      "volume": 230.29,
      "ticker": "KXUELGAME-26NOV26NIJREN-TIE"
@@ -5851,7 +5851,7 @@
       "yes_ask": 0.2,
       "no_bid": 0.8,
       "no_ask": 0.82,
-      "volume": 316.84,
+      "volume": 435.21,
       "quoted": true
      },
      "draw": {
@@ -5877,7 +5877,7 @@
       "yes_ask": 0.6,
       "no_bid": 0.4,
       "no_ask": 0.42,
-      "volume": 2815.11,
+      "volume": 2896.62,
       "quoted": true
      }
     }
@@ -5893,7 +5893,7 @@
      "fee": 0.011200000000000002,
      "edge": -0.014352295946301899,
      "edge_rest": 0.01684770405369812,
-     "volume": 316.84,
+     "volume": 435.21,
      "ticker": "KXUELGAME-26NOV26TORCEL-TOR"
     },
     {
@@ -5906,7 +5906,7 @@
      "fee": 0.010332000000000003,
      "edge": -0.027179704053698066,
      "edge_rest": 0.003152295946301842,
-     "volume": 316.84,
+     "volume": 435.21,
      "ticker": "KXUELGAME-26NOV26TORCEL-TOR"
     },
     {
@@ -5945,7 +5945,7 @@
      "fee": 0.016800000000000002,
      "edge": -0.030006915176207426,
      "edge_rest": 0.0067930848237925945,
-     "volume": 2815.11,
+     "volume": 2896.62,
      "ticker": "KXUELGAME-26NOV26TORCEL-CEL"
     },
     {
@@ -5958,7 +5958,7 @@
      "fee": 0.017052000000000005,
      "edge": -0.023845084823792544,
      "edge_rest": 0.013206915176207423,
-     "volume": 2815.11,
+     "volume": 2896.62,
      "ticker": "KXUELGAME-26NOV26TORCEL-CEL"
     }
    ],
@@ -6029,7 +6029,7 @@
       "yes_ask": 0.79,
       "no_bid": 0.21,
       "no_ask": 0.23,
-      "volume": 466.97,
+      "volume": 479.74,
       "quoted": true
      },
      "draw": {
@@ -6071,7 +6071,7 @@
      "fee": 0.011613,
      "edge": -0.029318796048585685,
      "edge_rest": 0.002294203951414331,
-     "volume": 466.97,
+     "volume": 479.74,
      "ticker": "KXUELGAME-26NOV26SUNJAG-SUN"
     },
     {
@@ -6084,7 +6084,7 @@
      "fee": 0.012397000000000004,
      "edge": -0.014691203951414362,
      "edge_rest": 0.01770579604858566,
-     "volume": 466.97,
+     "volume": 479.74,
      "ticker": "KXUELGAME-26NOV26SUNJAG-SUN"
     },
     {
@@ -6207,7 +6207,7 @@
       "yes_ask": 0.33,
       "no_bid": 0.67,
       "no_ask": 0.69,
-      "volume": 78.98,
+      "volume": 151.34,
       "quoted": true
      },
      "draw": {
@@ -6233,7 +6233,7 @@
       "yes_ask": 0.42,
       "no_bid": 0.58,
       "no_ask": 0.59,
-      "volume": 1553.75,
+      "volume": 1554.39,
       "quoted": true
      }
     }
@@ -6249,7 +6249,7 @@
      "fee": 0.015477,
      "edge": -0.01603831866972353,
      "edge_rest": 0.019438681330276486,
-     "volume": 78.98,
+     "volume": 151.34,
      "ticker": "KXUELGAME-26NOV26SPAAZA-SPA"
     },
     {
@@ -6262,7 +6262,7 @@
      "fee": 0.014973000000000004,
      "edge": -0.034411681330276486,
      "edge_rest": 0.0005613186697234207,
-     "volume": 78.98,
+     "volume": 151.34,
      "ticker": "KXUELGAME-26NOV26SPAAZA-SPA"
     },
     {
@@ -6301,7 +6301,7 @@
      "fee": 0.017052000000000005,
      "edge": -0.01867617901054685,
      "edge_rest": 0.008375820989453164,
-     "volume": 1553.75,
+     "volume": 1554.39,
      "ticker": "KXUELGAME-26NOV26SPAAZA-AZA"
     },
     {
@@ -6314,7 +6314,7 @@
      "fee": 0.016933000000000004,
      "edge": -0.025308820989453112,
      "edge_rest": 0.0016241790105469,
-     "volume": 1553.75,
+     "volume": 1554.39,
      "ticker": "KXUELGAME-26NOV26SPAAZA-AZA"
     }
    ],
@@ -6385,7 +6385,7 @@
       "yes_ask": 0.74,
       "no_bid": 0.26,
       "no_ask": 0.27,
-      "volume": 169.1,
+      "volume": 235.78,
       "quoted": true
      },
      "draw": {
@@ -6427,7 +6427,7 @@
      "fee": 0.013468000000000003,
      "edge": -0.03357383907496011,
      "edge_rest": -0.010105839074960099,
-     "volume": 169.1,
+     "volume": 235.78,
      "ticker": "KXUELGAME-26NOV26TSGSTU-TSG"
     },
     {
@@ -6440,7 +6440,7 @@
      "fee": 0.013797000000000002,
      "edge": -0.003691160925039903,
      "edge_rest": 0.020105839074960108,
-     "volume": 169.1,
+     "volume": 235.78,
      "ticker": "KXUELGAME-26NOV26TSGSTU-TSG"
     },
     {
@@ -6563,7 +6563,7 @@
       "yes_ask": 0.72,
       "no_bid": 0.28,
       "no_ask": 0.29,
-      "volume": 482.38,
+      "volume": 482.72,
       "quoted": true
      },
      "draw": {
@@ -6605,7 +6605,7 @@
      "fee": 0.014112000000000001,
      "edge": -0.023524077425053677,
      "edge_rest": 0.0005879225749463313,
-     "volume": 482.38,
+     "volume": 482.72,
      "ticker": "KXUELGAME-26NOV26FTCCEL-FTC"
     },
     {
@@ -6618,7 +6618,7 @@
      "fee": 0.014413,
      "edge": -0.015000922574946276,
      "edge_rest": 0.009412077425053678,
-     "volume": 482.38,
+     "volume": 482.72,
      "ticker": "KXUELGAME-26NOV26FTCCEL-FTC"
     },
     {

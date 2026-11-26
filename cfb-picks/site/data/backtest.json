@@ -1,7 +1,7 @@
 {
  "sport": "cfb",
  "league": "College football",
- "generated": "2026-11-26T01:44:36+00:00",
+ "generated": "2026-11-26T02:28:01+00:00",
  "season": 2026,
  "big_margin": 14.0,
  "selected": "srs",
@@ -908,6 +908,152 @@
   ],
   "note": "Flat one-unit bets against the DraftKings/consensus closing line from ESPN."
  },
+ "anchor": {
+  "ml": {
+   "n": 2211,
+   "weight": -0.0881,
+   "error": 0.0927,
+   "trust": 0.0,
+   "buckets": [
+    {
+     "lo": 0.0,
+     "hi": 0.03,
+     "n": 625,
+     "model": 0.5151,
+     "market": 0.5003,
+     "actual": 0.4928
+    },
+    {
+     "lo": 0.03,
+     "hi": 0.06,
+     "n": 471,
+     "model": 0.4946,
+     "market": 0.4505,
+     "actual": 0.4374
+    },
+    {
+     "lo": 0.06,
+     "hi": 0.1,
+     "n": 449,
+     "model": 0.4801,
+     "market": 0.4007,
+     "actual": 0.3853
+    },
+    {
+     "lo": 0.1,
+     "hi": 0.15,
+     "n": 301,
+     "model": 0.481,
+     "market": 0.3573,
+     "actual": 0.3289
+    },
+    {
+     "lo": 0.15,
+     "hi": 1.0,
+     "n": 365,
+     "model": 0.5273,
+     "market": 0.289,
+     "actual": 0.2877
+    }
+   ]
+  },
+  "spread": {
+   "n": 2211,
+   "weight": -0.1783,
+   "error": 0.0647,
+   "trust": 0.0,
+   "buckets": [
+    {
+     "lo": 0.0,
+     "hi": 0.03,
+     "n": 459,
+     "model": 0.514,
+     "market": 0.4997,
+     "actual": 0.4749
+    },
+    {
+     "lo": 0.03,
+     "hi": 0.06,
+     "n": 410,
+     "model": 0.5449,
+     "market": 0.5,
+     "actual": 0.4732
+    },
+    {
+     "lo": 0.06,
+     "hi": 0.1,
+     "n": 456,
+     "model": 0.5787,
+     "market": 0.4999,
+     "actual": 0.4825
+    },
+    {
+     "lo": 0.1,
+     "hi": 0.15,
+     "n": 353,
+     "model": 0.623,
+     "market": 0.4995,
+     "actual": 0.4703
+    },
+    {
+     "lo": 0.15,
+     "hi": 1.0,
+     "n": 533,
+     "model": 0.7366,
+     "market": 0.4995,
+     "actual": 0.4522
+    }
+   ]
+  },
+  "total": {
+   "n": 2224,
+   "weight": -0.0173,
+   "error": 0.0934,
+   "trust": 0.0,
+   "buckets": [
+    {
+     "lo": 0.0,
+     "hi": 0.03,
+     "n": 511,
+     "model": 0.5149,
+     "market": 0.5,
+     "actual": 0.4795
+    },
+    {
+     "lo": 0.03,
+     "hi": 0.06,
+     "n": 452,
+     "model": 0.5441,
+     "market": 0.5,
+     "actual": 0.469
+    },
+    {
+     "lo": 0.06,
+     "hi": 0.1,
+     "n": 530,
+     "model": 0.5786,
+     "market": 0.4999,
+     "actual": 0.5132
+    },
+    {
+     "lo": 0.1,
+     "hi": 0.15,
+     "n": 379,
+     "model": 0.6217,
+     "market": 0.5,
+     "actual": 0.4828
+    },
+    {
+     "lo": 0.15,
+     "hi": 1.0,
+     "n": 352,
+     "model": 0.7017,
+     "market": 0.4994,
+     "actual": 0.5085
+    }
+   ]
+  }
+ },
  "rules": {
   "edge_min": 0.05,
   "kelly_fraction": 0.25,
@@ -916,7 +1062,10 @@
   "gap_total": 7.0,
   "move_spread": 3.0,
   "move_total": 4.0,
-  "min_games": 3
+  "min_games": 3,
+  "trust_ml": 0.0,
+  "trust_spread": 0.0,
+  "trust_total": 0.0
  },
  "prototype_reference": {
   "accuracy": 0.73,

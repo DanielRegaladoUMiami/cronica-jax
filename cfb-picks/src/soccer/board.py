@@ -462,14 +462,21 @@ def build_board(now: datetime | None = None, days: int = 7, log=print) -> dict:
     return board
 
 
+LIKELY_PRICE = 0.30  # under it a contract is a long shot: never listed as a good price
+
+
 def best_contracts(board: dict, limit: int = 12) -> list[tuple[dict, dict]]:
-    """The contracts whose price is furthest below fair value, among matches not yet played."""
+    """The contracts whose price is furthest below fair value, among matches not yet played.
+
+    Long shots are left out. A one-cent gap on an 11-cent contract is noise, and on
+    Kalshi cheap contracts win less often than their price implies.
+    """
     rows = [
         (c, m)
         for m in board["matches"]
         if m["status"] == "scheduled"
         for c in m["contracts"]
-        if 0.05 <= c["price"] <= 0.95
+        if LIKELY_PRICE <= c["price"] <= 0.95
     ]
     rows.sort(key=lambda r: r[0]["edge"], reverse=True)
     return rows[:limit]

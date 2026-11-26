@@ -191,15 +191,34 @@
     const side = key ? block[key] : null;
     return side ? { g, market, key, side } : null;
   }
+  // The chance the evidence supports: the market's, moved toward the model's only as far as the track record backs it.
+  const fairOf = (side) => (side.p_fair != null ? side.p_fair : side.p_model);
+  const KALSHI_FEE = 0.07;
+  // The side the model likes more than the market does. For a moneyline that is often not the pick.
+  function leanOf(g, market) {
+    const block = g[market];
+    const key = block && (block.lean || block.pick);
+    const side = key ? block[key] : null;
+    return side ? { g, market, key, side } : null;
+  }
   function collectPicks(games) {
     const out = [];
     for (const g of games) {
       for (const market of visibleMarkets()) {
-        const p = pickOf(g, market);
+        const p = leanOf(g, market);
         if (p && p.side.edge != null) out.push(p);
       }
     }
     return out.sort((x, y) => y.side.edge - x.side.edge);
+  }
+  const hasPlay = (g, market) => sideKeys(market).some((k) => g[market] && g[market][k] && g[market][k].label === 'PLAY');
+  // What happened in past games where the model was 10+ points above the market.
+  function disagreement(anchor) {
+    const rows = ((anchor && anchor.buckets) || []).filter((r) => r.lo >= 0.0999);
+    const n = rows.reduce((acc, r) => acc + r.n, 0);
+    if (!n) return null;
+    const avg = (k) => rows.reduce((acc, r) => acc + r[k] * r.n, 0) / n;
+    return { n, model: avg('model'), market: avg('market'), actual: avg('actual') };
   }
   const providerName = (g) => (g.market.espn && g.market.espn.provider) || 'ESPN';
   function sourceName(g, source) {
@@ -301,21 +320,23 @@
   }
 
   function realityCheck() {
-    const P = state.picks, m = P.model;
-    const record = P.evidence && P.evidence[mlOnly() ? 'ml' : 'all'];
-    const play = record && record.PLAY;
+    const P = state.picks, m = P.model, B = state.backtest;
     const box = h('section', { class: 'callout', 'aria-label': 'Reality check' }, h('b', { class: 't' }, 'Reality check'));
     if (!m.n_backtest) {
       box.append(h('p', null, 'No ' + P.season + ' games have been played yet, so these projections lean on last season’s ratings and are less reliable.'));
       return box;
     }
-    const line = h('p', null, 'The model has picked ', b(rate(m.accuracy, 0) + ' of winners'), ' this season');
-    if (m.correct != null) line.append(': ', b(m.correct + ' right and ' + m.wrong + ' wrong'));
-    if (play && play.n) {
-      line.append(', but it has ', b('not beaten the betting market'), '. Past ' + (mlOnly() ? 'moneyline ' : '') + 'plays like the ones below went ' + play.won + '–' + play.lost +
-        ' against closing lines (ROI ' + signed(play.roi * 100, 1, '%') + '). Read a PLAY as “my number disagrees with the market,” not as a sure thing. ');
-    } else {
-      line.append('. ');
+    const line = h('p', null, 'On its own the model has picked ', b(rate(m.accuracy, 0) + ' of winners'), ' this season');
+    if (m.correct != null) line.append(' (' + m.correct + ' right, ' + m.wrong + ' wrong)');
+    const mkt = B && B.market;
+    if (mkt && mkt.accuracy != null) line.append('; the betting favorite won ', b(rate(mkt.accuracy, 0)));
+    line.append('. ');
+    const anchor = P.evidence && P.evidence.anchor && P.evidence.anchor.ml;
+    const d = disagreement(anchor);
+    if (d) {
+      line.append('When the two disagree, the market has been right: in ' + d.n + ' past games where the model gave a team 10+ points more than the market did, the model said ',
+        b(pct(d.model)), ', the market said ', b(pct(d.market)), ' and the team won ', b(pct(d.actual)), '. ');
+      line.append(anchor.trust > 0 ? 'So the chance shown here leans mostly on the market. ' : 'So the chance shown for every team is the market’s, with the model’s own number beside it. ');
     }
     line.append(h('a', { href: '#' + state.sport + '-record' }, 'See the track record'));
     box.append(line);
@@ -323,40 +344,61 @@
   }
 
   function topPlays() {
-    const games = scopedGames();
-    const picks = collectPicks(games);
-    const plays = picks.filter((p) => p.side.label === 'PLAY');
-    const avoid = picks.filter((p) => p.side.label === 'AVOID');
+    const P = state.picks, games = scopedGames();
     const box = h('section', { class: 'panel' });
-    box.append(h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, mlOnly() ? 'Best moneyline plays this week' : 'Best plays this week'),
-      h('label', { class: 'field-input', for: 'bankroll' }, 'Bankroll $',
-        h('input', { id: 'bankroll', type: 'number', min: '0', step: '50', inputmode: 'decimal', value: String(state.bankroll),
-          onchange: (e) => setState('bankroll', Math.max(0, Number(e.target.value) || 0), 'bankroll') }))));
+    const likely = games.map((g) => pickOf(g, 'ml')).filter((p) => p && p.side.p_market != null).sort((x, y) => fairOf(y.side) - fairOf(x.side));
     const where = useMine() ? 'your ' + plural(games.length, 'tracked game') : plural(games.length, 'game');
-    if (!plays.length) {
-      box.append(h('p', { class: 'empty' }, 'No play clears the ' + (state.picks.rules.edge_min * 100).toFixed(0) + '% edge bar in ' + where + '.'));
+    box.append(h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, 'Most likely winners this week')));
+    if (!likely.length) {
+      box.append(h('p', { class: 'empty' }, 'No game in ' + where + ' has a moneyline yet.'));
     } else {
-      box.append(h('p', { class: 'sub' }, plural(plays.length, 'play') + ' in ' + where + ', ranked by edge: the model’s chance minus the market’s. Tap one to see the game.'));
-      const shown = state.showAllPlays ? plays : plays.slice(0, 5);
-      box.append(h('div', { class: 'plays' }, shown.map((p, i) => playRow(p, i + 1))));
-      if (plays.length > 5) {
+      box.append(h('p', { class: 'sub' }, 'Ranked by chance of winning, across ' + where + '. A likely winner is not a bargain: the price already says how likely it is. Tap one to see the game.'));
+      const shown = state.showAllPlays ? likely : likely.slice(0, 5);
+      box.append(h('div', { class: 'plays' }, shown.map((p, i) => likelyRow(p, i + 1))));
+      if (likely.length > 5) {
         box.append(h('button', { type: 'button', class: 'btn more', id: 'more-plays', onclick: () => setState('showAllPlays', !state.showAllPlays, 'more-plays') },
-          state.showAllPlays ? 'Show top 5 only' : 'Show all ' + plays.length + ' plays'));
-      }
-      const exposure = plays.reduce((acc, p) => acc + p.side.stake, 0);
-      if (plays.length > 3) {
-        box.append(h('p', { class: 'small' }, 'Betting every play at the suggested stake would put ' + (exposure * 100).toFixed(0) + '% of your bankroll' +
-          (state.bankroll > 0 ? ' (' + money(exposure * state.bankroll) + ')' : '') + ' at risk in one week.' +
-          (mlOnly() ? '' : ' A moneyline and a spread on the same team are nearly the same bet, so pick one.')));
+          state.showAllPlays ? 'Show top 5 only' : 'Show all ' + likely.length));
       }
     }
-    if (avoid.length) {
+    const plays = [];
+    for (const g of games) for (const market of visibleMarkets()) for (const key of sideKeys(market)) {
+      const side = g[market] && g[market][key];
+      if (side && side.label === 'PLAY') plays.push({ g, market, key, side });
+    }
+    plays.sort((x, y) => (y.side.value || 0) - (x.side.value || 0));
+    if (plays.length) {
+      box.append(h('h3', { class: 'h3' }, plural(plays.length, 'play')),
+        h('p', { class: 'small' }, 'The price is ' + (P.rules.edge_min * 100).toFixed(0) + '%+ better than the chance, with no red flag.'),
+        h('div', { class: 'plays' }, plays.map((p, i) => playRow(p, i + 1))));
+    } else {
+      box.append(h('p', { class: 'small' }, 'No play this week. A play needs a price ' + (P.rules.edge_min * 100).toFixed(0) +
+        '%+ better than the chance to win, and the model has not shown it can find one: where it disagreed with the market, the market was right.'));
+    }
+    const gaps = collectPicks(games).filter((p) => p.side.edge >= P.rules.edge_min);
+    if (gaps.length) {
       box.append(h('details', null,
-        h('summary', { class: 'h3' }, plural(avoid.length, 'pick') + ' to avoid'),
-        h('p', { class: 'small', style: 'margin-top:8px' }, 'These have an edge on paper, but the pick is unstable, the market disagrees by too much or the line moved against it. Picks like these did worst in the backtest.'),
-        h('div', { class: 'plays' }, avoid.map((p) => playRow(p, null)))));
+        h('summary', { class: 'h3' }, 'Where the model disagrees with the market (' + gaps.length + ')'),
+        h('p', { class: 'small', style: 'margin-top:8px' }, 'The model alone would take these. They are not picks: the track record shows the market’s number holding up, and the ones marked AVOID have a red flag on top (a line that moved against them, an unstable projection or a new quarterback).'),
+        h('div', { class: 'plays' }, gaps.map((p) => playRow(p, null)))));
     }
     return box;
+  }
+
+  function likelyRow(p, rank) {
+    const { g, key, side } = p;
+    const other = g[key === 'home' ? 'away' : 'home'];
+    const chance = fairOf(side);
+    let ctx = (key === 'home' ? 'vs ' : 'at ') + other.name + ' · ' + kickFmt(g.date) + ' · the model alone says ' + pct(side.p_model);
+    const k = g.kalshi && g.kalshi[key];
+    if (k && k.yes_ask != null) {
+      ctx += ' · Kalshi ' + cents(k.yes_ask) + ' (' + signed((chance - k.yes_ask - KALSHI_FEE * k.yes_ask * (1 - k.yes_ask)) * 100, 1, '¢') + ' after the fee)';
+    }
+    if ((g.qb_changes || []).length) ctx += ' · a quarterback change in this game';
+    return h('button', { type: 'button', class: 'playrow', onclick: () => goToGame(g.id, 'ml') },
+      h('span', { class: 'rankno' }, String(rank)),
+      h('span', { class: 'what' }, g[key].name + ' to win ', h('span', { class: 'price' }, '(' + oddsFmt(side.odds) + ')')),
+      h('span', { class: 'edge' }, pct(chance), h('small', null, 'chance to win')),
+      h('span', { class: 'ctx' }, ctx));
   }
 
   function playRow(p, rank) {
@@ -366,9 +408,9 @@
     if (rank && stake) ctx += ' · stake ' + stake;
     if (!rank && side.reasons.length) ctx += ' · ' + side.reasons[0];
     return h('button', { type: 'button', class: 'playrow', onclick: () => goToGame(g.id, market) },
-      rank ? h('span', { class: 'rankno' }, String(rank)) : pill('AVOID'),
+      rank ? h('span', { class: 'rankno' }, String(rank)) : pill(side.label),
       h('span', { class: 'what' }, sideLabel(g, market, key, true), ' ', h('span', { class: 'price' }, '(' + oddsFmt(side.odds) + ')')),
-      h('span', { class: 'edge' }, edgeFmt(side.edge), h('small', null, pct(side.p_model) + ' vs ' + pct(side.p_market))),
+      h('span', { class: 'edge' }, edgeFmt(rank ? side.value : side.edge), h('small', null, rank ? pct(fairOf(side)) + ' vs ' + pct(side.p_market) : 'model ' + pct(side.p_model) + ' · market ' + pct(side.p_market))),
       h('span', { class: 'ctx' }, ctx));
   }
 
@@ -412,7 +454,7 @@
     const q = state.query.trim().toLowerCase();
     let list = q ? allGames() : scopedGames();   // a search looks through every game
     if (q) list = list.filter((g) => [g.home.name, g.away.name, g.home.abbr, g.away.abbr].some((x) => String(x).toLowerCase().includes(q)));
-    if (state.playsOnly) list = list.filter((g) => visibleMarkets().some((m) => { const p = pickOf(g, m); return p && p.side.label === 'PLAY'; }));
+    if (state.playsOnly) list = list.filter((g) => visibleMarkets().some((m) => hasPlay(g, m)));
     return list.slice().sort((x, y) => x.date.localeCompare(y.date));
   }
 
@@ -445,7 +487,10 @@
 
   function gameCard(g) {
     const pr = g.projection, model = state.picks.model, espn = g.market.espn;
-    const favHome = pr.margin >= 0;
+    const favHome = pr.margin >= 0;   // the model's favorite, for its own line below
+    const priced = g.ml.home && g.ml.away && g.ml.home.p_market != null;
+    const chance = (key) => (priced ? fairOf(g.ml[key]) : key === 'home' ? pr.p_home : pr.p_away);
+    const likelyHome = chance('home') >= chance('away');
     const card = h('article', { class: 'panel game', id: 'g-' + g.id });
     const tags = h('div', { class: 'tags' });
     if (g.on_my_list) tags.append(h('span', { class: 'tag' }, 'My lines'));
@@ -456,19 +501,19 @@
     const teams = h('div', { class: 'teams' });
     for (const key of ['away', 'home']) {
       const t = g[key];
-      const isFav = (key === 'home') === favHome;
+      const isFav = (key === 'home') === likelyHome;
       const meta = [t.record, t.rank ? 'AP #' + t.rank : null, t.rating_rank ? 'model #' + t.rating_rank : null,
         key === 'home' && !g.neutral ? 'home' : null].filter(Boolean).join(' · ');
       teams.append(
         h('div', { class: 'team' + (isFav ? ' fav' : '') }, badge(t), h('div', { class: 'team-name' }, h('b', null, t.name), h('span', null, meta))),
         h('div', { class: 'proj' }, pr[key] == null ? '–' : String(Math.round(pr[key]))),
-        h('div', { class: 'wp' }, pct(key === 'home' ? pr.p_home : pr.p_away)));
+        h('div', { class: 'wp' }, pct(chance(key))));
     }
     card.append(teams);
-    card.append(h('div', { class: 'wpbar', role: 'img', 'aria-label': 'Win chance: ' + g.away.name + ' ' + pct(pr.p_away) + ', ' + g.home.name + ' ' + pct(pr.p_home) },
-      h('i', { class: favHome ? null : 'fav', style: 'flex:' + Math.max(pr.p_away, 0.02) }),
-      h('i', { class: favHome ? 'fav' : null, style: 'flex:' + Math.max(pr.p_home, 0.02) })));
-    card.append(h('div', { class: 'cap' }, h('span', null, 'Projected score and win chance'),
+    card.append(h('div', { class: 'wpbar', role: 'img', 'aria-label': 'Win chance: ' + g.away.name + ' ' + pct(chance('away')) + ', ' + g.home.name + ' ' + pct(chance('home')) },
+      h('i', { class: likelyHome ? null : 'fav', style: 'flex:' + Math.max(chance('away'), 0.02) }),
+      h('i', { class: likelyHome ? 'fav' : null, style: 'flex:' + Math.max(chance('home'), 0.02) })));
+    card.append(h('div', { class: 'cap' }, h('span', null, priced ? 'Model’s projected score · market’s chance to win' : 'Projected score and win chance'),
       model.mae_margin != null ? h('span', null, 'typical miss ±' + trim(model.mae_margin) + ' pts') : null));
 
     const fav = favHome ? g.home : g.away;
@@ -532,8 +577,15 @@
       h('span', { class: 'mkt-type' }, MARKET_NAME[market]),
       h('span', { class: 'mkt-pick' }, sideLabel(g, market, p.key), ' ', h('span', { class: 'price' }, '(' + oddsFmt(side.odds) + ')')),
       pill(side.label));
-    const sub = h('span', { class: 'mkt-sub' }, h('span', null, 'model ', b(pct(side.p_model))));
-    if (side.p_market != null) sub.append(h('span', null, 'market ', b(pct(side.p_market))), h('span', null, 'edge ', b(edgeFmt(side.edge))));
+    const sub = h('span', { class: 'mkt-sub' });
+    if (side.p_market == null) sub.append(h('span', null, 'model ', b(pct(side.p_model))));
+    else if (market === 'ml') {
+      sub.append(h('span', null, 'chance ', b(pct(fairOf(side)))), h('span', null, 'model alone ', b(pct(side.p_model))));
+      const lean = leanOf(g, market);
+      if (lean && lean.key !== p.key && lean.side.edge >= state.picks.rules.edge_min) sub.append(h('span', null, 'the model alone leans ' + g[lean.key].name));
+    } else {
+      sub.append(h('span', null, 'model ', b(pct(side.p_model))), h('span', null, 'market ', b(pct(side.p_market))), h('span', null, 'gap ', b(edgeFmt(side.edge))));
+    }
     const stake = stakeText(side);
     if (stake) sub.append(h('span', null, 'stake ', b(stake)));
     if (side.label === 'AVOID' && side.reasons.length) sub.append(h('span', null, cap(side.reasons[0])));
@@ -547,8 +599,8 @@
         : 'Price ' + oddsFmt(side.odds) + ' from ' + sourceName(g, side.source) + '.');
     }
     const fair = fairOdds(side.p_model);
-    if (fair != null) facts.push('The model’s fair price would be ' + oddsFmt(fair) + '.');
-    if (side.ev != null) facts.push('Expected value at this price: ' + signed(side.ev * 100, 1, '%') + ' per unit staked.');
+    if (fair != null) facts.push('On its own the model would price it at ' + oddsFmt(fair) + '.');
+    if (side.ev != null) facts.push('At a ' + pct(fairOf(side)) + ' chance, this price returns ' + signed(side.ev * 100, 1, '%') + ' per unit staked.');
     const dv = block.devig;
     if (dv && dv.method === 'two_sided') facts.push('Market chance comes from both sides of the ' + sourceName(g, dv.source) + ' price, with the bookmaker’s cut removed.');
     if (dv && dv.method === 'one_sided') facts.push('Only one side was priced at ' + sourceName(g, dv.source) + ', so a typical 4.5% bookmaker cut was removed.');
@@ -564,7 +616,7 @@
     }
     body.append(h('ul', null, facts.map((f) => h('li', null, f))));
 
-    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null, ['Side', 'Price', 'Model', 'Market', 'Edge'].map((t) => h('th', null, t)))));
+    const table = h('table', { class: 'mini' }, h('thead', null, h('tr', null, ['Side', 'Price', 'Model', 'Market', 'Gap'].map((t) => h('th', null, t)))));
     const tbody = h('tbody');
     for (const key of sideKeys(market)) {
       const sd = block[key];
@@ -587,26 +639,34 @@
     if (side.label === 'PLAY') {
       const stake = stakeText(side);
       return h('div', { class: 'why play' },
-        h('p', null, 'The model gives ', b(what), ' a ', b(pct(side.p_model)), ' chance ' + verb + '. The market price implies ', b(pct(side.p_market)),
-          ' once the bookmaker’s cut is removed. That gap of ', b(edgeFmt(side.edge)), ' is the edge.'),
+        h('p', null, 'Checked against the market, ', b(what), ' has a ', b(pct(fairOf(side))), ' chance ' + verb + '. The price implies ', b(pct(side.p_market)),
+          ' once the bookmaker’s cut is removed. That gap of ', b(edgeFmt(side.value == null ? side.edge : side.value)), ' is the value.'),
         h('p', { style: 'margin-top:6px' }, 'The pick holds up without each team’s last two games, and the line has not moved against it.' +
           (stake ? ' Suggested stake: ' + stake + ', a quarter of the Kelly amount and never more than 2%.' : '')));
     }
     if (side.label === 'AVOID') {
       return h('div', { class: 'why avoid' },
-        h('p', null, 'On paper there is an edge of ', b(edgeFmt(side.edge)), ' (model ' + pct(side.p_model) + ', market ' + pct(side.p_market) + '), but there is a red flag:'),
+        h('p', null, 'The model alone sees a gap of ', b(edgeFmt(side.edge)), ' (model ' + pct(side.p_model) + ', market ' + pct(side.p_market) + '), and there is a red flag on top:'),
         h('ul', { style: 'margin-top:6px' }, side.reasons.map((r) => h('li', null, cap(r)))),
         h('p', { style: 'margin-top:6px' }, 'The model does not see injuries, weather or news. When the market disagrees this much, it usually knows something.'));
     }
-    return h('p', { class: 'why' }, 'Not enough edge. The model says ', b(pct(side.p_model)), ' and the market ', b(pct(side.p_market)),
-      ', a gap of ' + edgeFmt(side.edge) + '. A PLAY needs at least ' + (state.picks.rules.edge_min * 100).toFixed(0) + '%.');
+    if (side.edge >= state.picks.rules.edge_min) {
+      return h('div', { class: 'why' },
+        h('p', null, 'The model alone gives ', b(what), ' a ', b(pct(side.p_model)), ' chance ' + verb + '; the market says ', b(pct(side.p_market)), '.'),
+        h('p', { style: 'margin-top:6px' }, 'That is a disagreement, not a play. In the track record, when the model was this far from the market, the market’s number was the one that held up.'));
+    }
+    if (market === 'ml') {
+      return h('p', { class: 'why' }, b(what), ' is the likelier winner: ', b(pct(fairOf(side))), ' by the market, ' + pct(side.p_model) + ' by the model alone. The price already reflects it, so there is no play.');
+    }
+    return h('p', { class: 'why' }, 'The model says ', b(pct(side.p_model)), ' and the market ', b(pct(side.p_market)),
+      ', a gap of ' + edgeFmt(side.edge) + '. Too close to act on.');
   }
 
   // ================================================================== PARLAY
   function parlayMath(legs) {
     const out = { n: legs.length, pModel: null, pMarket: null, decimal: null };
     if (!legs.length) return out;
-    out.pModel = legs.reduce((acc, l) => acc * l.side.p_model, 1);
+    out.pModel = legs.reduce((acc, l) => acc * fairOf(l.side), 1);   // the chance to quote, not the model's own
     if (legs.every((l) => l.side.p_market != null)) out.pMarket = legs.reduce((acc, l) => acc * l.side.p_market, 1);
     if (legs.every((l) => l.side.odds != null)) out.decimal = legs.reduce((acc, l) => acc * toDecimal(l.side.odds), 1);
     return out;
@@ -633,7 +693,7 @@
         opts.append(h('button', { type: 'button', class: 'leg', id, 'aria-pressed': String(isLeg(g.id, market, key)),
           onclick: () => { setLeg(g, market, key); refocus = id; render(); } },
           h('b', null, sideLabel(g, market, key)), h('span', { class: 'o' }, oddsFmt(leg.side.odds)),
-          h('span', { class: 'p' }, 'model ' + pct(leg.side.p_model) + (leg.side.p_market != null ? ' · market ' + pct(leg.side.p_market) : ''))));
+          h('span', { class: 'p' }, 'chance ' + pct(fairOf(leg.side)) + ' · model alone ' + pct(leg.side.p_model))));
       }
       if (opts.children.length) list.append(h('div', { class: 'legrow' }, h('span', { class: 'when' }, matchup(g) + ' · ' + kickFmt(g.date)), opts));
     }
@@ -650,20 +710,22 @@
       box.append(h('p', { class: 'empty' }, 'None of these legs has a pending game this week.'));
       return box;
     }
-    const verdict = h('p', { class: 'verdict' }, 'The model gives this ' + legs.length + '-leg ticket an ', b(pct(saved.p_model, 1)), ' chance, about ', b(oneIn(saved.p_model)), '.');
-    if (saved.p_market != null) verdict.append(' The market’s own numbers say ', b(pct(saved.p_market, 1)), ' (' + oneIn(saved.p_market) + ').');
+    const chance = saved.p_fair != null ? saved.p_fair : saved.p_model;
+    const legChance = (leg) => (leg.p_fair != null ? leg.p_fair : leg.p_model);
+    const verdict = h('p', { class: 'verdict' }, 'This ' + legs.length + '-leg ticket has about a ', b(pct(chance, 1)), ' chance, ', b(oneIn(chance)), '.');
+    if (Math.abs(saved.p_model - chance) >= 0.005) verdict.append(' The model alone says ' + pct(saved.p_model, 1) + ', but where it has disagreed with the market the market was right.');
     if (saved.implied_prob != null) {
       verdict.append(' The book pays ', b(oddsFmt(decimalToAmerican(saved.decimal))), ', which only breaks even if it hits ', b(pct(saved.implied_prob, 1)), ' of the time.');
     }
     box.append(verdict);
     const kv = h('div', { class: 'kv' });
-    kv.append(h('div', null, h('div', { class: 'k' }, 'Model'), h('div', { class: 'v' }, pct(saved.p_model, 1)), h('div', { class: 's' }, 'chance all ' + legs.length + ' legs win')));
-    if (saved.p_market != null) kv.append(h('div', null, h('div', { class: 'k' }, 'Market, no vig'), h('div', { class: 'v' }, pct(saved.p_market, 1)), h('div', { class: 's' }, 'what the prices themselves imply')));
+    kv.append(h('div', null, h('div', { class: 'k' }, 'Chance'), h('div', { class: 'v' }, pct(chance, 1)), h('div', { class: 's' }, 'all ' + legs.length + ' legs win')));
+    kv.append(h('div', null, h('div', { class: 'k' }, 'Model alone'), h('div', { class: 'v' }, pct(saved.p_model, 1)), h('div', { class: 's' }, 'before checking it against the market')));
     if (saved.implied_prob != null) {
       kv.append(h('div', null, h('div', { class: 'k' }, 'Needed to break even'), h('div', { class: 'v' }, pct(saved.implied_prob, 1)), h('div', { class: 's' }, 'pays ' + oddsFmt(decimalToAmerican(saved.decimal)) + ' (x' + saved.decimal.toFixed(2) + ')')));
-      const ev = saved.ev_market != null ? saved.ev_market : saved.ev_model;
+      const ev = chance * saved.decimal - 1;
       kv.append(h('div', null, h('div', { class: 'k' }, 'Expected value'), h('div', { class: 'v ' + (ev >= 0 ? 'pos' : 'neg') }, signed(ev * 100, 0, '%')),
-        h('div', { class: 's' }, saved.ev_market != null ? 'per $1 by the market’s numbers; ' + signed(saved.ev_model * 100, 0, '%') + ' by the model' : 'per $1, by the model')));
+        h('div', { class: 's' }, 'per $1, at that chance')));
     }
     box.append(kv);
     box.append(h('p', { class: 'small' }, 'Why the gap: every leg is priced with the bookmaker’s cut built in, and in a parlay those cuts multiply.'));
@@ -671,15 +733,15 @@
     box.append(h('h3', { class: 'h3' }, 'Legs, weakest first'));
     const byId = new Map(allGames().map((g) => [g.id, g]));
     const grid = h('div', { class: 'legs' });
-    for (const leg of legs.slice().sort((x, y) => x.p_model - y.p_model)) {
+    for (const leg of legs.slice().sort((x, y) => legChance(x) - legChance(y))) {
       const g = byId.get(leg.game_id);
       const weak = leg.team === saved.weakest;
       grid.append(h('div', { class: 'legitem' },
         g ? badge(g[leg.side], true) : h('span'),
         h('div', { class: 'legname' }, h('b', null, leg.team), weak ? h('span', { class: 'flag' }, 'Weakest leg') : null,
           h('small', null, (leg.venue === 'home' ? 'vs ' : 'at ') + leg.opponent)),
-        h('div', { class: 'fig' }, pct(leg.p_model), h('small', null, (leg.p_market != null ? 'market ' + pct(leg.p_market) + ' · ' : '') + oddsFmt(leg.odds))),
-        h('div', { class: 'bar' + (weak ? ' weak' : ''), role: 'img', 'aria-label': 'Model chance ' + pct(leg.p_model) }, h('i', { style: 'width:' + clamp(leg.p_model * 100, 2, 100).toFixed(0) + '%' }))));
+        h('div', { class: 'fig' }, pct(legChance(leg)), h('small', null, 'model alone ' + pct(leg.p_model) + ' · ' + oddsFmt(leg.odds))),
+        h('div', { class: 'bar' + (weak ? ' weak' : ''), role: 'img', 'aria-label': 'Chance ' + pct(legChance(leg)) }, h('i', { style: 'width:' + clamp(legChance(leg) * 100, 2, 100).toFixed(0) + '%' }))));
     }
     box.append(grid);
     for (const leg of (saved.legs || []).filter((l) => l.no_data)) box.append(h('p', { class: 'small' }, 'No data for ' + leg.team + '.'));
@@ -709,12 +771,11 @@
       return box;
     }
     const grid = h('div', { class: 'kv' });
-    grid.append(h('div', null, h('div', { class: 'k' }, 'Model chance'), h('div', { class: 'v' }, pct(math.pModel, 1)), h('div', { class: 's' }, 'about ' + oneIn(math.pModel))));
-    if (math.pMarket != null) grid.append(h('div', null, h('div', { class: 'k' }, 'Market, no vig'), h('div', { class: 'v' }, pct(math.pMarket, 1)), h('div', { class: 's' }, 'about ' + oneIn(math.pMarket))));
+    grid.append(h('div', null, h('div', { class: 'k' }, 'Chance'), h('div', { class: 'v' }, pct(math.pModel, 1)), h('div', { class: 's' }, 'about ' + oneIn(math.pModel))));
     if (math.decimal != null) {
       const ev = math.pModel * math.decimal - 1;
       grid.append(h('div', null, h('div', { class: 'k' }, 'Pays'), h('div', { class: 'v' }, oddsFmt(american)), h('div', { class: 's' }, 'breaks even at ' + pct(1 / math.decimal, 1))));
-      grid.append(h('div', null, h('div', { class: 'k' }, 'Expected value'), h('div', { class: 'v ' + (ev >= 0 ? 'pos' : 'neg') }, signed(ev * 100, 0, '%')), h('div', { class: 's' }, 'per $1, by the model')));
+      grid.append(h('div', null, h('div', { class: 'k' }, 'Expected value'), h('div', { class: 'v ' + (ev >= 0 ? 'pos' : 'neg') }, signed(ev * 100, 0, '%')), h('div', { class: 's' }, 'per $1, at that chance')));
     } else {
       grid.append(h('div', null, h('div', { class: 'k' }, 'Pays'), h('div', { class: 'v' }, '–'), h('div', { class: 's' }, 'a leg has no price')));
     }
@@ -725,8 +786,8 @@
           onchange: (e) => setState('stake', Math.max(0, Number(e.target.value) || 0), 'slip-stake') }),
         h('span', null, 'returns ' + money(state.stake * math.decimal) + ' if every leg wins')));
     }
-    const weakest = legs.reduce((x, y) => (x.side.p_model <= y.side.p_model ? x : y));
-    body.append(h('p', { class: 'small' }, 'Weakest leg: ' + weakest.label + ' (' + pct(weakest.side.p_model) + '). Tap a leg to remove it.'));
+    const weakest = legs.reduce((x, y) => (fairOf(x.side) <= fairOf(y.side) ? x : y));
+    body.append(h('p', { class: 'small' }, 'Weakest leg: ' + weakest.label + ' (' + pct(fairOf(weakest.side)) + '). Tap a leg to remove it.'));
     body.append(h('div', { class: 'slip-legs' }, legs.map((l) => h('button', { type: 'button', 'aria-label': 'Remove ' + l.label,
       onclick: () => { setLeg(l.g, l.market, l.key); refocus = 'slip'; render(); } }, l.label + ' ' + oddsFmt(l.side.odds) + ' ×'))));
     body.append(h('div', null, h('button', { type: 'button', class: 'btn ghost', onclick: () => { saveLegs({}); refocus = 'slip'; render(); } }, 'Clear ticket')));
@@ -763,11 +824,43 @@
         kpiBox('Typical miss, total', cur.mae_total.toFixed(1) + ' pts', mkt ? 'the market: ' + mkt.mae_total.toFixed(1) : '')));
     }
     out.push(kpi);
+    const disagree = disagreePanel(B);
+    if (disagree) out.push(disagree);
     out.push(bettingPanel(B));
     out.push(comparisonPanel(B, sel));
     out.push(weeksPanel(B));
     out.push(calibrationPanel(B));
     return out;
+  }
+
+  // The evidence behind the rule: grouped by how far the model was above the market, what happened.
+  function disagreePanel(B) {
+    const A = B.anchor || {};
+    const markets = (mlOnly() ? ['ml'] : ['ml', 'spread', 'total']).filter((m) => A[m] && A[m].buckets && A[m].buckets.length);
+    if (!markets.length) return null;
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'When the model and the market disagree'));
+    const d = disagreement(A.ml);
+    if (d) {
+      box.append(h('p', { class: 'verdict' }, b('The market has been right.'), ' In ' + d.n + ' games where the model gave a team 10+ points more than the market did, the model said ',
+        b(pct(d.model)), ', the market said ', b(pct(d.market)), ' and the team won ', b(pct(d.actual)), '.'));
+    }
+    box.append(h('p', { class: 'sub' }, 'Each row groups past games by how far the model’s chance was above the market’s. If the model knew something the market did not, the last column would follow the model. ' +
+      'It follows the market, so the chance shown on this site is the market’s and a gap alone is never a play.'));
+    const two = h('div', { class: 'two' });
+    for (const m of markets) {
+      const body = h('tbody');
+      for (const r of A[m].buckets) {
+        const range = r.hi >= 1 ? Math.round(r.lo * 100) + '+ pts' : Math.round(r.lo * 100) + '–' + Math.round(r.hi * 100) + ' pts';
+        body.append(h('tr', null, h('td', null, range), h('td', { class: 'opt' }, String(r.n)), h('td', null, pct(r.model, 1)), h('td', null, pct(r.market, 1)), h('td', null, b(pct(r.actual, 1)))));
+      }
+      two.append(h('div', null, h('h3', { class: 'h3' }, MARKET_NAME[m]), h('div', { class: 'scroll' }, h('table', { class: 'mini' },
+        h('thead', null, h('tr', null, h('th', null, 'Model ahead by'), h('th', { class: 'opt' }, 'Games'), h('th', null, 'Model'), h('th', null, 'Market'), h('th', null, 'Happened'))), body))));
+    }
+    box.append(two);
+    const w = A.ml && A.ml.weight;
+    box.append(h('p', { class: 'small' }, 'Closing lines, seasons ' + B.bets.seasons_with_lines.join(', ') + '. “Model” and “Market” are the chance each gave the side; “Happened” is how often it won, covered or went over.' +
+      (w == null ? '' : ' Put as one number, the share of the moneyline gap that came true is ' + signed(w, 2) + ' ± ' + trim(A.ml.error, 2) + ': 1 would mean the model was right, 0 that the market was.')));
+    return box;
   }
 
   function recordTable(block) {
@@ -791,7 +884,7 @@
 
   function bettingPanel(B) {
     const ml = mlOnly(), kind = ml ? 'moneyline ' : '';
-    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'Would the ' + kind + 'plays have made money?'));
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'What if you had bet the model’s ' + kind + 'disagreements?'));
     const cur = (B.bets.current || {})[ml ? 'ml' : 'all'], hist = (B.bets.history || {})[ml ? 'ml' : 'all'];
     if (!cur || !cur.PLAY) {
       box.append(h('p', { class: 'empty' }, 'There are no closing lines yet to simulate against.'));
@@ -801,8 +894,8 @@
     // Inside one standard error of zero, the honest answer is that it is too early to say.
     const even = j.roi_error != null && Math.abs(j.roi) <= j.roi_error;
     const verdict = !j.n
-      ? h('p', { class: 'verdict' }, 'No ' + kind + 'PLAY has been settled yet in ' + B.season + '.')
-      : h('p', { class: 'verdict' }, b(even ? 'Too few bets to say.' : j.roi >= 0 ? 'So far, yes.' : 'Not so far.'), ' Betting one unit on every ' + kind + 'PLAY in ' + B.season + ' at the closing line went ' + j.won + '–' + j.lost +
+      ? h('p', { class: 'verdict' }, 'No ' + kind + 'bet of that kind has been settled yet in ' + B.season + '.')
+      : h('p', { class: 'verdict' }, b(even ? 'Too few bets to say.' : j.roi >= 0 ? 'So far it would have paid.' : 'It would have lost.'), ' Betting one unit every time the model alone saw a ' + kind + 'play in ' + B.season + ' at the closing line went ' + j.won + '–' + j.lost +
         ' for ', b(signed(j.units, 1, ' units')), ' (ROI ' + signed(j.roi * 100, 1, '%') + (j.roi_error == null ? '' : ' ± ' + trim(j.roi_error * 100, 0) + '%') + ').');
     if (hp && hp.n) {
       const read = hp.roi >= 0 ? '.' : hp.roi > -0.065 ? ', roughly the bookmaker’s cut.' : ', which is worse than the bookmaker’s cut alone (about ' + MINUS + '4.5%).';
@@ -824,7 +917,8 @@
     two.append(h('div', null, h('h3', { class: 'h3' }, B.season + (ml ? '' : ' by bet type')), h('div', { class: 'scroll' }, recordTable(B.bets.current))));
     two.append(h('div', null, h('h3', { class: 'h3' }, 'Seasons ' + B.bets.seasons_with_lines.join(', ')), h('div', { class: 'scroll' }, recordTable(B.bets.history))));
     box.append(two);
-    box.append(h('p', { class: 'small' }, 'ROI is profit per unit staked; ± is one standard error. The closing line is the last price before kickoff, the hardest one to beat.' +
+    box.append(h('p', { class: 'small' }, 'Here “play” is what the model alone would flag: 5%+ above the market with no red flag. The site no longer treats that as a play. ' +
+      'ROI is profit per unit staked; ± is one standard error. The closing line is the last price before kickoff, the hardest one to beat.' +
       (S().college ? '' : ' The NFL red flags were set on this same record, so the gap between plays and flagged picks is a best case.')));
     return box;
   }
@@ -1065,10 +1159,10 @@
     const sec = (title, ...kids) => h('section', { class: 'panel' }, h('h2', { class: 'h2' }, title), kids);
     const p = (...kids) => h('p', null, kids);
     const key = h('div', { class: 'key' },
-      pill('PLAY'), h('div', null, 'The model’s chance beats the market’s by ' + (r.edge_min * 100).toFixed(0) + '% or more, the bet has positive expected value at the real price, and there are no red flags.'),
-      pill('AVOID'), h('div', null, 'There is an edge on paper, but the pick flips when each team’s last 2 games are removed, the model is ' + trim(r.gap_margin) + '+ points away from the market spread (' +
+      pill('PLAY'), h('div', null, 'After the model is checked against the market, the chance still beats the price by ' + (r.edge_min * 100).toFixed(0) + '% or more, with positive expected value and no red flags. The track record has not given the model that credit, so plays are rare.'),
+      pill('AVOID'), h('div', null, 'The model alone sees ' + (r.edge_min * 100).toFixed(0) + '%+, but the pick flips when each team’s last 2 games are removed, the model is ' + trim(r.gap_margin) + '+ points away from the market spread (' +
         trim(r.gap_total) + '+ on a total), or the line moved ' + trim(r.move_spread) + '+ points against it since it opened (' + trim(r.move_total) + '+ on a total).'),
-      pill('PASS'), h('div', null, 'The model and the market roughly agree. Nothing to do.'));
+      pill('PASS'), h('div', null, 'No value: the model agrees with the market, or disagrees without a record to back it.'));
     const gloss = h('dl', { class: 'gloss' });
     const terms = [
       ['Moneyline', 'A bet on who wins. −300 means you risk $300 to win $100; +240 means you risk $100 to win $240.'],
@@ -1076,7 +1170,7 @@
       ['Total', 'A bet on the combined score going over or under a number.'],
       ['Vig', 'The bookmaker’s cut, built into the prices. At −110 on both sides you need to win 52.4% of the time just to break even.'],
       ['Market chance', 'The win chance the prices imply once the vig is removed. It is the fairest read of what the market believes.'],
-      ['Edge', 'The model’s chance minus the market chance. A positive edge means the model thinks the price is too generous.'],
+      ['Gap', 'The model’s chance minus the market’s. A gap is a disagreement. It only counts as value for the share of it that has come true in the past, and so far that share is zero.'],
       ['Stake', 'A quarter of the Kelly amount, which sizes a bet by its edge, and never more than ' + (r.stake_cap * 100).toFixed(0) + '% of your bankroll.'],
       ['Closing line', 'The last price before kickoff. It reflects everything known about the game, which makes it very hard to beat.'],
     ];
@@ -1091,6 +1185,10 @@
       sec('From a projection to a percentage', h('div', { class: 'prose' },
         p('In testing, real margins landed about ' + trim(m.sigma_margin) + ' points away from the projection on a typical day (' + trim(m.sigma_total) + ' for totals). That spread turns a projected margin into a chance of winning, covering a spread or going over a total.'),
         p('No percentage is ever shown as 100%, and the typical miss sits next to every projection for the same reason.'))),
+      sec('Why the chance shown is the market’s', h('div', { class: 'prose' },
+        p('The model has its chance of winning and the betting market has another. In past seasons, whenever the two were far apart, the result followed the market’s number: the model does not see injuries, a change of quarterback or the weather, and the market does.'),
+        p('So the chance on every card is the market’s, the model’s own number sits beside it, and the gap between them is something to look into, never a bet by itself. The moneyline pick is simply the team more likely to win. ',
+          'If the model starts getting its disagreements right, the track record will show it and the rule will give it that much credit.'))),
       sec('What the labels mean', key),
       sec('What the model does not know', h('div', { class: 'prose' },
         h('ul', null,
@@ -1178,21 +1276,23 @@
     const box = h('section', { class: 'panel' }, h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, 'Kalshi contracts the model flags')));
     const rule = P.rule;
     if (!plays.length) {
-      box.append(h('p', { class: 'empty' }, 'No contract clears the bar this week: ' + (rule.edge_play * 100).toFixed(0) + ' points of edge after the fee, backed by the DraftKings line.'));
+      box.append(h('p', { class: 'empty' }, 'No contract clears the bar this week: likely to come in (' + (rule.min_prob * 100).toFixed(0) + '%+), and priced ' + (rule.edge_play * 100).toFixed(0) +
+        '+ points below what both the model and the DraftKings line say.'));
     } else {
-      box.append(h('p', { class: 'sub' }, plural(plays.length, 'contract') + ' with ' + (rule.edge_play * 100).toFixed(0) +
-        '+ points left after Kalshi’s fee, where the DraftKings line agrees and the player is not in doubt. Tap one to see the player.'));
+      box.append(h('p', { class: 'sub' }, plural(plays.length, 'contract') + ' likely to come in (' + (rule.min_prob * 100).toFixed(0) + '%+), where the model and the DraftKings line both say Kalshi’s price is ' +
+        (rule.edge_play * 100).toFixed(0) + '+ points too low after the fee. Long shots are never flagged. Tap one to see the player.'));
       box.append(h('div', { class: 'plays' }, plays.map((f, i) => flagRow(f, i + 1))));
     }
     const fold = (rows, one, many, text) => (rows.length ? h('details', null, h('summary', { class: 'h3' }, plural(rows.length, one, many)),
       h('p', { class: 'small', style: 'margin-top:8px' }, text), h('div', { class: 'plays' }, rows.slice(0, 25).map((f) => flagRow(f, null)))) : null);
-    box.append(fold(leans, 'lean', 'leans', 'An edge on paper that only the model sees: no DraftKings line to confirm it, or too few contracts traded for the price to mean much.'));
+    box.append(fold(leans, 'lean', 'leans', 'Likely contracts the model thinks are cheap, without a DraftKings line that fully backs it or with too few contracts traded for the price to mean much.'));
     box.append(fold(checks, 'contract to check first', 'contracts to check first', 'The model is far from the market here, or the player’s situation changed. A big gap usually means the market knows something: read the news before touching these.'));
     return box;
   }
 
   function flagRow(f, rank) {
-    let ctx = f.name + ' · ' + f.team + ' · ' + f.game + ' · ' + kickFmt(f.kickoff) + ' · projection ' + trim(f.proj, 1) + (f.dk != null ? ' (DraftKings ' + trim(f.dk, 1) + ')' : '');
+    let ctx = f.name + ' · ' + f.team + ' · ' + f.game + ' · ' + kickFmt(f.kickoff) + ' · projection ' + trim(f.proj, 1) + (f.dk != null ? ' (DraftKings line ' + trim(f.dk, 1) + ')' : '') +
+      (f.p_dk != null ? ' · DraftKings implies ' + pct(f.p_dk) : '');
     if (!rank && f.reasons.length) ctx += ' · ' + f.reasons[0];
     return h('button', { type: 'button', class: 'playrow', onclick: () => openPlayer(f.game_id, f.athlete_id) },
       rank ? h('span', { class: 'rankno' }, String(rank)) : flagPill(f.label),
@@ -1347,15 +1447,19 @@
         h('li', null, b('Who is available. '), 'Shares are split among the players who will play. When a teammate is out, the man who replaces him takes most of the vacancy.'),
         h('li', null, b('His own efficiency. '), 'Catch rate, yards per target and per carry, pulled toward the average of his position when he has had few chances.')),
       p('A projection is an average. To price a contract such as “250+ passing yards”, the model uses how real results have spread around projections of that size in the backtest.'),
-      p(b('PLAY'), ': the model leaves ' + (r.edge_play * 100).toFixed(0) + '+ points after Kalshi’s fee, the DraftKings line agrees, the price is between ' + cents(r.price_range[0]) + ' and ' + cents(r.price_range[1]) +
+      p('Only likely things are flagged. A contract under ' + cents(r.min_price) + ', or one the model gives less than ' + (r.min_prob * 100).toFixed(0) +
+        '%, is a long shot: on Kalshi those win less often than their price says, and a few points of error in the model is a third of what they are worth.'),
+      p(b('PLAY'), ': a likely contract where the model and the DraftKings line both leave ' + (r.edge_play * 100).toFixed(0) + '+ points after Kalshi’s fee, the price is between ' + cents(r.min_price) + ' and ' + cents(r.max_price) +
         ' with bid and ask close together, enough contracts have traded, and the player is not questionable, just back from injury or playing with a new quarterback. ',
-        b('LEAN'), ': the model is alone. ', b('CHECK'), ': the model is more than ' + (r.max_gap * 100).toFixed(0) + ' points from the market, which usually means the market knows something.')));
+        b('LEAN'), ': the model is alone. ', b('CHECK'), ': the model is more than ' + (r.max_gap * 100).toFixed(0) + ' points from the market, which usually means the market knows something.'),
+      p('The model alone is not enough for a PLAY because of what the team picks showed: when the model disagreed with the market, the market was right.')));
   }
 
   // ================================================================== SOCCER
   // European cups: the sportsbook's odds with the margin removed, next to Kalshi's prices.
   const COMP_NAME = { ucl: 'Champions League', uel: 'Europa League', uecl: 'Conference League' };
   const OUTCOMES = ['home', 'draw', 'away'];
+  const LIKELY_PRICE = 0.30;   // below it a contract is a long shot and never listed as a good price
   const upcoming = (m) => m.status === 'scheduled';
   const boardMatches = () => state.board.matches.filter((m) => state.soccerComp === 'all' || m.competition === state.soccerComp);
 
@@ -1380,7 +1484,7 @@
     const rows = [];
     for (const m of B.matches) {
       if (!upcoming(m)) continue;
-      for (const c of m.contracts) if (c.price >= 0.05 && c.price <= 0.95) rows.push({ c, m });
+      for (const c of m.contracts) if (c.price >= LIKELY_PRICE && c.price <= 0.95) rows.push({ c, m });
     }
     rows.sort((x, y) => y.c.edge - x.c.edge);
     const box = h('section', { class: 'panel' }, h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, 'Kalshi against the sportsbook')));
@@ -1390,7 +1494,7 @@
     }
     const best = rows[0].c.edge, n = rows.length;
     box.append(h('p', { class: 'verdict' }, best < 0.01
-      ? ['Nothing is cheap. Of ' + n + ' contracts on matches still to play, the best one leaves ', b(signed(best * 100, 1, '¢')), ' after Kalshi’s fee. Kalshi is priced where the sportsbooks are.']
+      ? ['Nothing is cheap. Of ' + n + ' contracts on results that are not long shots, the best one leaves ', b(signed(best * 100, 1, '¢')), ' after Kalshi’s fee. Kalshi is priced where the sportsbooks are.']
       : [plural(rows.filter((r) => r.c.edge >= 0.01).length, 'contract') + ' cost less than the sportsbook’s fair price after the fee. The widest gap is ', b(signed(best * 100, 1, '¢')), '.']));
     box.append(h('div', { class: 'plays' }, rows.slice(0, 6).map(({ c, m }) => h('button', { type: 'button', class: 'playrow', onclick: () => goToMatch(m.id) },
       h('span', { class: 'rankno' }, cents(c.price)),
@@ -1398,7 +1502,8 @@
       h('span', { class: 'edge' + (c.edge > 0 ? ' pos' : '') }, signed(c.edge * 100, 1, '¢'), h('small', null, 'worth ' + (c.fair * 100).toFixed(1) + '¢')),
       h('span', { class: 'ctx' }, m.home.short + ' v ' + m.away.short + ' · ' + COMP_NAME[m.competition] + ' · ' + kickFmt(m.kickoff))))));
     box.append(h('p', { class: 'small' }, 'Price is what you pay now. “Worth” is the market’s chance of that result. The gap is what is left after a fee of about ' +
-      (B.fee.taker_rate * 100).toFixed(0) + '% × price × (1 − price) per contract.'));
+      (B.fee.taker_rate * 100).toFixed(0) + '% × price × (1 − price) per contract. Contracts under ' + cents(LIKELY_PRICE) +
+      ' are left out of this list: they are long shots, and on Kalshi those win less often than their price says.'));
     return box;
   }
 

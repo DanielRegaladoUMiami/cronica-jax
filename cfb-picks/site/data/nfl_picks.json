@@ -1,7 +1,7 @@
 {
  "sport": "nfl",
  "league": "NFL",
- "generated": "2026-11-26T01:44:39+00:00",
+ "generated": "2026-11-26T02:28:03+00:00",
  "season": 2026,
  "week": 12,
  "week_label": "Week 12",
@@ -30,7 +30,10 @@
   "gap_total": 4.0,
   "move_spread": 1.0,
   "move_total": 3.0,
-  "min_games": 3
+  "min_games": 3,
+  "trust_ml": 0.0,
+  "trust_spread": 0.0,
+  "trust_total": 0.0
  },
  "evidence": {
   "seasons": [
@@ -167,6 +170,152 @@
     "roi": -0.0395,
     "roi_error": 0.0321
    }
+  },
+  "anchor": {
+   "ml": {
+    "n": 839,
+    "weight": -0.6849,
+    "error": 0.248,
+    "trust": 0.0,
+    "buckets": [
+     {
+      "lo": 0.0,
+      "hi": 0.03,
+      "n": 202,
+      "model": 0.4991,
+      "market": 0.4838,
+      "actual": 0.4901
+     },
+     {
+      "lo": 0.03,
+      "hi": 0.06,
+      "n": 178,
+      "model": 0.4406,
+      "market": 0.3957,
+      "actual": 0.3483
+     },
+     {
+      "lo": 0.06,
+      "hi": 0.1,
+      "n": 190,
+      "model": 0.4348,
+      "market": 0.3557,
+      "actual": 0.3684
+     },
+     {
+      "lo": 0.1,
+      "hi": 0.15,
+      "n": 162,
+      "model": 0.4348,
+      "market": 0.3117,
+      "actual": 0.2469
+     },
+     {
+      "lo": 0.15,
+      "hi": 1.0,
+      "n": 107,
+      "model": 0.4913,
+      "market": 0.2843,
+      "actual": 0.243
+     }
+    ]
+   },
+   "spread": {
+    "n": 841,
+    "weight": -0.111,
+    "error": 0.1584,
+    "trust": 0.0,
+    "buckets": [
+     {
+      "lo": 0.0,
+      "hi": 0.03,
+      "n": 205,
+      "model": 0.5154,
+      "market": 0.5002,
+      "actual": 0.5024
+     },
+     {
+      "lo": 0.03,
+      "hi": 0.06,
+      "n": 180,
+      "model": 0.5428,
+      "market": 0.4994,
+      "actual": 0.5056
+     },
+     {
+      "lo": 0.06,
+      "hi": 0.1,
+      "n": 189,
+      "model": 0.5786,
+      "market": 0.4987,
+      "actual": 0.4127
+     },
+     {
+      "lo": 0.1,
+      "hi": 0.15,
+      "n": 150,
+      "model": 0.6215,
+      "market": 0.4995,
+      "actual": 0.4733
+     },
+     {
+      "lo": 0.15,
+      "hi": 1.0,
+      "n": 117,
+      "model": 0.7001,
+      "market": 0.4985,
+      "actual": 0.5128
+     }
+    ]
+   },
+   "total": {
+    "n": 848,
+    "weight": -0.3293,
+    "error": 0.1829,
+    "trust": 0.0,
+    "buckets": [
+     {
+      "lo": 0.0,
+      "hi": 0.03,
+      "n": 208,
+      "model": 0.5146,
+      "market": 0.4998,
+      "actual": 0.4904
+     },
+     {
+      "lo": 0.03,
+      "hi": 0.06,
+      "n": 217,
+      "model": 0.5452,
+      "market": 0.5005,
+      "actual": 0.5253
+     },
+     {
+      "lo": 0.06,
+      "hi": 0.1,
+      "n": 192,
+      "model": 0.5788,
+      "market": 0.4999,
+      "actual": 0.4479
+     },
+     {
+      "lo": 0.1,
+      "hi": 0.15,
+      "n": 139,
+      "model": 0.6226,
+      "market": 0.5001,
+      "actual": 0.4964
+     },
+     {
+      "lo": 0.15,
+      "hi": 1.0,
+      "n": 92,
+      "model": 0.6834,
+      "market": 0.4992,
+      "actual": 0.3913
+     }
+    ]
+   }
   }
  },
  "warnings": [],
@@ -205,7 +354,23 @@
    },
    "notes": "",
    "no_data": true,
-   "no_data_reason": "already started"
+   "no_data_reason": "already started",
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.57,
+     "yes_ask": 0.58,
+     "no_bid": 0.42,
+     "no_ask": 0.43,
+     "volume": 7101260.78
+    },
+    "away": {
+     "yes_bid": 0.42,
+     "yes_ask": 0.43,
+     "no_bid": 0.57,
+     "no_ask": 0.58,
+     "volume": 15999252.51
+    }
+   }
   },
   {
    "id": "401873081",
@@ -267,8 +432,8 @@
      "provider": "DraftKings",
      "spread_home": 1.5,
      "total": 55.5,
-     "ml_home": 101,
-     "ml_away": -119,
+     "ml_home": 102,
+     "ml_away": -120,
      "spread_open": -2.5,
      "total_open": 51.5
     }
@@ -276,11 +441,13 @@
    "ml": {
     "home": {
      "p_model": 0.5711,
-     "p_market": 0.478,
-     "edge": 0.0931,
-     "odds": 101,
+     "p_fair": 0.4758,
+     "p_market": 0.4758,
+     "edge": 0.0953,
+     "value": 0.0,
+     "odds": 102,
      "source": "espn",
-     "ev": 0.1479,
+     "ev": -0.0389,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -291,18 +458,21 @@
     },
     "away": {
      "p_model": 0.4289,
-     "p_market": 0.522,
-     "edge": -0.0931,
-     "odds": -119,
+     "p_fair": 0.5242,
+     "p_market": 0.5242,
+     "edge": -0.0953,
+     "value": 0.0,
+     "odds": -120,
      "source": "espn",
-     "ev": -0.2107,
+     "ev": -0.0389,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "home",
+    "pick": "away",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -311,11 +481,13 @@
    "spread": {
     "home": {
      "p_model": 0.6162,
+     "p_fair": 0.5076,
      "p_market": 0.5076,
      "edge": 0.1086,
+     "value": 0.0,
      "odds": -113,
      "source": "espn",
-     "ev": 0.1616,
+     "ev": -0.0431,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -326,11 +498,13 @@
     },
     "away": {
      "p_model": 0.3838,
+     "p_fair": 0.4924,
      "p_market": 0.4924,
      "edge": -0.1086,
+     "value": 0.0,
      "odds": -106,
      "source": "espn",
-     "ev": -0.2542,
+     "ev": -0.0431,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -338,6 +512,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": 1.5,
     "line_source": "espn",
     "devig": {
@@ -348,11 +523,13 @@
    "total": {
     "over": {
      "p_model": 0.346,
+     "p_fair": 0.5011,
      "p_market": 0.5011,
      "edge": -0.155,
+     "value": 0.0,
      "odds": -110,
      "source": "espn",
-     "ev": -0.3394,
+     "ev": -0.0434,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -361,11 +538,13 @@
     },
     "under": {
      "p_model": 0.654,
+     "p_fair": 0.4989,
      "p_market": 0.4989,
      "edge": 0.155,
+     "value": 0.0,
      "odds": -109,
      "source": "espn",
-     "ev": 0.2539,
+     "ev": -0.0434,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -376,6 +555,7 @@
      ]
     },
     "pick": "under",
+    "lean": "under",
     "line": 55.5,
     "line_source": "espn",
     "devig": {
@@ -387,7 +567,23 @@
    "alerts": [
     "the line moved 4.0 pts toward Bears since it opened",
     "the total rose 4.0 pts since it opened (weather or injuries?)"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.47,
+     "yes_ask": 0.48,
+     "no_bid": 0.52,
+     "no_ask": 0.53,
+     "volume": 509309.09
+    },
+    "away": {
+     "yes_bid": 0.52,
+     "yes_ask": 0.53,
+     "no_bid": 0.47,
+     "no_ask": 0.48,
+     "volume": 463701.81
+    }
+   }
   },
   {
    "id": "401873080",
@@ -458,11 +654,13 @@
    "ml": {
     "home": {
      "p_model": 0.6217,
+     "p_fair": 0.7955,
      "p_market": 0.7955,
      "edge": -0.1738,
+     "value": 0.0,
      "odds": -480,
      "source": "espn",
-     "ev": -0.2488,
+     "ev": -0.0388,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -471,11 +669,13 @@
     },
     "away": {
      "p_model": 0.3783,
+     "p_fair": 0.2045,
      "p_market": 0.2045,
      "edge": 0.1738,
+     "value": 0.0,
      "odds": 370,
      "source": "espn",
-     "ev": 0.7779,
+     "ev": -0.0388,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -486,7 +686,8 @@
       "Eagles start Joe Milton at quarterback instead of Tanner McKee: the model rates the team with its usual quarterback"
      ]
     },
-    "pick": "away",
+    "pick": "home",
+    "lean": "away",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -495,11 +696,13 @@
    "spread": {
     "home": {
      "p_model": 0.3632,
+     "p_fair": 0.5033,
      "p_market": 0.5033,
      "edge": -0.1401,
+     "value": 0.0,
      "odds": -111,
      "source": "espn",
-     "ev": -0.3096,
+     "ev": -0.0433,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -508,11 +711,13 @@
     },
     "away": {
      "p_model": 0.6368,
+     "p_fair": 0.4967,
      "p_market": 0.4967,
      "edge": 0.1401,
+     "value": 0.0,
      "odds": -108,
      "source": "espn",
-     "ev": 0.2264,
+     "ev": -0.0433,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -524,6 +729,7 @@
      ]
     },
     "pick": "away",
+    "lean": "away",
     "home_line": -8.5,
     "line_source": "espn",
     "devig": {
@@ -534,26 +740,30 @@
    "total": {
     "over": {
      "p_model": 0.5898,
+     "p_fair": 0.5142,
      "p_market": 0.5142,
      "edge": 0.0756,
+     "value": 0.0,
      "odds": -116,
      "source": "espn",
-     "ev": 0.0982,
+     "ev": -0.0425,
      "stable": true,
-     "kelly": 0.114,
+     "kelly": 0.0,
      "stake": 0.0,
-     "label": "AVOID",
+     "label": "PASS",
      "reasons": [
-      "Eagles start Joe Milton at quarterback instead of Tanner McKee: the model rates the team with its usual quarterback"
+      "the model disagrees with the market; when it has, the market has been right"
      ]
     },
     "under": {
      "p_model": 0.4102,
+     "p_fair": 0.4858,
      "p_market": 0.4858,
      "edge": -0.0756,
+     "value": 0.0,
      "odds": -103,
      "source": "espn",
-     "ev": -0.1915,
+     "ev": -0.0425,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -561,6 +771,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 47.5,
     "line_source": "espn",
     "devig": {
@@ -574,6 +785,22 @@
     "the model is 4.5 pts away from the market spread",
     "Eagles start Joe Milton at quarterback instead of Tanner McKee: the team model does not know it"
    ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.79,
+     "yes_ask": 0.8,
+     "no_bid": 0.2,
+     "no_ask": 0.21,
+     "volume": 166645.05
+    },
+    "away": {
+     "yes_bid": 0.2,
+     "yes_ask": 0.21,
+     "no_bid": 0.79,
+     "no_ask": 0.8,
+     "volume": 584606.14
+    }
+   },
    "qb_changes": [
     "Eagles start Joe Milton at quarterback instead of Tanner McKee"
    ]
@@ -647,11 +874,13 @@
    "ml": {
     "home": {
      "p_model": 0.5889,
+     "p_fair": 0.5738,
      "p_market": 0.5738,
      "edge": 0.0151,
+     "value": 0.0,
      "odds": -149,
      "source": "espn",
-     "ev": -0.0158,
+     "ev": -0.0411,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -660,11 +889,13 @@
     },
     "away": {
      "p_model": 0.4111,
+     "p_fair": 0.4262,
      "p_market": 0.4262,
      "edge": -0.0151,
+     "value": 0.0,
      "odds": 125,
      "source": "espn",
-     "ev": -0.0751,
+     "ev": -0.0411,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -672,6 +903,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -680,11 +912,13 @@
    "spread": {
     "home": {
      "p_model": 0.4968,
+     "p_fair": 0.4783,
      "p_market": 0.4783,
      "edge": 0.0185,
+     "value": 0.0,
      "odds": 100,
      "source": "espn",
-     "ev": -0.0064,
+     "ev": -0.0435,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -693,11 +927,13 @@
     },
     "away": {
      "p_model": 0.5032,
+     "p_fair": 0.5217,
      "p_market": 0.5217,
      "edge": -0.0185,
+     "value": 0.0,
      "odds": -120,
      "source": "espn",
-     "ev": -0.0774,
+     "ev": -0.0435,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -705,6 +941,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": -3.0,
     "line_source": "espn",
     "devig": {
@@ -715,11 +952,13 @@
    "total": {
     "over": {
      "p_model": 0.5258,
+     "p_fair": 0.4892,
      "p_market": 0.4892,
      "edge": 0.0366,
+     "value": 0.0,
      "odds": -105,
      "source": "espn",
-     "ev": 0.0265,
+     "ev": -0.045,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -728,11 +967,13 @@
     },
     "under": {
      "p_model": 0.4742,
+     "p_fair": 0.5108,
      "p_market": 0.5108,
      "edge": -0.0366,
+     "value": 0.0,
      "odds": -115,
      "source": "espn",
-     "ev": -0.1134,
+     "ev": -0.045,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -740,6 +981,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 46.5,
     "line_source": "espn",
     "devig": {
@@ -750,7 +992,23 @@
    "price_notes": [],
    "alerts": [
     "the total dropped 3.0 pts since it opened (weather or injuries?)"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.57,
+     "yes_ask": 0.58,
+     "no_bid": 0.42,
+     "no_ask": 0.43,
+     "volume": 542749.35
+    },
+    "away": {
+     "yes_bid": 0.42,
+     "yes_ask": 0.43,
+     "no_bid": 0.57,
+     "no_ask": 0.58,
+     "volume": 303247.84
+    }
+   }
   },
   {
    "id": "401873083",
@@ -821,11 +1079,13 @@
    "ml": {
     "home": {
      "p_model": 0.4263,
+     "p_fair": 0.3572,
      "p_market": 0.3572,
      "edge": 0.0691,
+     "value": 0.0,
      "odds": 169,
      "source": "espn",
-     "ev": 0.1468,
+     "ev": -0.039,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -837,18 +1097,21 @@
     },
     "away": {
      "p_model": 0.5737,
+     "p_fair": 0.6428,
      "p_market": 0.6428,
      "edge": -0.0691,
+     "value": 0.0,
      "odds": -202,
      "source": "espn",
-     "ev": -0.1423,
+     "ev": -0.039,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "home",
+    "pick": "away",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -857,11 +1120,13 @@
    "spread": {
     "home": {
      "p_model": 0.5343,
+     "p_fair": 0.4924,
      "p_market": 0.4924,
      "edge": 0.0419,
+     "value": 0.0,
      "odds": -106,
      "source": "espn",
-     "ev": 0.0383,
+     "ev": -0.0431,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -870,11 +1135,13 @@
     },
     "away": {
      "p_model": 0.4657,
+     "p_fair": 0.5076,
      "p_market": 0.5076,
      "edge": -0.0419,
+     "value": 0.0,
      "odds": -113,
      "source": "espn",
-     "ev": -0.1221,
+     "ev": -0.0431,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -882,6 +1149,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": 3.5,
     "line_source": "espn",
     "devig": {
@@ -892,11 +1160,13 @@
    "total": {
     "over": {
      "p_model": 0.6751,
+     "p_fair": 0.5098,
      "p_market": 0.5098,
      "edge": 0.1653,
+     "value": 0.0,
      "odds": -114,
      "source": "espn",
-     "ev": 0.2673,
+     "ev": -0.043,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -909,11 +1179,13 @@
     },
     "under": {
      "p_model": 0.3249,
+     "p_fair": 0.4902,
      "p_market": 0.4902,
      "edge": -0.1653,
+     "value": 0.0,
      "odds": -105,
      "source": "espn",
-     "ev": -0.3656,
+     "ev": -0.043,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -921,6 +1193,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 36.5,
     "line_source": "espn",
     "devig": {
@@ -934,6 +1207,22 @@
     "the total dropped 5.0 pts since it opened (weather or injuries?)",
     "Steelers start Mason Rudolph at quarterback instead of Aaron Rodgers: the team model does not know it"
    ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.34,
+     "yes_ask": 0.35,
+     "no_bid": 0.65,
+     "no_ask": 0.66,
+     "volume": 195257.15
+    },
+    "away": {
+     "yes_bid": 0.65,
+     "yes_ask": 0.66,
+     "no_bid": 0.34,
+     "no_ask": 0.35,
+     "volume": 1115448.9
+    }
+   },
    "qb_changes": [
     "Steelers start Mason Rudolph at quarterback instead of Aaron Rodgers"
    ]
@@ -1007,11 +1296,13 @@
    "ml": {
     "home": {
      "p_model": 0.6793,
+     "p_fair": 0.7262,
      "p_market": 0.7262,
      "edge": -0.0468,
+     "value": 0.0,
      "odds": -309,
      "source": "espn",
-     "ev": -0.1008,
+     "ev": -0.0388,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1020,18 +1311,21 @@
     },
     "away": {
      "p_model": 0.3207,
+     "p_fair": 0.2738,
      "p_market": 0.2738,
      "edge": 0.0468,
+     "value": 0.0,
      "odds": 251,
      "source": "espn",
-     "ev": 0.1256,
+     "ev": -0.0388,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "away",
+    "pick": "home",
+    "lean": "away",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -1040,11 +1334,13 @@
    "spread": {
     "home": {
      "p_model": 0.4691,
+     "p_fair": 0.4783,
      "p_market": 0.4783,
      "edge": -0.0092,
+     "value": 0.0,
      "odds": 100,
      "source": "espn",
-     "ev": -0.0618,
+     "ev": -0.0435,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1053,11 +1349,13 @@
     },
     "away": {
      "p_model": 0.5309,
+     "p_fair": 0.5217,
      "p_market": 0.5217,
      "edge": 0.0092,
+     "value": 0.0,
      "odds": -120,
      "source": "espn",
-     "ev": -0.0266,
+     "ev": -0.0435,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1065,6 +1363,7 @@
      "reasons": []
     },
     "pick": "away",
+    "lean": "away",
     "home_line": -7.0,
     "line_source": "espn",
     "devig": {
@@ -1075,11 +1374,13 @@
    "total": {
     "over": {
      "p_model": 0.453,
+     "p_fair": 0.5065,
      "p_market": 0.5065,
      "edge": -0.0535,
+     "value": 0.0,
      "odds": -113,
      "source": "espn",
-     "ev": -0.1462,
+     "ev": -0.0453,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1088,18 +1389,23 @@
     },
     "under": {
      "p_model": 0.547,
+     "p_fair": 0.4935,
      "p_market": 0.4935,
      "edge": 0.0535,
+     "value": 0.0,
      "odds": -107,
      "source": "espn",
-     "ev": 0.0583,
+     "ev": -0.0453,
      "stable": true,
-     "kelly": 0.0624,
-     "stake": 0.0156,
-     "label": "PLAY",
-     "reasons": []
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": [
+      "the model disagrees with the market; when it has, the market has been right"
+     ]
     },
     "pick": "under",
+    "lean": "under",
     "line": 41.5,
     "line_source": "espn",
     "devig": {
@@ -1110,7 +1416,23 @@
    "price_notes": [],
    "alerts": [
     "the line moved 2.5 pts toward Vikings since it opened"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.75,
+     "yes_ask": 0.76,
+     "no_bid": 0.24,
+     "no_ask": 0.25,
+     "volume": 31776.6
+    },
+    "away": {
+     "yes_bid": 0.25,
+     "yes_ask": 0.26,
+     "no_bid": 0.74,
+     "no_ask": 0.75,
+     "volume": 28729.12
+    }
+   }
   },
   {
    "id": "401873085",
@@ -1181,11 +1503,13 @@
    "ml": {
     "home": {
      "p_model": 0.7094,
+     "p_fair": 0.7384,
      "p_market": 0.7384,
      "edge": -0.0289,
+     "value": 0.0,
      "odds": -333,
      "source": "espn",
-     "ev": -0.0775,
+     "ev": -0.0399,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1194,18 +1518,21 @@
     },
     "away": {
      "p_model": 0.2906,
+     "p_fair": 0.2616,
      "p_market": 0.2616,
      "edge": 0.0289,
+     "value": 0.0,
      "odds": 267,
      "source": "espn",
-     "ev": 0.0663,
+     "ev": -0.0399,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "away",
+    "pick": "home",
+    "lean": "away",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -1214,11 +1541,13 @@
    "spread": {
     "home": {
      "p_model": 0.5188,
+     "p_fair": 0.5055,
      "p_market": 0.5055,
      "edge": 0.0134,
+     "value": 0.0,
      "odds": -112,
      "source": "espn",
-     "ev": -0.018,
+     "ev": -0.0433,
      "stable": false,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1227,11 +1556,13 @@
     },
     "away": {
      "p_model": 0.4812,
+     "p_fair": 0.4945,
      "p_market": 0.4945,
      "edge": -0.0134,
+     "value": 0.0,
      "odds": -107,
      "source": "espn",
-     "ev": -0.0691,
+     "ev": -0.0433,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1239,6 +1570,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": -6.5,
     "line_source": "espn",
     "devig": {
@@ -1249,11 +1581,13 @@
    "total": {
     "over": {
      "p_model": 0.4719,
+     "p_fair": 0.4924,
      "p_market": 0.4924,
      "edge": -0.0205,
+     "value": 0.0,
      "odds": -106,
      "source": "espn",
-     "ev": -0.0829,
+     "ev": -0.0431,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1262,11 +1596,13 @@
     },
     "under": {
      "p_model": 0.5281,
+     "p_fair": 0.5076,
      "p_market": 0.5076,
      "edge": 0.0205,
+     "value": 0.0,
      "odds": -113,
      "source": "espn",
-     "ev": -0.0045,
+     "ev": -0.0431,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1274,6 +1610,7 @@
      "reasons": []
     },
     "pick": "under",
+    "lean": "under",
     "line": 47.5,
     "line_source": "espn",
     "devig": {
@@ -1284,7 +1621,23 @@
    "price_notes": [],
    "alerts": [
     "the line moved 5.0 pts toward Texans since it opened"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.74,
+     "yes_ask": 0.75,
+     "no_bid": 0.25,
+     "no_ask": 0.26,
+     "volume": 10724.38
+    },
+    "away": {
+     "yes_bid": 0.26,
+     "yes_ask": 0.27,
+     "no_bid": 0.73,
+     "no_ask": 0.74,
+     "volume": 36579.43
+    }
+   }
   },
   {
    "id": "401873087",
@@ -1346,7 +1699,7 @@
      "provider": "DraftKings",
      "spread_home": -10.0,
      "total": 49.5,
-     "ml_home": -533,
+     "ml_home": -534,
      "ml_away": 405,
      "spread_open": -6.5,
      "total_open": 48.5
@@ -1355,11 +1708,13 @@
    "ml": {
     "home": {
      "p_model": 0.7433,
+     "p_fair": 0.8096,
      "p_market": 0.8096,
      "edge": -0.0663,
-     "odds": -533,
+     "value": 0.0,
+     "odds": -534,
      "source": "espn",
-     "ev": -0.1172,
+     "ev": -0.0387,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1368,11 +1723,13 @@
     },
     "away": {
      "p_model": 0.2567,
+     "p_fair": 0.1904,
      "p_market": 0.1904,
      "edge": 0.0663,
+     "value": 0.0,
      "odds": 405,
      "source": "espn",
-     "ev": 0.2961,
+     "ev": -0.0387,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1381,7 +1738,8 @@
       "the line moved 3.5 pts against this side since it opened"
      ]
     },
-    "pick": "away",
+    "pick": "home",
+    "lean": "away",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -1390,11 +1748,13 @@
    "spread": {
     "home": {
      "p_model": 0.4512,
+     "p_fair": 0.4945,
      "p_market": 0.4945,
      "edge": -0.0433,
+     "value": 0.0,
      "odds": -107,
      "source": "espn",
-     "ev": -0.1271,
+     "ev": -0.0433,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1403,11 +1763,13 @@
     },
     "away": {
      "p_model": 0.5488,
+     "p_fair": 0.5055,
      "p_market": 0.5055,
      "edge": 0.0433,
+     "value": 0.0,
      "odds": -112,
      "source": "espn",
-     "ev": 0.0388,
+     "ev": -0.0433,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1415,6 +1777,7 @@
      "reasons": []
     },
     "pick": "away",
+    "lean": "away",
     "home_line": -10.0,
     "line_source": "espn",
     "devig": {
@@ -1425,11 +1788,13 @@
    "total": {
     "over": {
      "p_model": 0.4832,
+     "p_fair": 0.5033,
      "p_market": 0.5033,
      "edge": -0.02,
+     "value": 0.0,
      "odds": -111,
      "source": "espn",
-     "ev": -0.0814,
+     "ev": -0.0433,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1438,11 +1803,13 @@
     },
     "under": {
      "p_model": 0.5168,
+     "p_fair": 0.4967,
      "p_market": 0.4967,
      "edge": 0.02,
+     "value": 0.0,
      "odds": -108,
      "source": "espn",
-     "ev": -0.0047,
+     "ev": -0.0433,
      "stable": false,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1450,6 +1817,7 @@
      "reasons": []
     },
     "pick": "under",
+    "lean": "under",
     "line": 49.5,
     "line_source": "espn",
     "devig": {
@@ -1460,7 +1828,23 @@
    "price_notes": [],
    "alerts": [
     "the line moved 3.5 pts toward Bengals since it opened"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.83,
+     "yes_ask": 0.84,
+     "no_bid": 0.16,
+     "no_ask": 0.17,
+     "volume": 17750.71
+    },
+    "away": {
+     "yes_bid": 0.16,
+     "yes_ask": 0.17,
+     "no_bid": 0.83,
+     "no_ask": 0.84,
+     "volume": 23316.62
+    }
+   }
   },
   {
    "id": "401873088",
@@ -1513,17 +1897,17 @@
     "total_adj": 0.0
    },
    "market": {
-    "margin": -6.5,
-    "margin_gap": 3.5347,
+    "margin": -6.0,
+    "margin_gap": 3.0347,
     "total_gap": 4.767,
-    "spread_move": -9.0,
+    "spread_move": -8.5,
     "total_move": -6.0,
     "espn": {
      "provider": "DraftKings",
-     "spread_home": 6.5,
+     "spread_home": 6.0,
      "total": 41.5,
-     "ml_home": 261,
-     "ml_away": -322,
+     "ml_home": 235,
+     "ml_away": -286,
      "spread_open": -2.5,
      "total_open": 47.5
     }
@@ -1531,34 +1915,39 @@
    "ml": {
     "home": {
      "p_model": 0.409,
-     "p_market": 0.2663,
-     "edge": 0.1426,
-     "odds": 261,
+     "p_fair": 0.2872,
+     "p_market": 0.2872,
+     "edge": 0.1218,
+     "value": 0.0,
+     "odds": 235,
      "source": "espn",
-     "ev": 0.4764,
+     "ev": -0.0379,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "AVOID",
      "reasons": [
-      "the line moved 9.0 pts against this side since it opened",
+      "the line moved 8.5 pts against this side since it opened",
       "Colts start Anthony Richardson Sr. at quarterback instead of Daniel Jones: the model rates the team with its usual quarterback"
      ]
     },
     "away": {
      "p_model": 0.591,
-     "p_market": 0.7337,
-     "edge": -0.1426,
-     "odds": -322,
+     "p_fair": 0.7128,
+     "p_market": 0.7128,
+     "edge": -0.1218,
+     "value": 0.0,
+     "odds": -286,
      "source": "espn",
-     "ev": -0.2254,
+     "ev": -0.0379,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "home",
+    "pick": "away",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -1566,28 +1955,32 @@
    },
    "spread": {
     "home": {
-     "p_model": 0.6081,
-     "p_market": 0.4913,
-     "edge": 0.1168,
-     "odds": -106,
+     "p_model": 0.5931,
+     "p_fair": 0.5011,
+     "p_market": 0.5011,
+     "edge": 0.092,
+     "value": 0.0,
+     "odds": -110,
      "source": "espn",
-     "ev": 0.1818,
+     "ev": -0.0434,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "AVOID",
      "reasons": [
-      "the line moved 9.0 pts against this side since it opened",
+      "the line moved 8.5 pts against this side since it opened",
       "Colts start Anthony Richardson Sr. at quarterback instead of Daniel Jones: the model rates the team with its usual quarterback"
      ]
     },
     "away": {
-     "p_model": 0.3919,
-     "p_market": 0.5087,
-     "edge": -0.1168,
-     "odds": -114,
+     "p_model": 0.4069,
+     "p_fair": 0.4989,
+     "p_market": 0.4989,
+     "edge": -0.092,
+     "value": 0.0,
+     "odds": -109,
      "source": "espn",
-     "ev": -0.2643,
+     "ev": -0.0434,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1595,7 +1988,8 @@
      "reasons": []
     },
     "pick": "home",
-    "home_line": 6.5,
+    "lean": "home",
+    "home_line": 6.0,
     "line_source": "espn",
     "devig": {
      "method": "two_sided",
@@ -1605,11 +1999,13 @@
    "total": {
     "over": {
      "p_model": 0.6388,
+     "p_fair": 0.5033,
      "p_market": 0.5033,
      "edge": 0.1355,
+     "value": 0.0,
      "odds": -111,
      "source": "espn",
-     "ev": 0.2143,
+     "ev": -0.0433,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1622,11 +2018,13 @@
     },
     "under": {
      "p_model": 0.3612,
+     "p_fair": 0.4967,
      "p_market": 0.4967,
      "edge": -0.1355,
+     "value": 0.0,
      "odds": -108,
      "source": "espn",
-     "ev": -0.3044,
+     "ev": -0.0433,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1634,6 +2032,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 41.5,
     "line_source": "espn",
     "devig": {
@@ -1643,10 +2042,26 @@
    },
    "price_notes": [],
    "alerts": [
-    "the line moved 9.0 pts toward Giants since it opened",
+    "the line moved 8.5 pts toward Giants since it opened",
     "the total dropped 6.0 pts since it opened (weather or injuries?)",
     "Colts start Anthony Richardson Sr. at quarterback instead of Daniel Jones: the team model does not know it"
    ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.27,
+     "yes_ask": 0.28,
+     "no_bid": 0.72,
+     "no_ask": 0.73,
+     "volume": 19898.57
+    },
+    "away": {
+     "yes_bid": 0.73,
+     "yes_ask": 0.74,
+     "no_bid": 0.26,
+     "no_ask": 0.27,
+     "volume": 42004.99
+    }
+   },
    "qb_changes": [
     "Colts start Anthony Richardson Sr. at quarterback instead of Daniel Jones"
    ]
@@ -1711,8 +2126,8 @@
      "provider": "DraftKings",
      "spread_home": 4.5,
      "total": 40.5,
-     "ml_home": 183,
-     "ml_away": -221,
+     "ml_home": 179,
+     "ml_away": -215,
      "spread_open": -1.5,
      "total_open": 41.5
     }
@@ -1720,11 +2135,13 @@
    "ml": {
     "home": {
      "p_model": 0.5534,
-     "p_market": 0.3392,
-     "edge": 0.2143,
-     "odds": 183,
+     "p_fair": 0.3443,
+     "p_market": 0.3443,
+     "edge": 0.2091,
+     "value": 0.0,
+     "odds": 179,
      "source": "espn",
-     "ev": 0.5662,
+     "ev": -0.0394,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1737,18 +2154,21 @@
     },
     "away": {
      "p_model": 0.4466,
-     "p_market": 0.6608,
-     "edge": -0.2143,
-     "odds": -221,
+     "p_fair": 0.6557,
+     "p_market": 0.6557,
+     "edge": -0.2091,
+     "value": 0.0,
+     "odds": -215,
      "source": "espn",
-     "ev": -0.3514,
+     "ev": -0.0394,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "home",
+    "pick": "away",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -1757,11 +2177,13 @@
    "spread": {
     "home": {
      "p_model": 0.6857,
-     "p_market": 0.512,
-     "edge": 0.1737,
+     "p_fair": 0.5108,
+     "p_market": 0.5108,
+     "edge": 0.1749,
+     "value": 0.0,
      "odds": -115,
      "source": "espn",
-     "ev": 0.2819,
+     "ev": -0.045,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1774,11 +2196,13 @@
     },
     "away": {
      "p_model": 0.3143,
-     "p_market": 0.488,
-     "edge": -0.1737,
-     "odds": -104,
+     "p_fair": 0.4892,
+     "p_market": 0.4892,
+     "edge": -0.1749,
+     "value": 0.0,
+     "odds": -105,
      "source": "espn",
-     "ev": -0.3835,
+     "ev": -0.045,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1786,6 +2210,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": 4.5,
     "line_source": "espn",
     "devig": {
@@ -1796,26 +2221,30 @@
    "total": {
     "over": {
      "p_model": 0.5859,
+     "p_fair": 0.488,
      "p_market": 0.488,
      "edge": 0.0979,
+     "value": 0.0,
      "odds": -104,
      "source": "espn",
-     "ev": 0.1492,
+     "ev": -0.0428,
      "stable": true,
-     "kelly": 0.1551,
+     "kelly": 0.0,
      "stake": 0.0,
-     "label": "AVOID",
+     "label": "PASS",
      "reasons": [
-      "Dolphins start Kyle McCord at quarterback instead of Malik Willis: the model rates the team with its usual quarterback"
+      "the model disagrees with the market; when it has, the market has been right"
      ]
     },
     "under": {
      "p_model": 0.4141,
+     "p_fair": 0.512,
      "p_market": 0.512,
      "edge": -0.0979,
+     "value": 0.0,
      "odds": -115,
      "source": "espn",
-     "ev": -0.2257,
+     "ev": -0.0428,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1823,6 +2252,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 40.5,
     "line_source": "espn",
     "devig": {
@@ -1836,6 +2266,22 @@
     "the model is 6.2 pts away from the market spread",
     "Dolphins start Kyle McCord at quarterback instead of Malik Willis: the team model does not know it"
    ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.32,
+     "yes_ask": 0.33,
+     "no_bid": 0.67,
+     "no_ask": 0.68,
+     "volume": 13122.51
+    },
+    "away": {
+     "yes_bid": 0.67,
+     "yes_ask": 0.68,
+     "no_bid": 0.32,
+     "no_ask": 0.33,
+     "volume": 15687.96
+    }
+   },
    "qb_changes": [
     "Dolphins start Kyle McCord at quarterback instead of Malik Willis"
    ]
@@ -1909,11 +2355,13 @@
    "ml": {
     "home": {
      "p_model": 0.8766,
+     "p_fair": 0.8895,
      "p_market": 0.8895,
      "edge": -0.013,
+     "value": 0.0,
      "odds": -1240,
      "source": "espn",
-     "ev": -0.0528,
+     "ev": -0.0388,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1922,18 +2370,21 @@
     },
     "away": {
      "p_model": 0.1234,
+     "p_fair": 0.1105,
      "p_market": 0.1105,
      "edge": 0.013,
+     "value": 0.0,
      "odds": 770,
      "source": "espn",
-     "ev": 0.074,
+     "ev": -0.0388,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "away",
+    "pick": "home",
+    "lean": "away",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -1942,11 +2393,13 @@
    "spread": {
     "home": {
      "p_model": 0.5129,
+     "p_fair": 0.487,
      "p_market": 0.487,
      "edge": 0.0259,
+     "value": 0.0,
      "odds": -104,
      "source": "espn",
-     "ev": 0.006,
+     "ev": -0.0447,
      "stable": false,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1955,11 +2408,13 @@
     },
     "away": {
      "p_model": 0.4871,
+     "p_fair": 0.513,
      "p_market": 0.513,
      "edge": -0.0259,
+     "value": 0.0,
      "odds": -116,
      "source": "espn",
-     "ev": -0.093,
+     "ev": -0.0447,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1967,6 +2422,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": -14.5,
     "line_source": "espn",
     "devig": {
@@ -1977,11 +2433,13 @@
    "total": {
     "over": {
      "p_model": 0.4519,
+     "p_fair": 0.4924,
      "p_market": 0.4924,
      "edge": -0.0405,
+     "value": 0.0,
      "odds": -106,
      "source": "espn",
-     "ev": -0.1218,
+     "ev": -0.0431,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -1990,11 +2448,13 @@
     },
     "under": {
      "p_model": 0.5481,
+     "p_fair": 0.5076,
      "p_market": 0.5076,
      "edge": 0.0405,
+     "value": 0.0,
      "odds": -113,
      "source": "espn",
-     "ev": 0.0332,
+     "ev": -0.0431,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2002,6 +2462,7 @@
      "reasons": []
     },
     "pick": "under",
+    "lean": "under",
     "line": 49.5,
     "line_source": "espn",
     "devig": {
@@ -2013,7 +2474,23 @@
    "alerts": [
     "the line moved 9.0 pts toward Jaguars since it opened",
     "the total rose 4.0 pts since it opened (weather or injuries?)"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.89,
+     "yes_ask": 0.9,
+     "no_bid": 0.1,
+     "no_ask": 0.11,
+     "volume": 79524.44
+    },
+    "away": {
+     "yes_bid": 0.1,
+     "yes_ask": 0.11,
+     "no_bid": 0.89,
+     "no_ask": 0.9,
+     "volume": 88696.37
+    }
+   }
   },
   {
    "id": "401873093",
@@ -2075,7 +2552,7 @@
      "provider": "DraftKings",
      "spread_home": 1.5,
      "total": 35.5,
-     "ml_home": -102,
+     "ml_home": -103,
      "ml_away": -115,
      "spread_open": -2.5,
      "total_open": 45.5
@@ -2084,11 +2561,13 @@
    "ml": {
     "home": {
      "p_model": 0.3824,
-     "p_market": 0.4856,
-     "edge": -0.1033,
-     "odds": -102,
+     "p_fair": 0.4868,
+     "p_market": 0.4868,
+     "edge": -0.1045,
+     "value": 0.0,
+     "odds": -103,
      "source": "espn",
-     "ev": -0.2428,
+     "ev": -0.0406,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2097,20 +2576,23 @@
     },
     "away": {
      "p_model": 0.6176,
-     "p_market": 0.5144,
-     "edge": 0.1033,
+     "p_fair": 0.5132,
+     "p_market": 0.5132,
+     "edge": 0.1045,
+     "value": 0.0,
      "odds": -115,
      "source": "espn",
-     "ev": 0.1547,
+     "ev": -0.0406,
      "stable": true,
-     "kelly": 0.1779,
+     "kelly": 0.0,
      "stake": 0.0,
-     "label": "AVOID",
+     "label": "PASS",
      "reasons": [
-      "Patriots start Tommy DeVito at quarterback instead of Drake Maye: the model rates the team with its usual quarterback"
+      "the model disagrees with the market; when it has, the market has been right"
      ]
     },
     "pick": "away",
+    "lean": "away",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -2119,11 +2601,13 @@
    "spread": {
     "home": {
      "p_model": 0.4275,
+     "p_fair": 0.5186,
      "p_market": 0.5186,
      "edge": -0.0911,
+     "value": 0.0,
      "odds": -118,
      "source": "espn",
-     "ev": -0.2103,
+     "ev": -0.0419,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2132,20 +2616,23 @@
     },
     "away": {
      "p_model": 0.5725,
+     "p_fair": 0.4814,
      "p_market": 0.4814,
      "edge": 0.0911,
+     "value": 0.0,
      "odds": -101,
      "source": "espn",
-     "ev": 0.1394,
+     "ev": -0.0419,
      "stable": true,
-     "kelly": 0.1408,
+     "kelly": 0.0,
      "stake": 0.0,
-     "label": "AVOID",
+     "label": "PASS",
      "reasons": [
-      "Patriots start Tommy DeVito at quarterback instead of Drake Maye: the model rates the team with its usual quarterback"
+      "the model disagrees with the market; when it has, the market has been right"
      ]
     },
     "pick": "away",
+    "lean": "away",
     "home_line": 1.5,
     "line_source": "espn",
     "devig": {
@@ -2156,11 +2643,13 @@
    "total": {
     "over": {
      "p_model": 0.7276,
+     "p_fair": 0.4989,
      "p_market": 0.4989,
      "edge": 0.2287,
+     "value": 0.0,
      "odds": -109,
      "source": "espn",
-     "ev": 0.3951,
+     "ev": -0.0434,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2173,11 +2662,13 @@
     },
     "under": {
      "p_model": 0.2724,
+     "p_fair": 0.5011,
      "p_market": 0.5011,
      "edge": -0.2287,
+     "value": 0.0,
      "odds": -110,
      "source": "espn",
-     "ev": -0.48,
+     "ev": -0.0434,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2185,6 +2676,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 35.5,
     "line_source": "espn",
     "devig": {
@@ -2198,6 +2690,22 @@
     "the total dropped 10.0 pts since it opened (weather or injuries?)",
     "Patriots start Tommy DeVito at quarterback instead of Drake Maye: the team model does not know it"
    ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.47,
+     "yes_ask": 0.48,
+     "no_bid": 0.52,
+     "no_ask": 0.53,
+     "volume": 20270.82
+    },
+    "away": {
+     "yes_bid": 0.52,
+     "yes_ask": 0.53,
+     "no_bid": 0.47,
+     "no_ask": 0.48,
+     "volume": 138328.31
+    }
+   },
    "qb_changes": [
     "Patriots start Tommy DeVito at quarterback instead of Drake Maye"
    ]
@@ -2271,11 +2779,13 @@
    "ml": {
     "home": {
      "p_model": 0.5817,
+     "p_fair": 0.5714,
      "p_market": 0.5714,
      "edge": 0.0103,
+     "value": 0.0,
      "odds": -147,
      "source": "espn",
-     "ev": -0.0226,
+     "ev": -0.0399,
      "stable": false,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2284,11 +2794,13 @@
     },
     "away": {
      "p_model": 0.4183,
+     "p_fair": 0.4286,
      "p_market": 0.4286,
      "edge": -0.0103,
+     "value": 0.0,
      "odds": 124,
      "source": "espn",
-     "ev": -0.0629,
+     "ev": -0.0399,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2296,6 +2808,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -2304,11 +2817,13 @@
    "spread": {
     "home": {
      "p_model": 0.5048,
+     "p_fair": 0.5227,
      "p_market": 0.5227,
      "edge": -0.0179,
+     "value": 0.0,
      "odds": -121,
      "source": "espn",
-     "ev": -0.078,
+     "ev": -0.0454,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2317,11 +2832,13 @@
     },
     "away": {
      "p_model": 0.4952,
+     "p_fair": 0.4773,
      "p_market": 0.4773,
      "edge": 0.0179,
+     "value": 0.0,
      "odds": 100,
      "source": "espn",
-     "ev": -0.0096,
+     "ev": -0.0454,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2329,6 +2846,7 @@
      "reasons": []
     },
     "pick": "away",
+    "lean": "away",
     "home_line": -2.5,
     "line_source": "espn",
     "devig": {
@@ -2339,24 +2857,30 @@
    "total": {
     "over": {
      "p_model": 0.5627,
+     "p_fair": 0.4989,
      "p_market": 0.4989,
      "edge": 0.0638,
+     "value": 0.0,
      "odds": -109,
      "source": "espn",
-     "ev": 0.079,
+     "ev": -0.0434,
      "stable": true,
-     "kelly": 0.0861,
-     "stake": 0.02,
-     "label": "PLAY",
-     "reasons": []
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": [
+      "the model disagrees with the market; when it has, the market has been right"
+     ]
     },
     "under": {
      "p_model": 0.4373,
+     "p_fair": 0.5011,
      "p_market": 0.5011,
      "edge": -0.0638,
+     "value": 0.0,
      "odds": -110,
      "source": "espn",
-     "ev": -0.1652,
+     "ev": -0.0434,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2364,6 +2888,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 44.5,
     "line_source": "espn",
     "devig": {
@@ -2374,7 +2899,23 @@
    "price_notes": [],
    "alerts": [
     "the line moved 1.0 pts toward 49ers since it opened"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.56,
+     "yes_ask": 0.57,
+     "no_bid": 0.43,
+     "no_ask": 0.44,
+     "volume": 436853.45
+    },
+    "away": {
+     "yes_bid": 0.43,
+     "yes_ask": 0.44,
+     "no_bid": 0.56,
+     "no_ask": 0.57,
+     "volume": 628594.92
+    }
+   }
   },
   {
    "id": "401873092",
@@ -2436,8 +2977,8 @@
      "provider": "DraftKings",
      "spread_home": 7.0,
      "total": 41.5,
-     "ml_home": 263,
-     "ml_away": -325,
+     "ml_home": 262,
+     "ml_away": -324,
      "spread_open": 4.5,
      "total_open": 47.5
     }
@@ -2445,11 +2986,13 @@
    "ml": {
     "home": {
      "p_model": 0.3654,
-     "p_market": 0.2648,
-     "edge": 0.1006,
-     "odds": 263,
+     "p_fair": 0.2655,
+     "p_market": 0.2655,
+     "edge": 0.0999,
+     "value": 0.0,
+     "odds": 262,
      "source": "espn",
-     "ev": 0.3264,
+     "ev": -0.0388,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2461,18 +3004,21 @@
     },
     "away": {
      "p_model": 0.6346,
-     "p_market": 0.7352,
-     "edge": -0.1006,
-     "odds": -325,
+     "p_fair": 0.7345,
+     "p_market": 0.7345,
+     "edge": -0.0999,
+     "value": 0.0,
+     "odds": -324,
      "source": "espn",
-     "ev": -0.1701,
+     "ev": -0.0388,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
      "label": "PASS",
      "reasons": []
     },
-    "pick": "home",
+    "pick": "away",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -2481,11 +3027,13 @@
    "spread": {
     "home": {
      "p_model": 0.579,
+     "p_fair": 0.513,
      "p_market": 0.513,
      "edge": 0.066,
+     "value": 0.0,
      "odds": -116,
      "source": "espn",
-     "ev": 0.0781,
+     "ev": -0.0447,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2497,11 +3045,13 @@
     },
     "away": {
      "p_model": 0.421,
+     "p_fair": 0.487,
      "p_market": 0.487,
      "edge": -0.066,
+     "value": 0.0,
      "odds": -104,
      "source": "espn",
-     "ev": -0.1742,
+     "ev": -0.0447,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2509,6 +3059,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": 7.0,
     "line_source": "espn",
     "devig": {
@@ -2519,11 +3070,13 @@
    "total": {
     "over": {
      "p_model": 0.6665,
+     "p_fair": 0.5033,
      "p_market": 0.5033,
      "edge": 0.1632,
+     "value": 0.0,
      "odds": -111,
      "source": "espn",
-     "ev": 0.267,
+     "ev": -0.0433,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2536,11 +3089,13 @@
     },
     "under": {
      "p_model": 0.3335,
+     "p_fair": 0.4967,
      "p_market": 0.4967,
      "edge": -0.1632,
+     "value": 0.0,
      "odds": -108,
      "source": "espn",
-     "ev": -0.3577,
+     "ev": -0.0433,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2548,6 +3103,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 41.5,
     "line_source": "espn",
     "devig": {
@@ -2561,6 +3117,22 @@
     "the total dropped 6.0 pts since it opened (weather or injuries?)",
     "Cardinals start Carson Beck at quarterback instead of Gardner Minshew II: the team model does not know it"
    ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.24,
+     "yes_ask": 0.25,
+     "no_bid": 0.75,
+     "no_ask": 0.76,
+     "volume": 25193.21
+    },
+    "away": {
+     "yes_bid": 0.76,
+     "yes_ask": 0.77,
+     "no_bid": 0.23,
+     "no_ask": 0.24,
+     "volume": 21059.24
+    }
+   },
    "qb_changes": [
     "Cardinals start Carson Beck at quarterback instead of Gardner Minshew II"
    ]
@@ -2626,7 +3198,7 @@
      "spread_home": -4.5,
      "total": 39.5,
      "ml_home": -244,
-     "ml_away": 202,
+     "ml_away": 201,
      "spread_open": -2.5,
      "total_open": 39.5
     }
@@ -2634,11 +3206,13 @@
    "ml": {
     "home": {
      "p_model": 0.5548,
-     "p_market": 0.6817,
-     "edge": -0.127,
+     "p_fair": 0.681,
+     "p_market": 0.681,
+     "edge": -0.1262,
+     "value": 0.0,
      "odds": -244,
      "source": "espn",
-     "ev": -0.2178,
+     "ev": -0.0399,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2647,11 +3221,13 @@
     },
     "away": {
      "p_model": 0.4452,
-     "p_market": 0.3183,
-     "edge": 0.127,
-     "odds": 202,
+     "p_fair": 0.319,
+     "p_market": 0.319,
+     "edge": 0.1262,
+     "value": 0.0,
+     "odds": 201,
      "source": "espn",
-     "ev": 0.3445,
+     "ev": -0.0399,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2660,7 +3236,8 @@
       "the line moved 2.0 pts against this side since it opened"
      ]
     },
-    "pick": "away",
+    "pick": "home",
+    "lean": "away",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -2669,11 +3246,13 @@
    "spread": {
     "home": {
      "p_model": 0.4162,
+     "p_fair": 0.4902,
      "p_market": 0.4902,
      "edge": -0.074,
+     "value": 0.0,
      "odds": -105,
      "source": "espn",
-     "ev": -0.1874,
+     "ev": -0.043,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2682,11 +3261,13 @@
     },
     "away": {
      "p_model": 0.5838,
+     "p_fair": 0.5098,
      "p_market": 0.5098,
      "edge": 0.074,
+     "value": 0.0,
      "odds": -114,
      "source": "espn",
-     "ev": 0.0959,
+     "ev": -0.043,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2696,6 +3277,7 @@
      ]
     },
     "pick": "away",
+    "lean": "away",
     "home_line": -4.5,
     "line_source": "espn",
     "devig": {
@@ -2706,11 +3288,13 @@
    "total": {
     "over": {
      "p_model": 0.6596,
+     "p_fair": 0.5142,
      "p_market": 0.5142,
      "edge": 0.1454,
+     "value": 0.0,
      "odds": -116,
      "source": "espn",
-     "ev": 0.2283,
+     "ev": -0.0425,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2721,11 +3305,13 @@
     },
     "under": {
      "p_model": 0.3404,
+     "p_fair": 0.4858,
      "p_market": 0.4858,
      "edge": -0.1454,
+     "value": 0.0,
      "odds": -103,
      "source": "espn",
-     "ev": -0.3292,
+     "ev": -0.0425,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2733,6 +3319,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 39.5,
     "line_source": "espn",
     "devig": {
@@ -2743,7 +3330,23 @@
    "price_notes": [],
    "alerts": [
     "the line moved 2.0 pts toward Browns since it opened"
-   ]
+   ],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.68,
+     "yes_ask": 0.69,
+     "no_bid": 0.31,
+     "no_ask": 0.32,
+     "volume": 16203.96
+    },
+    "away": {
+     "yes_bid": 0.32,
+     "yes_ask": 0.33,
+     "no_bid": 0.67,
+     "no_ask": 0.68,
+     "volume": 59896.29
+    }
+   }
   },
   {
    "id": "401873094",
@@ -2814,11 +3417,13 @@
    "ml": {
     "home": {
      "p_model": 0.6265,
+     "p_fair": 0.588,
      "p_market": 0.588,
      "edge": 0.0386,
+     "value": 0.0,
      "odds": -158,
      "source": "espn",
-     "ev": 0.0231,
+     "ev": -0.0399,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2827,11 +3432,13 @@
     },
     "away": {
      "p_model": 0.3735,
+     "p_fair": 0.412,
      "p_market": 0.412,
      "edge": -0.0386,
+     "value": 0.0,
      "odds": 133,
      "source": "espn",
-     "ev": -0.1298,
+     "ev": -0.0399,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2839,6 +3446,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "devig": {
      "method": "two_sided",
      "source": "espn"
@@ -2847,11 +3455,13 @@
    "spread": {
     "home": {
      "p_model": 0.5358,
+     "p_fair": 0.4945,
      "p_market": 0.4945,
      "edge": 0.0412,
+     "value": 0.0,
      "odds": -107,
      "source": "espn",
-     "ev": 0.0365,
+     "ev": -0.0433,
      "stable": true,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2860,11 +3470,13 @@
     },
     "away": {
      "p_model": 0.4642,
+     "p_fair": 0.5055,
      "p_market": 0.5055,
      "edge": -0.0412,
+     "value": 0.0,
      "odds": -112,
      "source": "espn",
-     "ev": -0.1213,
+     "ev": -0.0433,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2872,6 +3484,7 @@
      "reasons": []
     },
     "pick": "home",
+    "lean": "home",
     "home_line": -3.0,
     "line_source": "espn",
     "devig": {
@@ -2882,24 +3495,30 @@
    "total": {
     "over": {
      "p_model": 0.5952,
+     "p_fair": 0.5011,
      "p_market": 0.5011,
      "edge": 0.0942,
+     "value": 0.0,
      "odds": -110,
      "source": "espn",
-     "ev": 0.1364,
+     "ev": -0.0434,
      "stable": true,
-     "kelly": 0.15,
-     "stake": 0.02,
-     "label": "PLAY",
-     "reasons": []
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": [
+      "the model disagrees with the market; when it has, the market has been right"
+     ]
     },
     "under": {
      "p_model": 0.4048,
+     "p_fair": 0.4989,
      "p_market": 0.4989,
      "edge": -0.0942,
+     "value": 0.0,
      "odds": -109,
      "source": "espn",
-     "ev": -0.2239,
+     "ev": -0.0434,
      "stable": null,
      "kelly": 0.0,
      "stake": 0.0,
@@ -2907,6 +3526,7 @@
      "reasons": []
     },
     "pick": "over",
+    "lean": "over",
     "line": 43.5,
     "line_source": "espn",
     "devig": {
@@ -2915,7 +3535,23 @@
     }
    },
    "price_notes": [],
-   "alerts": []
+   "alerts": [],
+   "kalshi": {
+    "home": {
+     "yes_bid": 0.59,
+     "yes_ask": 0.6,
+     "no_bid": 0.4,
+     "no_ask": 0.41,
+     "volume": 9090.05
+    },
+    "away": {
+     "yes_bid": 0.4,
+     "yes_ask": 0.41,
+     "no_bid": 0.59,
+     "no_ask": 0.6,
+     "volume": 27230.71
+    }
+   }
   }
  ],
  "parlays": []

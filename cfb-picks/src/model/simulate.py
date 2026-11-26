@@ -117,7 +117,7 @@ def simulate_bets(
                     )
                     margin, total = float(sa.hp[g] - sa.ap[g]), float(sa.hp[g] + sa.ap[g])
                     for market in ("ml", "spread", "total"):
-                        pick = ev[market]["pick"]
+                        pick = ev[market]["lean"]  # the bets follow the model's disagreements
                         side = ev[market].get(pick) if pick else None
                         if not side or side["edge"] is None:
                             continue
@@ -158,6 +158,71 @@ def simulate_bets(
             )
             prev_sa = sa
     return pd.DataFrame(rows)
+
+
+MIN_BETS = 200  # decided bets a market needs before its trust is measured
+GAP_BUCKETS = ((0.0, 0.03), (0.03, 0.06), (0.06, 0.10), (0.10, 0.15), (0.15, 1.0))
+
+
+def _logit(p) -> np.ndarray:
+    p = np.clip(np.asarray(p, dtype=float), 1e-4, 1.0 - 1e-4)
+    return np.log(p / (1.0 - p))
+
+
+def _logistic(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Logistic regression by Newton's method: coefficients and their standard errors."""
+    beta = np.zeros(x.shape[1])
+    for _ in range(50):
+        p = 1.0 / (1.0 + np.exp(-(x @ beta)))
+        hessian = x.T @ (x * (p * (1.0 - p))[:, None]) + 1e-8 * np.eye(x.shape[1])
+        step = np.linalg.solve(hessian, x.T @ (y - p))
+        beta = beta + step
+        if np.abs(step).max() < 1e-9:
+            break
+    p = 1.0 / (1.0 + np.exp(-(x @ beta)))
+    cov = np.linalg.inv(x.T @ (x * (p * (1.0 - p))[:, None]) + 1e-8 * np.eye(x.shape[1]))
+    return beta, np.sqrt(np.diag(cov))
+
+
+def fit_trust(bets: pd.DataFrame) -> dict:
+    """When the model and the market disagreed, how much of the disagreement came true?
+
+    Per market, a logistic regression of the result on the market's log-odds and on
+    the gap between the model's log-odds and the market's. The weight of the gap is
+    the answer: 1 = the model's number was right, 0 = the market's was. `trust` is
+    that weight clipped to [0, 1]. A market with fewer than MIN_BETS decided bets
+    gets 0: with no evidence, the market's number is the one to believe.
+
+    `buckets` shows the same thing without a formula: by size of the disagreement,
+    what the model said, what the market said and what happened.
+    """
+    out = {}
+    for market in ("ml", "spread", "total"):
+        d = bets[(bets["market"] == market) & (bets["result"] != 0)] if len(bets) else bets
+        entry = {"n": len(d), "weight": None, "error": None, "trust": 0.0, "buckets": []}
+        if len(d) >= MIN_BETS:
+            y = (d["result"] > 0).to_numpy(dtype=float)
+            market_logit = _logit(d["p_market"])
+            gap = _logit(d["p_model"]) - market_logit
+            beta, se = _logistic(np.column_stack([market_logit, gap]), y)
+            entry["weight"], entry["error"] = float(beta[1]), float(se[1])
+            entry["trust"] = float(min(max(beta[1], 0.0), 1.0))
+            diff = d["p_model"] - d["p_market"]
+            for lo, hi in GAP_BUCKETS:
+                sub = d[(diff >= lo) & (diff < hi)]
+                if len(sub) >= 20:
+                    entry["buckets"].append(
+                        {
+                            "lo": lo,
+                            "hi": hi,
+                            "n": len(sub),
+                            "model": float(sub["p_model"].mean()),
+                            "market": float(sub["p_market"].mean()),
+                            "actual": float((sub["result"] > 0).mean()),
+                        }
+                    )
+        out[market] = entry
+    return out
 
 
 def record(bets: pd.DataFrame) -> dict:

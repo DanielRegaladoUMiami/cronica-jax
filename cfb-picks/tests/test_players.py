@@ -413,9 +413,9 @@ def test_kalshi_fee_and_empty_book():
 
 
 # ------------------------------------------------------------------- the flags
-def rung(t, p, yes_bid, yes_ask, volume=500, edge_dk=None):
+def rung(t, p, yes_bid, yes_ask, volume=500, edge_dk=None, p_dk=None):
     no_bid, no_ask = round(1 - yes_ask, 2), round(1 - yes_bid, 2)
-    row = {"t": t, "p": p, "p_dk": None, "yes_bid": yes_bid, "yes_ask": yes_ask, "no_bid": no_bid, "no_ask": no_ask,
+    row = {"t": t, "p": p, "p_dk": p_dk, "yes_bid": yes_bid, "yes_ask": yes_ask, "no_bid": no_bid, "no_ask": no_ask,
            "volume": volume, "ticker": f"T-{t}",
            "edge_yes": p - yes_ask - kalshi.taker_fee(yes_ask),
            "edge_no": (1 - p) - no_ask - kalshi.taker_fee(no_ask)}  # fmt: skip
@@ -424,40 +424,61 @@ def rung(t, p, yes_bid, yes_ask, volume=500, edge_dk=None):
     return row
 
 
-def test_flag_rules():
+def test_only_likely_contracts_backed_by_a_second_market_are_plays():
     calm = {}
-    play = week.best_contract([rung(50, 0.60, 0.49, 0.50, edge_dk=0.03)], calm)
+    # Likely (70%), a real price (60 cents), and both the model and DraftKings say it is low.
+    play = week.best_contract([rung(50, 0.70, 0.59, 0.60, edge_dk=0.05, p_dk=0.68)], calm)
+    assert play["label"] == "PLAY" and play["side"] == "yes"
+    assert play["edge"] == pytest.approx(0.70 - 0.60 - kalshi.taker_fee(0.60))
+    assert play["p"] == pytest.approx(0.70) and play["p_dk"] == pytest.approx(0.68)
+    # The model alone is only a lean: no DraftKings line, one that backs it in part, or a thin market.
+    assert week.best_contract([rung(50, 0.70, 0.59, 0.60)], calm)["label"] == "LEAN"
+    part = week.best_contract([rung(50, 0.70, 0.59, 0.60, edge_dk=0.02, p_dk=0.64)], calm)
+    assert part["label"] == "LEAN" and "only in part" in part["reasons"][0]
+    thin = week.best_contract([rung(50, 0.70, 0.59, 0.60, volume=3, edge_dk=0.05, p_dk=0.68)], calm)
+    assert thin["label"] == "LEAN"
+    unlikely = week.best_contract([rung(50, 0.70, 0.59, 0.60, edge_dk=0.05, p_dk=0.50)], calm)
+    assert unlikely["label"] == "LEAN" and "less likely" in unlikely["reasons"][0]
+    # The "No" side counts when it is the likely one.
+    no = week.best_contract([rung(50, 0.22, 0.30, 0.31, edge_dk=-0.05, p_dk=0.24)], calm)
+    assert no["label"] == "PLAY" and no["side"] == "no"
     assert (
-        play["label"] == "PLAY" and play["side"] == "yes" and play["edge"] == pytest.approx(0.0825)
+        no["p"] == pytest.approx(0.78) and no["p_dk"] == pytest.approx(0.76) and no["price"] == 0.70
     )
-    # The same edge with no second source is only a lean; so is a thin market.
-    assert week.best_contract([rung(50, 0.60, 0.49, 0.50)], calm)["label"] == "LEAN"
-    assert (
-        week.best_contract([rung(50, 0.60, 0.49, 0.50, volume=3, edge_dk=0.03)], calm)["label"]
-        == "LEAN"
-    )
-    # Reasons to stop: the market is far away, DraftKings disagrees, or the player is in doubt.
-    assert week.best_contract([rung(50, 0.75, 0.49, 0.50, edge_dk=0.03)], calm)["label"] == "CHECK"
-    assert week.best_contract([rung(50, 0.60, 0.49, 0.50, edge_dk=-0.02)], calm)["label"] == "CHECK"
-    assert (
-        week.best_contract([rung(50, 0.60, 0.49, 0.50, edge_dk=0.03)], {"questionable": True})[
-            "label"
-        ]
-        == "CHECK"
-    )
-    # Nothing to flag: no edge, a price near the extremes, or a wide book.
-    assert week.best_contract([rung(50, 0.52, 0.49, 0.50, edge_dk=0.03)], calm) is None
-    assert week.best_contract([rung(50, 0.20, 0.05, 0.06, edge_dk=0.03)], calm) is None
-    assert week.best_contract([rung(50, 0.70, 0.40, 0.50, edge_dk=0.03)], calm) is None
-    # The "No" side is found too.
-    no = week.best_contract([rung(50, 0.40, 0.49, 0.50, edge_dk=-0.03)], calm)
-    assert no["side"] == "no" and no["label"] == "PLAY" and no["p"] == pytest.approx(0.60)
+
+
+def test_long_shots_are_never_flagged():
+    calm = {}
+    # The user's case: the market says 12%, the model says 16%. Four points of "edge", and no flag.
+    assert week.best_contract([rung(50, 0.16, 0.11, 0.12, edge_dk=0.04, p_dk=0.16)], calm) is None
+    # Twenty cents for something the model gives 30%: still a long shot.
+    assert week.best_contract([rung(50, 0.30, 0.19, 0.20, edge_dk=0.08, p_dk=0.30)], calm) is None
+    # A fair price for a coin flip the model does not make likely.
+    assert week.best_contract([rung(50, 0.52, 0.44, 0.45, edge_dk=0.05, p_dk=0.52)], calm) is None
+    # Too expensive to leave anything, a wide book, or no edge at all.
+    assert week.best_contract([rung(50, 0.99, 0.92, 0.93, edge_dk=0.05, p_dk=0.99)], calm) is None
+    assert week.best_contract([rung(50, 0.80, 0.50, 0.60, edge_dk=0.05, p_dk=0.80)], calm) is None
+    assert week.best_contract([rung(50, 0.62, 0.59, 0.60, edge_dk=0.05, p_dk=0.66)], calm) is None
+
+
+def test_reasons_to_stop_make_it_a_check():
+    calm = {}
+    far = week.best_contract([rung(50, 0.85, 0.59, 0.60, edge_dk=0.05, p_dk=0.70)], calm)
+    assert far["label"] == "CHECK" and "far from the model" in far["reasons"][0]
+    against = week.best_contract([rung(50, 0.70, 0.59, 0.60, edge_dk=-0.02, p_dk=0.59)], calm)
+    assert against["label"] == "CHECK"
+    for flag in ("questionable", "small_sample", "qb_change", "returning"):
+        doubt = week.best_contract(
+            [rung(50, 0.70, 0.59, 0.60, edge_dk=0.05, p_dk=0.68)], {flag: True}
+        )
+        assert doubt["label"] == "CHECK"
 
 
 def test_team_picks_are_told_about_a_quarterback_change(tmp_path):
     side = lambda label: {"label": label, "stake": 0.01, "reasons": []}
     picks = {"season": 2026, "week": 12, "games": [
-        {"id": "1", "alerts": [], "ml": {"home": side("PLAY"), "away": side("PASS"), "pick": "home"},
+        {"id": "1", "away": {"abbr": "NE"}, "home": {"abbr": "LAC"}, "alerts": [],
+         "ml": {"home": side("PLAY"), "away": side("PASS"), "pick": "home"},
          "spread": {"home": side("AVOID"), "away": side("PASS")}, "total": {"over": side("PLAY"), "under": side("PASS")}},
         {"id": "2", "alerts": [], "ml": {"home": side("PLAY"), "away": side("PASS")}, "spread": {}, "total": {}},
     ]}  # fmt: skip
@@ -468,9 +489,11 @@ def test_team_picks_are_told_about_a_quarterback_change(tmp_path):
                                    {"side": "home", "name": "Chargers", "qb": "Justin Herbert", "usual_qb": None, "qb_change": False}]},
         {"game_id": "2", "teams": [{"side": "away", "qb_change": False}, {"side": "home", "qb_change": False}]},
     ]}  # fmt: skip
+    data["kalshi_winners"] = {"NE@LAC": {"away": {"yes_ask": 0.52}, "home": {"yes_ask": 0.49}}}
     assert week.annotate_team_picks(data, path, log=lambda *_: None) == 2
     out = json.loads(path.read_text(encoding="utf-8"))
     first, second = out["games"]
+    assert first["kalshi"]["away"]["yes_ask"] == 0.52 and "kalshi" not in second
     assert first["ml"]["home"]["label"] == "AVOID" and first["ml"]["home"]["stake"] == 0.0
     assert first["total"]["over"]["label"] == "AVOID" and first["ml"]["away"]["label"] == "PASS"
     assert (

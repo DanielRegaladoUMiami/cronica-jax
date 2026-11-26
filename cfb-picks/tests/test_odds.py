@@ -9,8 +9,9 @@ from src.data.odds import (
     match_manual,
     normalize_team,
 )
-from src.model.prob import american_to_prob
+from src.model.prob import american_to_prob, anchored
 from src.model.rules import Rules, evaluate_game
+from src.model.simulate import MIN_BETS, fit_trust
 
 ESPN = {
     "provider": "DraftKings",
@@ -229,3 +230,94 @@ def test_without_lines_there_is_only_the_model_probability():
     )
     assert out["ml"]["home"]["label"] == "NO LINE" and out["ml"]["home"]["edge"] is None
     assert out["ml"]["pick"] == "home" and out["spread"]["pick"] is None
+
+
+# ------------------------------------------------- the model against the market
+MARKET_ONLY = {"trust_ml": 0.0, "trust_spread": 0.0, "trust_total": 0.0}
+
+
+def _checked(margin, margin_alt=None, espn=STEADY, **trust):
+    return evaluate_game(
+        margin=margin,
+        total=44.0,
+        margin_alt=margin if margin_alt is None else margin_alt,
+        total_alt=44.0,
+        markets=build_markets(None, espn),
+        sigma_m=16.0,
+        sigma_t=16.0,
+        rules=Rules(**trust),
+    )
+
+
+def test_anchored_probability_moves_from_the_market_toward_the_model():
+    # The case that started it: the market says 12% and the model 16%.
+    assert anchored(0.16, 0.12, 1.0) == 0.16
+    assert anchored(0.16, 0.12, 0.0) == 0.12
+    assert 0.12 < anchored(0.16, 0.12, 0.5) < 0.16
+    assert anchored(0.5, 0.5, 0.3) == pytest.approx(0.5)
+
+
+def test_a_gap_the_record_does_not_back_is_not_a_play():
+    alone = _checked(16.5, 16.0)  # the model on its own: 4 points better than the market
+    assert alone["spread"]["home"]["label"] == "PLAY"
+    assert alone["spread"]["home"]["p_fair"] == alone["spread"]["home"]["p_model"]
+    out = _checked(16.5, 16.0, **MARKET_ONLY)
+    side = out["spread"]["home"]
+    assert side["label"] == "PASS" and side["stake"] == 0.0
+    assert side["p_fair"] == pytest.approx(side["p_market"]) and side["value"] == pytest.approx(0.0)
+    assert side["edge"] == pytest.approx(alone["spread"]["home"]["edge"])  # the gap is still shown
+    assert "the market has been right" in side["reasons"][-1]
+    # A red flag is still a red flag.
+    assert _checked(20.5, **MARKET_ONLY)["spread"]["home"]["label"] == "AVOID"
+    # Half the trust: the chance sits between the two, and only that part counts as value.
+    half = _checked(16.5, 16.0, trust_spread=0.5)["spread"]["home"]
+    assert side["p_market"] < half["p_fair"] < half["p_model"]
+    assert half["value"] == pytest.approx(half["edge"] / 2, abs=0.01)
+
+
+def test_moneyline_pick_is_the_likelier_team_not_the_bigger_gap():
+    # The market makes the home team an 81% favorite; the model has it closer.
+    out = _checked(4.0, **MARKET_ONLY)
+    ml = out["ml"]
+    assert ml["lean"] == "away" and ml["away"]["edge"] > 0.05  # the model alone likes the underdog
+    assert ml["pick"] == "home"  # but the pick is who is likelier to win
+    assert (
+        ml["home"]["p_fair"] == pytest.approx(ml["home"]["p_market"])
+        and ml["home"]["p_fair"] > 0.75
+    )
+    assert ml["away"]["label"] in ("PASS", "AVOID") and ml["home"]["label"] == "PASS"
+    # A spread is priced as a coin flip, so its pick stays the model's lean.
+    assert out["spread"]["pick"] == out["spread"]["lean"] == "away"
+
+
+def _bets(n, follow, seed=3):
+    """Synthetic moneyline bets whose results follow the market's number or the model's."""
+    rng = __import__("numpy").random.default_rng(seed)
+    market = rng.uniform(0.15, 0.70, n)
+    model = __import__("numpy").clip(market + rng.uniform(0.0, 0.25, n), 0.05, 0.95)
+    truth = market if follow == "market" else model
+    won = rng.uniform(size=n) < truth
+    return pd.DataFrame(
+        {
+            "market": "ml",
+            "p_market": market,
+            "p_model": model,
+            "result": [1 if w else -1 for w in won],
+        }
+    )
+
+
+def test_trust_is_measured_on_the_bets():
+    right_market = fit_trust(_bets(4000, "market"))["ml"]
+    assert abs(right_market["weight"]) < 0.25 and right_market["trust"] < 0.25
+    right_model = fit_trust(_bets(4000, "model"))["ml"]
+    assert right_model["weight"] > 0.75 and right_model["trust"] > 0.75
+    wide = [b for b in right_market["buckets"] if b["lo"] >= 0.10]
+    assert wide and all(
+        abs(b["actual"] - b["market"]) < abs(b["actual"] - b["model"]) for b in wide
+    )
+    # Too few bets to judge: the market gets the benefit of the doubt.
+    few = fit_trust(_bets(MIN_BETS - 1, "model"))
+    assert few["ml"]["trust"] == 0.0 and few["ml"]["weight"] is None
+    assert few["spread"]["n"] == 0 and few["spread"]["trust"] == 0.0
+    assert fit_trust(pd.DataFrame())["total"]["trust"] == 0.0

@@ -23,6 +23,7 @@ import csv
 import json
 import math
 import sys
+from dataclasses import replace
 from datetime import datetime, timezone
 
 import numpy as np
@@ -54,7 +55,7 @@ from .model.data import make_seasons
 from .model.prob import american_to_decimal, norm_cdf, prob_to_american
 from .model.registry import build_models, load_params, selected_name
 from .model.rules import AVOID, PASS, PLAY, Rules, evaluate_game
-from .model.simulate import drop_last_games, record, simulate_bets
+from .model.simulate import drop_last_games, fit_trust, record, simulate_bets
 
 LABELS = (PLAY, AVOID, PASS)
 NO_DATA_REASONS = {
@@ -245,6 +246,15 @@ def build_backtest(
     bets = pd.DataFrame()
     if odds_seasons:
         bets = simulate_bets(models[chosen], seasons, odds, sigma_m, sigma_t, rules, odds_seasons)
+    # The bets above follow the model on its own. What they show about how far to
+    # believe it becomes part of the rule used for this week's picks.
+    anchor = fit_trust(bets)
+    live_rules = replace(
+        rules,
+        trust_ml=anchor["ml"]["trust"],
+        trust_spread=anchor["spread"]["trust"],
+        trust_total=anchor["total"]["trust"],
+    )
 
     def summary(frame: pd.DataFrame) -> dict:
         if frame.empty:
@@ -339,7 +349,8 @@ def build_backtest(
             "seasons_with_lines": odds_seasons,
             "note": "Flat one-unit bets against the DraftKings/consensus closing line from ESPN.",
         },
-        "rules": rules.as_dict(),
+        "anchor": anchor,
+        "rules": live_rules.as_dict(),
         "prototype_reference": league.prototype,
     }
     context = {
@@ -351,6 +362,8 @@ def build_backtest(
         "cal_error": cal_error,
         "evidence": summary(bets),
         "odds_seasons": odds_seasons,
+        "anchor": anchor,
+        "rules": live_rules,
     }
     log(f"Model: {models[chosen].label} · margin sigma {sigma_m:.1f} · total sigma {sigma_t:.1f}")
     return backtest, context
@@ -629,7 +642,11 @@ def build_picks(
             "training_games": int(train.sum()),
         },
         "rules": rules.as_dict(),
-        "evidence": {"seasons": context["odds_seasons"], **context["evidence"]},
+        "evidence": {
+            "seasons": context["odds_seasons"],
+            **context["evidence"],
+            "anchor": context.get("anchor"),
+        },
         "warnings": warnings,
         "games": out_games,
         "parlays": parlays,
@@ -692,6 +709,7 @@ def evaluate_parlay(
                 "opponent": game["away" if side_key == "home" else "home"]["name"],
                 "venue": side_key,
                 "p_model": side["p_model"],
+                "p_fair": side.get("p_fair", side["p_model"]),
                 "p_market": side["p_market"],
                 "odds": side["odds"],
                 "source": side["source"],
@@ -706,6 +724,8 @@ def evaluate_parlay(
         return out, warnings
     p_model = float(np.prod([leg["p_model"] for leg in ok]))
     out["p_model"] = p_model
+    # The chance to quote: each leg at the probability the evidence supports.
+    out["p_fair"] = float(np.prod([leg["p_fair"] for leg in ok]))
     if all(leg["p_market"] is not None for leg in ok):
         out["p_market"] = float(np.prod([leg["p_market"] for leg in ok]))
     if all(leg["odds"] is not None for leg in ok):
@@ -753,6 +773,8 @@ def main(argv: list[str] | None = None) -> int:
             week = week_for(calendar, datetime.now(timezone.utc), league)
             week = next_open_week(games, args.season, week)
         backtest, context = build_backtest(games, args.season, rules, league)
+        # The rule for this week carries what the backtest measured about the model.
+        rules = context["rules"]
         picks = build_picks(games, teams, args.season, week, context, rules, client, league)
     except EspnError as exc:
         print(f"ERROR: the ESPN API failed and no data is made up: {exc}", file=sys.stderr)
@@ -783,6 +805,20 @@ def print_summary(picks: dict, league: config.League = config.CFB) -> None:
         f"\n{league.name}, {picks['week_label']} {picks['season']}: {len(games)} games with a"
         f" projection, {sum(g['on_my_list'] for g in games)} with your lines"
     )
+    likely = []
+    for g in games:
+        key = g["ml"].get("pick")
+        side = g["ml"].get(key) if key else None
+        if side and side["p_market"] is not None:
+            likely.append((side["p_fair"], g, key, side))
+    if likely:
+        print("\nMost likely winners (the chance the evidence supports):")
+        for p_fair, g, key, side in sorted(likely, key=lambda row: -row[0])[:8]:
+            other = g["away" if key == "home" else "home"]["abbr"]
+            print(
+                f"  {g[key]['name']:<22s} {p_fair:.0%} ({side['odds']:+d}) vs {other}"
+                f" · the model alone says {side['p_model']:.0%}"
+            )
     found = []
     for g in games:
         for market, keys in (

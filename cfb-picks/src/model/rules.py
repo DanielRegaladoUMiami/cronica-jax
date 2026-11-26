@@ -3,17 +3,32 @@
 The same function labels this week's picks and the betting backtest, so the
 track record measures exactly the rule shown on the site.
 
-PLAY   = edge of at least 5%, positive expected value at the real price, no red flags.
-AVOID  = there is an edge on paper, but the pick is unstable or the market is
+The model and the market each give a probability. Their difference is a
+DISAGREEMENT, not yet an advantage: the backtest measures how much of it came
+true (`trust`), and only that part counts.
+
+p_model = the model on its own.
+p_fair  = the market's probability moved toward the model's by `trust`. With the
+          trust measured so far (0: when the two disagreed, the market was right)
+          it is simply the market's probability.
+edge    = p_model - market: how far the model is from the market.
+value   = p_fair - market: the part of that the evidence backs.
+
+PLAY   = value of at least 5%, positive expected value at the real price, no red flags.
+AVOID  = the model sees 5%+ on paper, but the pick is unstable or the market is
          telling us something the model cannot know (injuries, weather, news).
-PASS   = not enough edge.
+PASS   = no value: the model agrees with the market, or disagrees without the
+         evidence to back it.
+
+The moneyline pick is the team more likely to win (by p_fair). `lean` is the side
+the model likes more than the market does, which is what the betting backtest follows.
 """
 
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 
-from .prob import expected_value, kelly_fraction, norm_cdf
+from .prob import anchored, expected_value, kelly_fraction, norm_cdf
 
 PLAY, AVOID, PASS, NO_LINE = "PLAY", "AVOID", "PASS", "NO LINE"
 
@@ -30,6 +45,12 @@ class Rules:
     move_spread: float = 3.0  # line move (open -> now) against the pick that triggers AVOID
     move_total: float = 4.0
     min_games: int = 3  # games each team needs before its rating is trusted
+    # How much of the model's disagreement with the market to believe, per market:
+    # 1 = all of it (the model alone), 0 = none (the market's number). The picks
+    # pipeline measures it on the betting backtest; 1 leaves the model untouched.
+    trust_ml: float = 1.0
+    trust_spread: float = 1.0
+    trust_total: float = 1.0
 
     def as_dict(self) -> dict:
         return asdict(self)
@@ -55,12 +76,15 @@ def _side(
     quote: dict | None,
     rules: Rules,
     alerts: list[str],
+    trust: float = 1.0,
 ) -> dict:
     """Evaluate one side of a market."""
     out = {
         "p_model": p_model,
+        "p_fair": p_model,
         "p_market": p_market,
         "edge": None,
+        "value": None,
         "odds": quote["odds"] if quote else None,
         "source": quote["source"] if quote else None,
         "ev": None,
@@ -73,11 +97,13 @@ def _side(
     if p_market is None or quote is None:
         return out
     edge = p_model - p_market
-    ev = expected_value(p_model, quote["odds"])
-    out["edge"], out["ev"] = edge, ev
+    p_fair = anchored(p_model, p_market, trust)
+    value = p_fair - p_market
+    ev = expected_value(p_fair, quote["odds"])
+    out.update(edge=edge, p_fair=p_fair, value=value, ev=ev)
     if p_alt is not None:
         out["stable"] = bool(p_alt - p_market > 0) if edge > 0 else None
-    if edge < rules.edge_min or ev <= 0:
+    if edge < rules.edge_min or expected_value(p_model, quote["odds"]) <= 0:
         out["label"] = PASS
         return out
     reasons = list(alerts)
@@ -90,8 +116,16 @@ def _side(
     if blocking:
         out["label"] = AVOID
         return out
+    if value < rules.edge_min or ev <= 0:
+        # The model disagrees with the market, but the record says not to believe it.
+        out["label"] = PASS
+        out["reasons"] = [
+            *reasons,
+            "the model disagrees with the market; when it has, the market has been right",
+        ]
+        return out
     out["label"] = PLAY
-    out["kelly"] = kelly_fraction(p_model, quote["odds"])
+    out["kelly"] = kelly_fraction(p_fair, quote["odds"])
     out["stake"] = min(rules.kelly_fraction * out["kelly"], rules.stake_cap)
     return out
 
@@ -158,7 +192,9 @@ def evaluate_game(
     p_home_alt = None if margin_alt is None else float(norm_cdf(margin_alt / sigma_m))
     ml = markets["ml"]
     out_ml = {
-        "home": _side(p_home, p_home_alt, ml["p_home"], ml["home"], rules, side_alerts(True)),
+        "home": _side(
+            p_home, p_home_alt, ml["p_home"], ml["home"], rules, side_alerts(True), rules.trust_ml
+        ),
         "away": _side(
             1 - p_home,
             None if p_home_alt is None else 1 - p_home_alt,
@@ -166,6 +202,7 @@ def evaluate_game(
             ml["away"],
             rules,
             side_alerts(False),
+            rules.trust_ml,
         ),
     }
 
@@ -176,7 +213,9 @@ def evaluate_game(
         pc = float(norm_cdf((margin + line) / sigma_m))
         pc_alt = None if margin_alt is None else float(norm_cdf((margin_alt + line) / sigma_m))
         out_sp = {
-            "home": _side(pc, pc_alt, sp["p_home"], sp["home"], rules, side_alerts(True)),
+            "home": _side(
+                pc, pc_alt, sp["p_home"], sp["home"], rules, side_alerts(True), rules.trust_spread
+            ),
             "away": _side(
                 1 - pc,
                 None if pc_alt is None else 1 - pc_alt,
@@ -184,6 +223,7 @@ def evaluate_game(
                 sp["away"],
                 rules,
                 side_alerts(False),
+                rules.trust_spread,
             ),
         }
 
@@ -217,7 +257,9 @@ def evaluate_game(
         po = float(norm_cdf((total - tline) / sigma_t))
         po_alt = None if total_alt is None else float(norm_cdf((total_alt - tline) / sigma_t))
         out_tot = {
-            "over": _side(po, po_alt, tot["p_over"], tot["over"], rules, total_alerts(True)),
+            "over": _side(
+                po, po_alt, tot["p_over"], tot["over"], rules, total_alerts(True), rules.trust_total
+            ),
             "under": _side(
                 1 - po,
                 None if po_alt is None else 1 - po_alt,
@@ -225,10 +267,12 @@ def evaluate_game(
                 tot["under"],
                 rules,
                 total_alerts(False),
+                rules.trust_total,
             ),
         }
 
-    def best(pair: dict, keys: tuple[str, str]) -> str | None:
+    def lean(pair: dict, keys: tuple[str, str]) -> str | None:
+        """The side the model likes more than the market does."""
         sides = [(k, pair[k]) for k in keys if pair.get(k)]
         if not sides:
             return None
@@ -237,10 +281,20 @@ def evaluate_game(
             return max(with_edge, key=lambda ks: ks[1]["edge"])[0]
         return max(sides, key=lambda ks: ks[1]["p_model"])[0]
 
+    def likely(pair: dict, keys: tuple[str, str]) -> str | None:
+        """The side more likely to win, by the probability the evidence supports."""
+        sides = [(k, pair[k]) for k in keys if pair.get(k)]
+        return max(sides, key=lambda ks: ks[1]["p_fair"])[0] if sides else None
+
+    ml_lean = lean(out_ml, ("home", "away"))
+    sp_lean = lean(out_sp, ("home", "away"))
+    tot_lean = lean(out_tot, ("over", "under"))
     return {
-        "ml": {**out_ml, "pick": best(out_ml, ("home", "away"))},
-        "spread": {**out_sp, "pick": best(out_sp, ("home", "away"))},
-        "total": {**out_tot, "pick": best(out_tot, ("over", "under"))},
+        # A moneyline pick answers "who wins": the likelier team, not the bigger disagreement.
+        "ml": {**out_ml, "pick": likely(out_ml, ("home", "away")), "lean": ml_lean},
+        # A spread or a total is priced as a coin flip, so the pick is the model's lean.
+        "spread": {**out_sp, "pick": sp_lean, "lean": sp_lean},
+        "total": {**out_tot, "pick": tot_lean, "lean": tot_lean},
         "market_margin": mkt_margin,
         "margin_gap": gap,
         "total_gap": tgap,

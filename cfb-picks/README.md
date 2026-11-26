@@ -37,11 +37,16 @@ Two things to keep in mind:
 
 - **The percentages are honest.** In 2022-2025 the chance the model gave its
   favorite was off by 2 points on average.
-- **The model does not beat the market.** Applying the PLAY rule to 1,817 past
-  bets against closing lines (2021, 2022 and 2026) went 832-974 for an ROI of
-  -5.8% ± 2.6%, which is roughly the bookmaker's cut. Picks flagged AVOID did
-  worse on spreads (-13.7%). Read a PLAY as "my number disagrees with the
-  market", not as a bet with a proven edge.
+- **The model does not beat the market.** Betting every disagreement of 5%+
+  that had no red flag, 1,817 past bets against closing lines (2021, 2022 and
+  2026), went 832-974 for an ROI of -5.8% ± 2.6%, which is roughly the
+  bookmaker's cut. Picks flagged AVOID did worse on spreads (-13.7%).
+- **When the two disagree, the market is right.** In 666 college games where
+  the model gave a team 10+ points more than the market did, the model said
+  51%, the market said 32% and the team won 31%. In the NFL (269
+  games) it was 46%, 30% and 25%. The same holds for spreads and totals.
+  So a gap between the model and the market is no longer treated as a play: see
+  [the rules](#how-it-works).
 
 These numbers are recomputed on every run and shown on the site's *Track
 record* tab.
@@ -137,21 +142,32 @@ site evaluates every week.
 4. **Probabilities** (`src/model/prob.py`): a normal distribution with the
    real standard deviation from the backtest (15.8 points for the margin, 16.1
    for the total).
-5. **Rules** (`src/model/rules.py`):
-   - **PLAY**: edge of at least 5%, positive expected value at the real price,
-     and no red flags.
-   - **AVOID**: there is an edge on paper, but the pick flips when each team's
+5. **The model against the market** (`src/model/simulate.py`, `fit_trust`): the
+   model's chance and the market's are two opinions. The betting backtest
+   measures how much of their disagreement came true (1 = the model was right,
+   0 = the market was), per market. So far it is 0 everywhere, so the chance
+   the site shows for a team is the market's, with the model's own number
+   beside it. If the model starts getting its disagreements right, that weight
+   rises on its own and the model gets that much credit.
+6. **Rules** (`src/model/rules.py`):
+   - The **moneyline pick** is the team more likely to win, not the side where
+     the model is furthest from the market. A 16% chance against a 12% price is
+     a long shot either way.
+   - **PLAY**: after that check, the chance still beats the price by 5%+, with
+     positive expected value and no red flags. With the weight at 0 there are
+     none.
+   - **AVOID**: the model alone sees 5%+, but the pick flips when each team's
      last 2 games are removed, the model is 5+ points away from the market
-     spread (7+ on a total), or the line moved 3+ points against the pick since
-     it opened (4+ on a total).
-   - **PASS**: not enough edge.
+     spread (7+ on a total), the line moved 3+ points against the pick since
+     it opened (4+ on a total), or (NFL) a team starts a different quarterback.
+   - **PASS**: no value: the model agrees with the market, or disagrees
+     without a record to back it.
    - Stake: quarter Kelly, capped at 2% of bankroll.
-6. **Site** (`site/`): plain HTML and JavaScript that read
-   `site/data/picks.json` and `site/data/backtest.json` (and the `nfl_` pair).
-   No backend. It opens on moneylines only: who wins, how likely, and how
-   many winners the model has called right and wrong this season. The
-   "Spreads and totals too" box brings the other two markets back and the
-   browser remembers the choice.
+7. **Site** (`site/`): plain HTML and JavaScript that read the JSON files in
+   `site/data/`. No backend. The picks page opens on the most likely winners
+   of the week with their price (and Kalshi's, for the NFL), then the model's
+   disagreements with the market, kept apart and labelled as such. Unticking
+   "Spreads and totals too" leaves only the moneylines.
 
 ## NFL
 
@@ -279,19 +295,31 @@ bettor would do, the player's average per game so far. Average miss:
 
 A contract is a rung of Kalshi's ladder, bought as Yes or No.
 
-- **PLAY**: the model leaves 5+ points after Kalshi's fee, the DraftKings
-  line agrees, the price is between 15 and 85 cents with bid and ask no more
-  than 5 cents apart, at least 50 contracts have traded, and the player is
-  not questionable, just back from injury or playing with a new quarterback.
-- **LEAN**: an edge that only the model sees (no DraftKings line to confirm it,
-  or a thin market).
+Two things decide what gets flagged, both from evidence:
+
+- **Only likely things.** Nothing under 30 cents, and nothing the model gives
+  less than 55%, is ever flagged. A cheap contract is a lottery ticket: on
+  Kalshi those win less often than their price implies
+  ([Bürgi, Deng and Whelan](https://www.karlwhelan.com/Papers/Kalshi.pdf)), and
+  a few points of model error is a third of what one is worth.
+- **The model is not enough on its own.** In the team markets the model's
+  disagreements with the market came to nothing, so a play needs a second
+  market on its side.
+
+- **PLAY**: a likely contract (55%+ by the model and by DraftKings) where both
+  the model and the DraftKings line leave 4+ points after Kalshi's fee, the
+  price is between 30 and 90 cents with bid and ask no more than 5 cents
+  apart, at least 50 contracts have traded, and the player is not
+  questionable, just back from injury or playing with a new quarterback.
+- **LEAN**: a likely contract the model thinks is cheap, without a DraftKings
+  line that fully backs it, or in a thin market.
 - **CHECK**: the model is more than 12 points from the market, or something
   about the player changed. A gap that size usually means the market knows
   something: read the news first.
 
 The same step also tells the team picks which teams start a different
-quarterback than usual, and moves those picks from PLAY to AVOID: the team
-model rates a team by its season and does not know the starter is out.
+quarterback than usual (the team model rates a team by its season and does not
+know the starter is out), and adds Kalshi's price for each team to win.
 
 Kalshi charges about 7% x price x (1 - price) per contract (1.7 cents at 50
 cents, almost nothing near 0 or 100). Every edge on the site is after that fee.
@@ -313,6 +341,8 @@ matches, so the board shows the market instead:
 
 A positive number means Kalshi charges less than the sportsbook implies. That
 is two markets disagreeing, not a tested edge; most weeks nothing is positive.
+The list of best prices leaves out contracts under 30 cents: a one-cent gap on
+a long shot is noise.
 "No" is not safer either: "No" on a 14% underdog costs about 86 cents to win
 14, and comes in exactly as often as it needs to.
 
