@@ -1,0 +1,2843 @@
+{
+ "sport": "nfl",
+ "league": "NFL",
+ "generated": "2026-11-26T16:57:35+00:00",
+ "season": 2026,
+ "week": 12,
+ "week_label": "Week 12",
+ "model": {
+  "name": "srs",
+  "label": "SRS (schedule-adjusted margin)",
+  "sigma_margin": 12.8784,
+  "sigma_total": 13.4143,
+  "accuracy": 0.638,
+  "accuracy_big": 0.8438,
+  "big_margin": 7.0,
+  "mae_margin": 9.8402,
+  "mae_total": 11.1135,
+  "n_backtest": 164,
+  "calibration_error": 0.0268,
+  "training_games": 164
+ },
+ "rules": {
+  "edge_min": 0.05,
+  "kelly_fraction": 0.25,
+  "stake_cap": 0.02,
+  "gap_margin": 4.0,
+  "gap_total": 4.0,
+  "move_spread": 1.0,
+  "move_total": 3.0,
+  "min_games": 3
+ },
+ "evidence": {
+  "seasons": [
+   2021,
+   2022,
+   2023,
+   2025,
+   2026
+  ],
+  "ml": {
+   "PLAY": {
+    "n": 211,
+    "won": 69,
+    "lost": 142,
+    "push": 0,
+    "win_pct": 0.327,
+    "units": -12.2764,
+    "roi": -0.0582,
+    "roi_error": 0.1033
+   },
+   "AVOID": {
+    "n": 315,
+    "won": 90,
+    "lost": 223,
+    "push": 2,
+    "win_pct": 0.2875,
+    "units": -55.005,
+    "roi": -0.1746,
+    "roi_error": 0.0808
+   },
+   "PASS": {
+    "n": 318,
+    "won": 139,
+    "lost": 177,
+    "push": 2,
+    "win_pct": 0.4399,
+    "units": -18.0803,
+    "roi": -0.0569,
+    "roi_error": 0.0659
+   }
+  },
+  "spread": {
+   "PLAY": {
+    "n": 200,
+    "won": 91,
+    "lost": 105,
+    "push": 4,
+    "win_pct": 0.4643,
+    "units": -21.497,
+    "roi": -0.1075,
+    "roi_error": 0.0671
+   },
+   "AVOID": {
+    "n": 315,
+    "won": 145,
+    "lost": 168,
+    "push": 2,
+    "win_pct": 0.4633,
+    "units": -35.7095,
+    "roi": -0.1134,
+    "roi_error": 0.0537
+   },
+   "PASS": {
+    "n": 339,
+    "won": 168,
+    "lost": 165,
+    "push": 6,
+    "win_pct": 0.5045,
+    "units": -11.4665,
+    "roi": -0.0338,
+    "roi_error": 0.0516
+   }
+  },
+  "total": {
+   "PLAY": {
+    "n": 222,
+    "won": 107,
+    "lost": 114,
+    "push": 1,
+    "win_pct": 0.4842,
+    "units": -16.6209,
+    "roi": -0.0749,
+    "roi_error": 0.0641
+   },
+   "AVOID": {
+    "n": 271,
+    "won": 118,
+    "lost": 151,
+    "push": 2,
+    "win_pct": 0.4387,
+    "units": -43.89,
+    "roi": -0.162,
+    "roi_error": 0.0574
+   },
+   "PASS": {
+    "n": 362,
+    "won": 182,
+    "lost": 177,
+    "push": 3,
+    "win_pct": 0.507,
+    "units": -11.6285,
+    "roi": -0.0321,
+    "roi_error": 0.05
+   }
+  },
+  "all": {
+   "PLAY": {
+    "n": 633,
+    "won": 267,
+    "lost": 361,
+    "push": 5,
+    "win_pct": 0.4252,
+    "units": -50.3944,
+    "roi": -0.0796,
+    "roi_error": 0.0462
+   },
+   "AVOID": {
+    "n": 901,
+    "won": 353,
+    "lost": 542,
+    "push": 6,
+    "win_pct": 0.3944,
+    "units": -134.6045,
+    "roi": -0.1494,
+    "roi_error": 0.038
+   },
+   "PASS": {
+    "n": 1019,
+    "won": 489,
+    "lost": 519,
+    "push": 11,
+    "win_pct": 0.4851,
+    "units": -41.1753,
+    "roi": -0.0404,
+    "roi_error": 0.0321
+   }
+  }
+ },
+ "warnings": [],
+ "games": [
+  {
+   "id": "401873081",
+   "date": "2026-11-26T18:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "3",
+    "name": "Bears",
+    "abbr": "CHI",
+    "color": "0b1c3a",
+    "alt_color": "e64100",
+    "rank": null,
+    "record": "8-2",
+    "fbs": true,
+    "rating": 3.1492,
+    "rating_rank": 11,
+    "games": 10
+   },
+   "home": {
+    "id": "8",
+    "name": "Lions",
+    "abbr": "DET",
+    "color": "0076b6",
+    "alt_color": "bbbbbb",
+    "rank": null,
+    "record": "8-2",
+    "fbs": true,
+    "rating": 4.5271,
+    "rating_rank": 7,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 26.2725,
+    "away": 23.9092,
+    "margin": 2.3633,
+    "total": 50.1816,
+    "p_home": 0.5728,
+    "p_away": 0.4272,
+    "winner": "home",
+    "fair_ml_home": -134,
+    "fair_ml_away": 134,
+    "margin_without_last2": 0.1591,
+    "total_without_last2": 50.546,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": -1.5,
+    "margin_gap": 3.8633,
+    "total_gap": -6.3184,
+    "spread_move": -4.0,
+    "total_move": 5.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": 1.5,
+     "total": 56.5,
+     "ml_home": -102,
+     "ml_away": -116,
+     "spread_open": -2.5,
+     "total_open": 51.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.5728,
+     "p_market": 0.4846,
+     "edge": 0.0882,
+     "odds": -102,
+     "source": "espn",
+     "ev": 0.1344,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 4.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.4272,
+     "p_market": 0.5154,
+     "edge": -0.0882,
+     "odds": -116,
+     "source": "espn",
+     "ev": -0.2045,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.6179,
+     "p_market": 0.5152,
+     "edge": 0.1027,
+     "odds": -117,
+     "source": "espn",
+     "ev": 0.146,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 4.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.3821,
+     "p_market": 0.4848,
+     "edge": -0.1027,
+     "odds": -103,
+     "source": "espn",
+     "ev": -0.2469,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": 1.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.3188,
+     "p_market": 0.4924,
+     "edge": -0.1736,
+     "odds": -106,
+     "source": "espn",
+     "ev": -0.3804,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.6812,
+     "p_market": 0.5076,
+     "edge": 0.1736,
+     "odds": -113,
+     "source": "espn",
+     "ev": 0.284,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 6.3 pts off the total",
+      "the total moved 5.0 pts against this side since it opened (weather or injuries?)"
+     ]
+    },
+    "pick": "under",
+    "line": 56.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 4.0 pts toward Bears since it opened",
+    "the total rose 5.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873080",
+   "date": "2026-11-26T21:30:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "21",
+    "name": "Eagles",
+    "abbr": "PHI",
+    "color": "06424d",
+    "alt_color": "000000",
+    "rank": null,
+    "record": "3-7",
+    "fbs": true,
+    "rating": -3.0479,
+    "rating_rank": 22,
+    "games": 10
+   },
+   "home": {
+    "id": "6",
+    "name": "Cowboys",
+    "abbr": "DAL",
+    "color": "002a5c",
+    "alt_color": "b0b7bc",
+    "rank": null,
+    "record": "5-6",
+    "fbs": true,
+    "rating": -0.0295,
+    "rating_rank": 16,
+    "games": 11
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 27.2731,
+    "away": 23.2692,
+    "margin": 4.0039,
+    "total": 50.5423,
+    "p_home": 0.6221,
+    "p_away": 0.3779,
+    "winner": "home",
+    "fair_ml_home": -165,
+    "fair_ml_away": 165,
+    "margin_without_last2": 2.9208,
+    "total_without_last2": 48.683,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 8.5,
+    "margin_gap": -4.4961,
+    "total_gap": 1.0423,
+    "spread_move": 7.0,
+    "total_move": 0.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -8.5,
+     "total": 49.5,
+     "ml_home": -469,
+     "ml_away": 363,
+     "spread_open": -1.5,
+     "total_open": 49.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.6221,
+     "p_market": 0.7924,
+     "edge": -0.1703,
+     "odds": -469,
+     "source": "espn",
+     "ev": -0.2453,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.3779,
+     "p_market": 0.2076,
+     "edge": 0.1703,
+     "odds": 363,
+     "source": "espn",
+     "ev": 0.7499,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 4.5 pts off the spread",
+      "the line moved 7.0 pts against this side since it opened"
+     ]
+    },
+    "pick": "away",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.3635,
+     "p_market": 0.4989,
+     "edge": -0.1354,
+     "odds": -109,
+     "source": "espn",
+     "ev": -0.303,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.6365,
+     "p_market": 0.5011,
+     "edge": 0.1354,
+     "odds": -110,
+     "source": "espn",
+     "ev": 0.2151,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 4.5 pts off the spread",
+      "the line moved 7.0 pts against this side since it opened"
+     ]
+    },
+    "pick": "away",
+    "home_line": -8.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.531,
+     "p_market": 0.5065,
+     "edge": 0.0245,
+     "odds": -113,
+     "source": "espn",
+     "ev": 0.0009,
+     "stable": false,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.469,
+     "p_market": 0.4935,
+     "edge": -0.0245,
+     "odds": -107,
+     "source": "espn",
+     "ev": -0.0926,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 49.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 7.0 pts toward Cowboys since it opened",
+    "the model is 4.5 pts away from the market spread"
+   ]
+  },
+  {
+   "id": "401873082",
+   "date": "2026-11-27T01:20:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "12",
+    "name": "Chiefs",
+    "abbr": "KC",
+    "color": "e31837",
+    "alt_color": "ffb612",
+    "rank": null,
+    "record": "8-2",
+    "fbs": true,
+    "rating": 5.1655,
+    "rating_rank": 5,
+    "games": 10
+   },
+   "home": {
+    "id": "2",
+    "name": "Bills",
+    "abbr": "BUF",
+    "color": "00338d",
+    "alt_color": "d50a0a",
+    "rank": null,
+    "record": "9-1",
+    "fbs": true,
+    "rating": 7.1413,
+    "rating_rank": 1,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 25.1566,
+    "away": 22.1954,
+    "margin": 2.9613,
+    "total": 47.352,
+    "p_home": 0.5909,
+    "p_away": 0.4091,
+    "winner": "home",
+    "fair_ml_home": -144,
+    "fair_ml_away": 144,
+    "margin_without_last2": 4.387,
+    "total_without_last2": 48.3143,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 3.0,
+    "margin_gap": -0.0387,
+    "total_gap": 1.852,
+    "spread_move": 0.5,
+    "total_move": -4.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -3.0,
+     "total": 45.5,
+     "ml_home": -153,
+     "ml_away": 129,
+     "spread_open": -2.5,
+     "total_open": 49.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.5909,
+     "p_market": 0.5807,
+     "edge": 0.0102,
+     "odds": -153,
+     "source": "espn",
+     "ev": -0.0228,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.4091,
+     "p_market": 0.4193,
+     "edge": -0.0102,
+     "odds": 129,
+     "source": "espn",
+     "ev": -0.0632,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.4988,
+     "p_market": 0.4805,
+     "edge": 0.0183,
+     "odds": -101,
+     "source": "espn",
+     "ev": -0.0073,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.5012,
+     "p_market": 0.5195,
+     "edge": -0.0183,
+     "odds": -119,
+     "source": "espn",
+     "ev": -0.0776,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": -3.0,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.5549,
+     "p_market": 0.5065,
+     "edge": 0.0484,
+     "odds": -113,
+     "source": "espn",
+     "ev": 0.046,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.4451,
+     "p_market": 0.4935,
+     "edge": -0.0484,
+     "odds": -107,
+     "source": "espn",
+     "ev": -0.1389,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 45.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the total dropped 4.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873083",
+   "date": "2026-11-27T20:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "7",
+    "name": "Broncos",
+    "abbr": "DEN",
+    "color": "0a2343",
+    "alt_color": "fc4c02",
+    "rank": null,
+    "record": "8-2",
+    "fbs": true,
+    "rating": 3.3257,
+    "rating_rank": 10,
+    "games": 10
+   },
+   "home": {
+    "id": "23",
+    "name": "Steelers",
+    "abbr": "PIT",
+    "color": "000000",
+    "alt_color": "ffb612",
+    "rank": null,
+    "record": "6-4",
+    "fbs": true,
+    "rating": -0.036,
+    "rating_rank": 17,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 20.1004,
+    "away": 22.4767,
+    "margin": -2.3762,
+    "total": 42.5771,
+    "p_home": 0.4268,
+    "p_away": 0.5732,
+    "winner": "away",
+    "fair_ml_home": 134,
+    "fair_ml_away": -134,
+    "margin_without_last2": -0.4509,
+    "total_without_last2": 41.6117,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": -4.5,
+    "margin_gap": 2.1238,
+    "total_gap": 6.0771,
+    "spread_move": -3.0,
+    "total_move": -5.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": 4.5,
+     "total": 36.5,
+     "ml_home": 190,
+     "ml_away": -228,
+     "spread_open": 1.5,
+     "total_open": 41.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.4268,
+     "p_market": 0.3316,
+     "edge": 0.0952,
+     "odds": 190,
+     "source": "espn",
+     "ev": 0.2377,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 3.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.5732,
+     "p_market": 0.6684,
+     "edge": -0.0952,
+     "odds": -228,
+     "source": "espn",
+     "ev": -0.1754,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.5655,
+     "p_market": 0.5011,
+     "edge": 0.0644,
+     "odds": -110,
+     "source": "espn",
+     "ev": 0.0796,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 3.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.4345,
+     "p_market": 0.4989,
+     "edge": -0.0644,
+     "odds": -109,
+     "source": "espn",
+     "ev": -0.1669,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": 4.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.6747,
+     "p_market": 0.5195,
+     "edge": 0.1552,
+     "odds": -119,
+     "source": "espn",
+     "ev": 0.2417,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 6.1 pts off the total",
+      "the total moved 5.0 pts against this side since it opened (weather or injuries?)"
+     ]
+    },
+    "under": {
+     "p_model": 0.3253,
+     "p_market": 0.4805,
+     "edge": -0.1552,
+     "odds": -101,
+     "source": "espn",
+     "ev": -0.3527,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 36.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 3.0 pts toward Broncos since it opened",
+    "the total dropped 5.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873084",
+   "date": "2026-11-29T18:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "1",
+    "name": "Falcons",
+    "abbr": "ATL",
+    "color": "a71930",
+    "alt_color": "000000",
+    "rank": null,
+    "record": "3-7",
+    "fbs": true,
+    "rating": -3.2365,
+    "rating_rank": 23,
+    "games": 10
+   },
+   "home": {
+    "id": "16",
+    "name": "Vikings",
+    "abbr": "MIN",
+    "color": "4f2683",
+    "alt_color": "ffc62f",
+    "rank": null,
+    "record": "7-3",
+    "fbs": true,
+    "rating": 1.8042,
+    "rating_rank": 12,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 22.9743,
+    "away": 16.9482,
+    "margin": 6.0261,
+    "total": 39.9225,
+    "p_home": 0.6801,
+    "p_away": 0.3199,
+    "winner": "home",
+    "fair_ml_home": -213,
+    "fair_ml_away": 213,
+    "margin_without_last2": 4.5996,
+    "total_without_last2": 39.5218,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 7.0,
+    "margin_gap": -0.9739,
+    "total_gap": -1.5775,
+    "spread_move": 2.5,
+    "total_move": -2.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -7.0,
+     "total": 41.5,
+     "ml_home": -311,
+     "ml_away": 252,
+     "spread_open": -4.5,
+     "total_open": 43.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.6801,
+     "p_market": 0.727,
+     "edge": -0.047,
+     "odds": -311,
+     "source": "espn",
+     "ev": -0.1012,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.3199,
+     "p_market": 0.273,
+     "edge": 0.047,
+     "odds": 252,
+     "source": "espn",
+     "ev": 0.1261,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "away",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.4699,
+     "p_market": 0.4805,
+     "edge": -0.0106,
+     "odds": -101,
+     "source": "espn",
+     "ev": -0.0649,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.5301,
+     "p_market": 0.5195,
+     "edge": 0.0106,
+     "odds": -119,
+     "source": "espn",
+     "ev": -0.0244,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "away",
+    "home_line": -7.0,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.4532,
+     "p_market": 0.4989,
+     "edge": -0.0457,
+     "odds": -109,
+     "source": "espn",
+     "ev": -0.131,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.5468,
+     "p_market": 0.5011,
+     "edge": 0.0457,
+     "odds": -110,
+     "source": "espn",
+     "ev": 0.0439,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "under",
+    "line": 41.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 2.5 pts toward Vikings since it opened"
+   ]
+  },
+  {
+   "id": "401873085",
+   "date": "2026-11-29T18:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "33",
+    "name": "Ravens",
+    "abbr": "BAL",
+    "color": "29126f",
+    "alt_color": "000000",
+    "rank": null,
+    "record": "4-7",
+    "fbs": true,
+    "rating": -2.8356,
+    "rating_rank": 21,
+    "games": 11
+   },
+   "home": {
+    "id": "34",
+    "name": "Texans",
+    "abbr": "HOU",
+    "color": "021018",
+    "alt_color": "eb0028",
+    "rank": null,
+    "record": "4-6",
+    "fbs": true,
+    "rating": 3.3421,
+    "rating_rank": 9,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 26.8468,
+    "away": 19.6837,
+    "margin": 7.1631,
+    "total": 46.5305,
+    "p_home": 0.711,
+    "p_away": 0.289,
+    "winner": "home",
+    "fair_ml_home": -246,
+    "fair_ml_away": 246,
+    "margin_without_last2": 6.104,
+    "total_without_last2": 46.0828,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 6.5,
+    "margin_gap": 0.6631,
+    "total_gap": -0.9695,
+    "spread_move": 5.0,
+    "total_move": 2.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -6.5,
+     "total": 47.5,
+     "ml_home": -333,
+     "ml_away": 267,
+     "spread_open": -1.5,
+     "total_open": 45.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.711,
+     "p_market": 0.7384,
+     "edge": -0.0274,
+     "odds": -333,
+     "source": "espn",
+     "ev": -0.0755,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.289,
+     "p_market": 0.2616,
+     "edge": 0.0274,
+     "odds": 267,
+     "source": "espn",
+     "ev": 0.0608,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "away",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.5205,
+     "p_market": 0.5055,
+     "edge": 0.0151,
+     "odds": -112,
+     "source": "espn",
+     "ev": -0.0147,
+     "stable": false,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.4795,
+     "p_market": 0.4945,
+     "edge": -0.0151,
+     "odds": -107,
+     "source": "espn",
+     "ev": -0.0724,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": -6.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.4712,
+     "p_market": 0.4924,
+     "edge": -0.0212,
+     "odds": -106,
+     "source": "espn",
+     "ev": -0.0843,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.5288,
+     "p_market": 0.5076,
+     "edge": 0.0212,
+     "odds": -113,
+     "source": "espn",
+     "ev": -0.0032,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "under",
+    "line": 47.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 5.0 pts toward Texans since it opened"
+   ]
+  },
+  {
+   "id": "401873087",
+   "date": "2026-11-29T18:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "18",
+    "name": "Saints",
+    "abbr": "NO",
+    "color": "d3bc8d",
+    "alt_color": "000000",
+    "rank": null,
+    "record": "3-7",
+    "fbs": true,
+    "rating": -3.5173,
+    "rating_rank": 25,
+    "games": 10
+   },
+   "home": {
+    "id": "4",
+    "name": "Bengals",
+    "abbr": "CIN",
+    "color": "fb4f14",
+    "alt_color": "000000",
+    "rank": null,
+    "record": "7-3",
+    "fbs": true,
+    "rating": 3.984,
+    "rating_rank": 8,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 28.6991,
+    "away": 20.2124,
+    "margin": 8.4868,
+    "total": 48.9115,
+    "p_home": 0.745,
+    "p_away": 0.255,
+    "winner": "home",
+    "fair_ml_home": -292,
+    "fair_ml_away": 292,
+    "margin_without_last2": 7.4294,
+    "total_without_last2": 50.1487,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 10.0,
+    "margin_gap": -1.5132,
+    "total_gap": -0.5885,
+    "spread_move": 3.5,
+    "total_move": 1.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -10.0,
+     "total": 49.5,
+     "ml_home": -563,
+     "ml_away": 423,
+     "spread_open": -6.5,
+     "total_open": 48.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.745,
+     "p_market": 0.8162,
+     "edge": -0.0712,
+     "odds": -563,
+     "source": "espn",
+     "ev": -0.1226,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.255,
+     "p_market": 0.1838,
+     "edge": 0.0712,
+     "odds": 423,
+     "source": "espn",
+     "ev": 0.3334,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 3.5 pts against this side since it opened"
+     ]
+    },
+    "pick": "away",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.4532,
+     "p_market": 0.4924,
+     "edge": -0.0391,
+     "odds": -106,
+     "source": "espn",
+     "ev": -0.1192,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.5468,
+     "p_market": 0.5076,
+     "edge": 0.0391,
+     "odds": -113,
+     "source": "espn",
+     "ev": 0.0306,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "away",
+    "home_line": -10.0,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.4825,
+     "p_market": 0.5033,
+     "edge": -0.0208,
+     "odds": -111,
+     "source": "espn",
+     "ev": -0.0828,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.5175,
+     "p_market": 0.4967,
+     "edge": 0.0208,
+     "odds": -108,
+     "source": "espn",
+     "ev": -0.0033,
+     "stable": false,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "under",
+    "line": 49.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 3.5 pts toward Bengals since it opened"
+   ]
+  },
+  {
+   "id": "401873088",
+   "date": "2026-11-29T18:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "19",
+    "name": "Giants",
+    "abbr": "NYG",
+    "color": "003c7f",
+    "alt_color": "c9243f",
+    "rank": null,
+    "record": "6-3-1",
+    "fbs": true,
+    "rating": -0.283,
+    "rating_rank": 18,
+    "games": 10
+   },
+   "home": {
+    "id": "11",
+    "name": "Colts",
+    "abbr": "IND",
+    "color": "003b75",
+    "alt_color": "ffffff",
+    "rank": null,
+    "record": "3-8",
+    "fbs": true,
+    "rating": -4.2107,
+    "rating_rank": 26,
+    "games": 11
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 21.6551,
+    "away": 24.5974,
+    "margin": -2.9422,
+    "total": 46.2525,
+    "p_home": 0.4096,
+    "p_away": 0.5904,
+    "winner": "away",
+    "fair_ml_home": 144,
+    "fair_ml_away": -144,
+    "margin_without_last2": -1.3611,
+    "total_without_last2": 47.3532,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": -6.0,
+    "margin_gap": 3.0578,
+    "total_gap": 4.7525,
+    "spread_move": -8.5,
+    "total_move": -6.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": 6.0,
+     "total": 41.5,
+     "ml_home": 236,
+     "ml_away": -287,
+     "spread_open": -2.5,
+     "total_open": 47.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.4096,
+     "p_market": 0.2864,
+     "edge": 0.1233,
+     "odds": 236,
+     "source": "espn",
+     "ev": 0.3764,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 8.5 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.5904,
+     "p_market": 0.7136,
+     "edge": -0.1233,
+     "odds": -287,
+     "source": "espn",
+     "ev": -0.2039,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.5938,
+     "p_market": 0.5011,
+     "edge": 0.0928,
+     "odds": -110,
+     "source": "espn",
+     "ev": 0.1337,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 8.5 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.4062,
+     "p_market": 0.4989,
+     "edge": -0.0928,
+     "odds": -109,
+     "source": "espn",
+     "ev": -0.2212,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": 6.0,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.6384,
+     "p_market": 0.5033,
+     "edge": 0.1352,
+     "odds": -111,
+     "source": "espn",
+     "ev": 0.2136,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 4.8 pts off the total",
+      "the total moved 6.0 pts against this side since it opened (weather or injuries?)"
+     ]
+    },
+    "under": {
+     "p_model": 0.3616,
+     "p_market": 0.4967,
+     "edge": -0.1352,
+     "odds": -108,
+     "source": "espn",
+     "ev": -0.3037,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 41.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 8.5 pts toward Giants since it opened",
+    "the total dropped 6.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873089",
+   "date": "2026-11-29T18:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "20",
+    "name": "Jets",
+    "abbr": "NYJ",
+    "color": "115740",
+    "alt_color": "ffffff",
+    "rank": null,
+    "record": "3-8",
+    "fbs": true,
+    "rating": -5.6512,
+    "rating_rank": 30,
+    "games": 11
+   },
+   "home": {
+    "id": "15",
+    "name": "Dolphins",
+    "abbr": "MIA",
+    "color": "008e97",
+    "alt_color": "fc4c02",
+    "rank": null,
+    "record": "1-9",
+    "fbs": true,
+    "rating": -4.8345,
+    "rating_rank": 29,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 22.5983,
+    "away": 20.796,
+    "margin": 1.8022,
+    "total": 43.3943,
+    "p_home": 0.5556,
+    "p_away": 0.4444,
+    "winner": "home",
+    "fair_ml_home": -125,
+    "fair_ml_away": 125,
+    "margin_without_last2": 2.0609,
+    "total_without_last2": 43.9479,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": -4.5,
+    "margin_gap": 6.3022,
+    "total_gap": 2.8943,
+    "spread_move": -6.0,
+    "total_move": -1.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": 4.5,
+     "total": 40.5,
+     "ml_home": 183,
+     "ml_away": -220,
+     "spread_open": -1.5,
+     "total_open": 41.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.5556,
+     "p_market": 0.3395,
+     "edge": 0.2162,
+     "odds": 183,
+     "source": "espn",
+     "ev": 0.5725,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 6.3 pts off the spread",
+      "the line moved 6.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.4444,
+     "p_market": 0.6605,
+     "edge": -0.2162,
+     "odds": -220,
+     "source": "espn",
+     "ev": -0.3537,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.6877,
+     "p_market": 0.5108,
+     "edge": 0.1769,
+     "odds": -115,
+     "source": "espn",
+     "ev": 0.2857,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 6.3 pts off the spread",
+      "the line moved 6.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.3123,
+     "p_market": 0.4892,
+     "edge": -0.1769,
+     "odds": -105,
+     "source": "espn",
+     "ev": -0.3903,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": 4.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.5854,
+     "p_market": 0.488,
+     "edge": 0.0974,
+     "odds": -104,
+     "source": "espn",
+     "ev": 0.1483,
+     "stable": true,
+     "kelly": 0.1542,
+     "stake": 0.02,
+     "label": "PLAY",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.4146,
+     "p_market": 0.512,
+     "edge": -0.0974,
+     "odds": -115,
+     "source": "espn",
+     "ev": -0.2249,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 40.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 6.0 pts toward Jets since it opened",
+    "the model is 6.3 pts away from the market spread"
+   ]
+  },
+  {
+   "id": "401873090",
+   "date": "2026-11-29T18:00:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "10",
+    "name": "Titans",
+    "abbr": "TEN",
+    "color": "4495d2",
+    "alt_color": "001532",
+    "rank": null,
+    "record": "1-9",
+    "fbs": true,
+    "rating": -7.3006,
+    "rating_rank": 32,
+    "games": 10
+   },
+   "home": {
+    "id": "30",
+    "name": "Jaguars",
+    "abbr": "JAX",
+    "color": "007487",
+    "alt_color": "d7a22a",
+    "rank": null,
+    "record": "7-3",
+    "fbs": true,
+    "rating": 6.6903,
+    "rating_rank": 2,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 31.4152,
+    "away": 16.4389,
+    "margin": 14.9763,
+    "total": 47.8541,
+    "p_home": 0.8776,
+    "p_away": 0.1224,
+    "winner": "home",
+    "fair_ml_home": -717,
+    "fair_ml_away": 717,
+    "margin_without_last2": 14.1175,
+    "total_without_last2": 45.0487,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 14.5,
+    "margin_gap": 0.4763,
+    "total_gap": -1.6459,
+    "spread_move": 9.0,
+    "total_move": 4.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -14.5,
+     "total": 49.5,
+     "ml_home": -1180,
+     "ml_away": 740,
+     "spread_open": -5.5,
+     "total_open": 45.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.8776,
+     "p_market": 0.8856,
+     "edge": -0.0081,
+     "odds": -1180,
+     "source": "espn",
+     "ev": -0.0481,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.1224,
+     "p_market": 0.1144,
+     "edge": 0.0081,
+     "odds": 740,
+     "source": "espn",
+     "ev": 0.0284,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "away",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.5148,
+     "p_market": 0.487,
+     "edge": 0.0278,
+     "odds": -104,
+     "source": "espn",
+     "ev": 0.0097,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.4852,
+     "p_market": 0.513,
+     "edge": -0.0278,
+     "odds": -116,
+     "source": "espn",
+     "ev": -0.0964,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": -14.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.4512,
+     "p_market": 0.4924,
+     "edge": -0.0412,
+     "odds": -106,
+     "source": "espn",
+     "ev": -0.1232,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.5488,
+     "p_market": 0.5076,
+     "edge": 0.0412,
+     "odds": -113,
+     "source": "espn",
+     "ev": 0.0345,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "under",
+    "line": 49.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 9.0 pts toward Jaguars since it opened",
+    "the total rose 4.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873093",
+   "date": "2026-11-29T21:05:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "17",
+    "name": "Patriots",
+    "abbr": "NE",
+    "color": "002a5c",
+    "alt_color": "c60c30",
+    "rank": null,
+    "record": "5-5",
+    "fbs": true,
+    "rating": 0.1609,
+    "rating_rank": 15,
+    "games": 10
+   },
+   "home": {
+    "id": "24",
+    "name": "Chargers",
+    "abbr": "LAC",
+    "color": "0080c6",
+    "alt_color": "ffc20e",
+    "rank": null,
+    "record": "1-9",
+    "fbs": true,
+    "rating": -4.5514,
+    "rating_rank": 28,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 19.9502,
+    "away": 23.677,
+    "margin": -3.7269,
+    "total": 43.6272,
+    "p_home": 0.3861,
+    "p_away": 0.6139,
+    "winner": "away",
+    "fair_ml_home": 159,
+    "fair_ml_away": -159,
+    "margin_without_last2": -6.5935,
+    "total_without_last2": 42.2051,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": -1.5,
+    "margin_gap": -2.2269,
+    "total_gap": 8.1272,
+    "spread_move": -4.0,
+    "total_move": -10.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": 1.5,
+     "total": 35.5,
+     "ml_home": -101,
+     "ml_away": -117,
+     "spread_open": -2.5,
+     "total_open": 45.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.3861,
+     "p_market": 0.4824,
+     "edge": -0.0963,
+     "odds": -101,
+     "source": "espn",
+     "ev": -0.2315,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.6139,
+     "p_market": 0.5176,
+     "edge": 0.0963,
+     "odds": -117,
+     "source": "espn",
+     "ev": 0.1385,
+     "stable": true,
+     "kelly": 0.1621,
+     "stake": 0.02,
+     "label": "PLAY",
+     "reasons": []
+    },
+    "pick": "away",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.4314,
+     "p_market": 0.5174,
+     "edge": -0.086,
+     "odds": -118,
+     "source": "espn",
+     "ev": -0.2031,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.5686,
+     "p_market": 0.4826,
+     "edge": 0.086,
+     "odds": -102,
+     "source": "espn",
+     "ev": 0.1261,
+     "stable": true,
+     "kelly": 0.1287,
+     "stake": 0.02,
+     "label": "PLAY",
+     "reasons": []
+    },
+    "pick": "away",
+    "home_line": 1.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.7277,
+     "p_market": 0.4989,
+     "edge": 0.2288,
+     "odds": -109,
+     "source": "espn",
+     "ev": 0.3953,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 8.1 pts off the total",
+      "the total moved 10.0 pts against this side since it opened (weather or injuries?)"
+     ]
+    },
+    "under": {
+     "p_model": 0.2723,
+     "p_market": 0.5011,
+     "edge": -0.2288,
+     "odds": -110,
+     "source": "espn",
+     "ev": -0.4801,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 35.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 4.0 pts toward Patriots since it opened",
+    "the total dropped 10.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873091",
+   "date": "2026-11-29T21:25:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "26",
+    "name": "Seahawks",
+    "abbr": "SEA",
+    "color": "002a5c",
+    "alt_color": "69be28",
+    "rank": null,
+    "record": "6-4",
+    "fbs": true,
+    "rating": 4.536,
+    "rating_rank": 6,
+    "games": 10
+   },
+   "home": {
+    "id": "25",
+    "name": "49ers",
+    "abbr": "SF",
+    "color": "aa0000",
+    "alt_color": "b3995d",
+    "rank": null,
+    "record": "9-1",
+    "fbs": true,
+    "rating": 6.2707,
+    "rating_rank": 3,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 24.6591,
+    "away": 21.9389,
+    "margin": 2.7202,
+    "total": 46.598,
+    "p_home": 0.5836,
+    "p_away": 0.4164,
+    "winner": "home",
+    "fair_ml_home": -140,
+    "fair_ml_away": 140,
+    "margin_without_last2": 1.2256,
+    "total_without_last2": 46.7162,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 2.5,
+    "margin_gap": 0.2202,
+    "total_gap": 3.098,
+    "spread_move": 1.0,
+    "total_move": -3.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -2.5,
+     "total": 43.5,
+     "ml_home": -150,
+     "ml_away": 127,
+     "spread_open": -1.5,
+     "total_open": 46.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.5836,
+     "p_market": 0.5766,
+     "edge": 0.007,
+     "odds": -150,
+     "source": "espn",
+     "ev": -0.0273,
+     "stable": false,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.4164,
+     "p_market": 0.4234,
+     "edge": -0.007,
+     "odds": 127,
+     "source": "espn",
+     "ev": -0.0549,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.5068,
+     "p_market": 0.5291,
+     "edge": -0.0223,
+     "odds": -124,
+     "source": "espn",
+     "ev": -0.0845,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.4932,
+     "p_market": 0.4709,
+     "edge": 0.0223,
+     "odds": 103,
+     "source": "espn",
+     "ev": 0.0012,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "away",
+    "home_line": -2.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.5913,
+     "p_market": 0.5142,
+     "edge": 0.0771,
+     "odds": -116,
+     "source": "espn",
+     "ev": 0.1011,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the total moved 3.0 pts against this side since it opened (weather or injuries?)"
+     ]
+    },
+    "under": {
+     "p_model": 0.4087,
+     "p_market": 0.4858,
+     "edge": -0.0771,
+     "odds": -103,
+     "source": "espn",
+     "ev": -0.1945,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 43.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 1.0 pts toward 49ers since it opened",
+    "the total dropped 3.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873092",
+   "date": "2026-11-29T21:25:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "28",
+    "name": "Commanders",
+    "abbr": "WSH",
+    "color": "5a1414",
+    "alt_color": "ffb612",
+    "rank": null,
+    "record": "4-5-1",
+    "fbs": true,
+    "rating": -1.2251,
+    "rating_rank": 19,
+    "games": 10
+   },
+   "home": {
+    "id": "22",
+    "name": "Cardinals",
+    "abbr": "ARI",
+    "color": "a40227",
+    "alt_color": "ffffff",
+    "rank": null,
+    "record": "3-8",
+    "fbs": true,
+    "rating": -6.5524,
+    "rating_rank": 31,
+    "games": 11
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 21.4729,
+    "away": 25.8147,
+    "margin": -4.3419,
+    "total": 47.2876,
+    "p_home": 0.368,
+    "p_away": 0.632,
+    "winner": "away",
+    "fair_ml_home": 172,
+    "fair_ml_away": -172,
+    "margin_without_last2": -1.009,
+    "total_without_last2": 48.3183,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": -6.5,
+    "margin_gap": 2.1581,
+    "total_gap": 5.7876,
+    "spread_move": -2.0,
+    "total_move": -6.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": 6.5,
+     "total": 41.5,
+     "ml_home": 282,
+     "ml_away": -351,
+     "spread_open": 4.5,
+     "total_open": 47.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.368,
+     "p_market": 0.2517,
+     "edge": 0.1163,
+     "odds": 282,
+     "source": "espn",
+     "ev": 0.4058,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 2.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.632,
+     "p_market": 0.7483,
+     "edge": -0.1163,
+     "odds": -351,
+     "source": "espn",
+     "ev": -0.1879,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.5665,
+     "p_market": 0.4826,
+     "edge": 0.0839,
+     "odds": -102,
+     "source": "espn",
+     "ev": 0.122,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 2.0 pts against this side since it opened"
+     ]
+    },
+    "away": {
+     "p_model": 0.4335,
+     "p_market": 0.5174,
+     "edge": -0.0839,
+     "odds": -118,
+     "source": "espn",
+     "ev": -0.1992,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": 6.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.6669,
+     "p_market": 0.5033,
+     "edge": 0.1637,
+     "odds": -111,
+     "source": "espn",
+     "ev": 0.2678,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 5.8 pts off the total",
+      "the total moved 6.0 pts against this side since it opened (weather or injuries?)"
+     ]
+    },
+    "under": {
+     "p_model": 0.3331,
+     "p_market": 0.4967,
+     "edge": -0.1637,
+     "odds": -108,
+     "source": "espn",
+     "ev": -0.3585,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 41.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 2.0 pts toward Commanders since it opened",
+    "the total dropped 6.0 pts since it opened (weather or injuries?)"
+   ]
+  },
+  {
+   "id": "401873086",
+   "date": "2026-11-30T01:20:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "13",
+    "name": "Raiders",
+    "abbr": "LV",
+    "color": "000000",
+    "alt_color": "a5acaf",
+    "rank": null,
+    "record": "4-7",
+    "fbs": true,
+    "rating": -4.2815,
+    "rating_rank": 27,
+    "games": 11
+   },
+   "home": {
+    "id": "5",
+    "name": "Browns",
+    "abbr": "CLE",
+    "color": "472a08",
+    "alt_color": "ff3c00",
+    "rank": null,
+    "record": "6-4",
+    "fbs": true,
+    "rating": -3.478,
+    "rating_rank": 24,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 23.3996,
+    "away": 21.6107,
+    "margin": 1.7889,
+    "total": 45.0104,
+    "p_home": 0.5552,
+    "p_away": 0.4448,
+    "winner": "home",
+    "fair_ml_home": -125,
+    "fair_ml_away": 125,
+    "margin_without_last2": 0.5321,
+    "total_without_last2": 44.1342,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 4.5,
+    "margin_gap": -2.7111,
+    "total_gap": 4.5104,
+    "spread_move": 2.0,
+    "total_move": 1.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -4.5,
+     "total": 40.5,
+     "ml_home": -244,
+     "ml_away": 201,
+     "spread_open": -2.5,
+     "total_open": 39.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.5552,
+     "p_market": 0.681,
+     "edge": -0.1258,
+     "odds": -244,
+     "source": "espn",
+     "ev": -0.2172,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.4448,
+     "p_market": 0.319,
+     "edge": 0.1258,
+     "odds": 201,
+     "source": "espn",
+     "ev": 0.3387,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 2.0 pts against this side since it opened"
+     ]
+    },
+    "pick": "away",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.4166,
+     "p_market": 0.4902,
+     "edge": -0.0735,
+     "odds": -105,
+     "source": "espn",
+     "ev": -0.1866,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.5834,
+     "p_market": 0.5098,
+     "edge": 0.0735,
+     "odds": -114,
+     "source": "espn",
+     "ev": 0.0951,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the line moved 2.0 pts against this side since it opened"
+     ]
+    },
+    "pick": "away",
+    "home_line": -4.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.6317,
+     "p_market": 0.4848,
+     "edge": 0.1468,
+     "odds": -103,
+     "source": "espn",
+     "ev": 0.2449,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "AVOID",
+     "reasons": [
+      "the market disagrees: the model is 4.5 pts off the total"
+     ]
+    },
+    "under": {
+     "p_model": 0.3683,
+     "p_market": 0.5152,
+     "edge": -0.1468,
+     "odds": -117,
+     "source": "espn",
+     "ev": -0.3168,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 40.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": [
+    "the line moved 2.0 pts toward Browns since it opened"
+   ]
+  },
+  {
+   "id": "401873094",
+   "date": "2026-12-01T01:15:00Z",
+   "status": "scheduled",
+   "neutral": false,
+   "on_my_list": false,
+   "away": {
+    "id": "29",
+    "name": "Panthers",
+    "abbr": "CAR",
+    "color": "0085ca",
+    "alt_color": "000000",
+    "rank": null,
+    "record": "5-5",
+    "fbs": true,
+    "rating": -2.1817,
+    "rating_rank": 20,
+    "games": 10
+   },
+   "home": {
+    "id": "27",
+    "name": "Buccaneers",
+    "abbr": "TB",
+    "color": "bd1c36",
+    "alt_color": "3e3a35",
+    "rank": null,
+    "record": "3-7",
+    "fbs": true,
+    "rating": 1.0397,
+    "rating_rank": 13,
+    "games": 10
+   },
+   "notes": "",
+   "no_data": false,
+   "fcs": false,
+   "projection": {
+    "home": 25.4693,
+    "away": 21.2624,
+    "margin": 4.2068,
+    "total": 46.7317,
+    "p_home": 0.628,
+    "p_away": 0.372,
+    "winner": "home",
+    "fair_ml_home": -169,
+    "fair_ml_away": 169,
+    "margin_without_last2": 4.8578,
+    "total_without_last2": 45.743,
+    "home_margin_adj": 0.0,
+    "total_adj": 0.0
+   },
+   "market": {
+    "margin": 3.0,
+    "margin_gap": 1.2068,
+    "total_gap": 3.2317,
+    "spread_move": -0.5,
+    "total_move": -1.0,
+    "espn": {
+     "provider": "Draft Kings",
+     "spread_home": -3.0,
+     "total": 43.5,
+     "ml_home": -157,
+     "ml_away": 132,
+     "spread_open": -3.5,
+     "total_open": 44.5
+    }
+   },
+   "ml": {
+    "home": {
+     "p_model": 0.628,
+     "p_market": 0.5863,
+     "edge": 0.0417,
+     "odds": -157,
+     "source": "espn",
+     "ev": 0.0281,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.372,
+     "p_market": 0.4137,
+     "edge": -0.0417,
+     "odds": 132,
+     "source": "espn",
+     "ev": -0.137,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "spread": {
+    "home": {
+     "p_model": 0.5373,
+     "p_market": 0.4945,
+     "edge": 0.0428,
+     "odds": -107,
+     "source": "espn",
+     "ev": 0.0395,
+     "stable": true,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "away": {
+     "p_model": 0.4627,
+     "p_market": 0.5055,
+     "edge": -0.0428,
+     "odds": -112,
+     "source": "espn",
+     "ev": -0.1242,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "home",
+    "home_line": -3.0,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "total": {
+    "over": {
+     "p_model": 0.5952,
+     "p_market": 0.5011,
+     "edge": 0.0941,
+     "odds": -110,
+     "source": "espn",
+     "ev": 0.1363,
+     "stable": true,
+     "kelly": 0.1499,
+     "stake": 0.02,
+     "label": "PLAY",
+     "reasons": []
+    },
+    "under": {
+     "p_model": 0.4048,
+     "p_market": 0.4989,
+     "edge": -0.0941,
+     "odds": -109,
+     "source": "espn",
+     "ev": -0.2238,
+     "stable": null,
+     "kelly": 0.0,
+     "stake": 0.0,
+     "label": "PASS",
+     "reasons": []
+    },
+    "pick": "over",
+    "line": 43.5,
+    "line_source": "espn",
+    "devig": {
+     "method": "two_sided",
+     "source": "espn"
+    }
+   },
+   "price_notes": [],
+   "alerts": []
+  }
+ ],
+ "parlays": []
+}

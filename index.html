@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Weekly college football and NFL projections: projected scores, win probabilities and how they compare with the betting market.">
+<!-- head:start -->
+<title>CFB &amp; NFL Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<!-- head:end -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- body:start -->
+<header class="field">
+  <div class="wrap">
+    <nav class="sports" aria-label="League">
+      <a href="#cfb-picks" data-sport="cfb">College football</a>
+      <a href="#nfl-picks" data-sport="nfl">NFL</a>
+    </nav>
+  </div>
+  <div class="wrap field-inner">
+    <div>
+      <p class="eyebrow" id="hdr-week">College football</p>
+      <h1 id="hdr-title">CFB Picks</h1>
+    </div>
+    <p class="field-meta" id="hdr-meta">Loading…</p>
+  </div>
+  <div class="hashmarks" aria-hidden="true"></div>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="wrap tabs-inner">
+    <a href="#picks" data-view="picks">Picks</a>
+    <a href="#parlay" data-view="parlay">Parlay<span class="count" id="parlay-count" hidden></span></a>
+    <a href="#record" data-view="record">Track record</a>
+    <a href="#how" data-view="how">How it works</a>
+  </div>
+</nav>
+
+<main class="wrap" id="view" tabindex="-1">
+  <p class="loading">Loading this week's picks…</p>
+</main>
+
+<footer class="wrap foot">
+  <p id="foot-gen"></p>
+  <p>These are statistical projections and they miss often. No pick is a sure thing: the model knows nothing about injuries, weather or motivation.</p>
+  <p>If you bet, only risk what you can afford to lose. Gambling problem? In the US, call 1-800-GAMBLER.</p>
+</footer>
+
+<div class="tooltip" id="tooltip" role="status" hidden></div>
+<!-- body:end -->
+<script src="app.js"></script>
+</body>
+</html>
