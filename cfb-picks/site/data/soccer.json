@@ -1,0 +1,6681 @@
+{
+ "sport": "soccer",
+ "generated_at": "2026-11-26T01:45:36+00:00",
+ "fee": {
+  "taker_rate": 0.07,
+  "maker_rate": 0.0175
+ },
+ "competitions": [
+  {
+   "key": "ucl",
+   "name": "Champions League",
+   "matches": 9,
+   "upcoming": 0,
+   "with_odds": 0,
+   "with_kalshi": 0
+  },
+  {
+   "key": "uel",
+   "name": "Europa League",
+   "matches": 18,
+   "upcoming": 18,
+   "with_odds": 18,
+   "with_kalshi": 18
+  },
+  {
+   "key": "uecl",
+   "name": "Conference League",
+   "matches": 18,
+   "upcoming": 18,
+   "with_odds": 17,
+   "with_kalshi": 18
+  }
+ ],
+ "matches": [
+  {
+   "id": "401915293",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T17:45Z",
+   "status": "final",
+   "venue": "Prague",
+   "home": {
+    "id": "494",
+    "name": "Slavia Prague",
+    "short": "Slavia Prague",
+    "abbr": "SLP",
+    "record": "0-1-4",
+    "form": "LLDLL",
+    "score": 0,
+    "rank": 35,
+    "points": 1,
+    "goal_diff": -5
+   },
+   "away": {
+    "id": "102",
+    "name": "Villarreal",
+    "short": "Villarreal",
+    "abbr": "VIL",
+    "record": "2-0-3",
+    "form": "WLWLL",
+    "score": 1,
+    "rank": 24,
+    "points": 6,
+    "goal_diff": -5
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915378",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T17:45Z",
+   "status": "final",
+   "venue": "Baku",
+   "home": {
+    "id": "21922",
+    "name": "Sabah FK",
+    "short": "Sabah",
+    "abbr": "SAB",
+    "record": "1-0-4",
+    "form": "LLLWL",
+    "score": 1,
+    "rank": 33,
+    "points": 3,
+    "goal_diff": -9
+   },
+   "away": {
+    "id": "83",
+    "name": "Barcelona",
+    "short": "Barcelona",
+    "abbr": "BAR",
+    "record": "4-0-1",
+    "form": "WWWWW",
+    "score": 4,
+    "rank": 4,
+    "points": 12,
+    "goal_diff": 11
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915291",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T20:00Z",
+   "status": "final",
+   "venue": "Madrid",
+   "home": {
+    "id": "1068",
+    "name": "Atlético Madrid",
+    "short": "Atlético",
+    "abbr": "ATM",
+    "record": "2-1-2",
+    "form": "WWLLW",
+    "score": 2,
+    "rank": 18,
+    "points": 7,
+    "goal_diff": 1
+   },
+   "away": {
+    "id": "510",
+    "name": "Viking FK",
+    "short": "Viking FK",
+    "abbr": "VFK",
+    "record": "1-1-3",
+    "form": "LLWWL",
+    "score": 0,
+    "rank": 27,
+    "points": 4,
+    "goal_diff": -3
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915292",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T20:00Z",
+   "status": "final",
+   "venue": "Brugge",
+   "home": {
+    "id": "570",
+    "name": "Club Brugge",
+    "short": "Club Brugge",
+    "abbr": "BRU",
+    "record": "3-0-2",
+    "form": "LWDWW",
+    "score": 0,
+    "rank": 13,
+    "points": 9,
+    "goal_diff": 1
+   },
+   "away": {
+    "id": "364",
+    "name": "Liverpool",
+    "short": "Liverpool",
+    "abbr": "LIV",
+    "record": "4-0-1",
+    "form": "WWWLL",
+    "score": 3,
+    "rank": 5,
+    "points": 12,
+    "goal_diff": 7
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915373",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T20:00Z",
+   "status": "final",
+   "venue": "Lisbon",
+   "home": {
+    "id": "2250",
+    "name": "Sporting CP",
+    "short": "Sporting",
+    "abbr": "SCP",
+    "record": "3-1-1",
+    "form": "DWWWW",
+    "score": 2,
+    "rank": 9,
+    "points": 10,
+    "goal_diff": 4
+   },
+   "away": {
+    "id": "360",
+    "name": "Manchester United",
+    "short": "Man Utd",
+    "abbr": "MAN",
+    "record": "2-1-2",
+    "form": "DLDWL",
+    "score": 2,
+    "rank": 19,
+    "points": 7,
+    "goal_diff": 0
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915374",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T20:00Z",
+   "status": "final",
+   "venue": "Paris",
+   "home": {
+    "id": "160",
+    "name": "Paris Saint-Germain",
+    "short": "PSG",
+    "abbr": "PSG",
+    "record": "4-1-0",
+    "form": "DWWWW",
+    "score": 2,
+    "rank": 2,
+    "points": 13,
+    "goal_diff": 15
+   },
+   "away": {
+    "id": "104",
+    "name": "AS Roma",
+    "short": "AS Roma",
+    "abbr": "ROMA",
+    "record": "1-2-2",
+    "form": "DWWLW",
+    "score": 2,
+    "rank": 25,
+    "points": 5,
+    "goal_diff": 2
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915375",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T20:00Z",
+   "status": "final",
+   "venue": "London",
+   "home": {
+    "id": "493",
+    "name": "Shakhtar Donetsk",
+    "short": "Shakhtar",
+    "abbr": "SHK",
+    "record": "1-1-3",
+    "form": "LLLWD",
+    "score": 0,
+    "rank": 26,
+    "points": 4,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "436",
+    "name": "Fenerbahce",
+    "short": "Fenerbahce",
+    "abbr": "FEN",
+    "record": "2-2-1",
+    "form": "WDWWL",
+    "score": 1,
+    "rank": 16,
+    "points": 8,
+    "goal_diff": -4
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915376",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T20:00Z",
+   "status": "final",
+   "venue": "Milano",
+   "home": {
+    "id": "110",
+    "name": "Internazionale",
+    "short": "Inter Milan",
+    "abbr": "INT",
+    "record": "3-0-2",
+    "form": "WDWWL",
+    "score": 2,
+    "rank": 12,
+    "points": 9,
+    "goal_diff": 4
+   },
+   "away": {
+    "id": "134",
+    "name": "VfB Stuttgart",
+    "short": "Stuttgart",
+    "abbr": "VFB",
+    "record": "2-1-2",
+    "form": "LDWLW",
+    "score": 0,
+    "rank": 17,
+    "points": 7,
+    "goal_diff": 1
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915377",
+   "competition": "ucl",
+   "kickoff": "2026-11-25T20:00Z",
+   "status": "final",
+   "venue": "Lille",
+   "home": {
+    "id": "166",
+    "name": "Lille",
+    "short": "Lille",
+    "abbr": "LILL",
+    "record": "1-1-3",
+    "form": "WLWDW",
+    "score": 2,
+    "rank": 29,
+    "points": 4,
+    "goal_diff": -5
+   },
+   "away": {
+    "id": "132",
+    "name": "Bayern Munich",
+    "short": "Bayern",
+    "abbr": "MUN",
+    "record": "2-2-1",
+    "form": "LDWWD",
+    "score": 1,
+    "rank": 15,
+    "points": 8,
+    "goal_diff": 6
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": null,
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915816",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T15:30Z",
+   "status": "scheduled",
+   "venue": "Almaty",
+   "home": {
+    "id": "2528",
+    "name": "Kairat Almaty",
+    "short": "Kairat Almaty",
+    "abbr": "KAI",
+    "record": "0-2-1",
+    "form": "DLDLL",
+    "score": 0,
+    "rank": 27,
+    "points": 2,
+    "goal_diff": -4
+   },
+   "away": {
+    "id": "20301",
+    "name": "Mjällby AIF",
+    "short": "Mjällby",
+    "abbr": "MJA",
+    "record": "2-1-0",
+    "form": "DDWDW",
+    "score": 0,
+    "rank": 9,
+    "points": 7,
+    "goal_diff": 4
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 115,
+     "draw": 250,
+     "away": 235
+    },
+    "total": 2.5,
+    "over": -110,
+    "under": -115
+   },
+   "fair": {
+    "home": 0.4472743006328253,
+    "draw": 0.2700459368556143,
+    "away": 0.2826797625115605
+   },
+   "fair_open": {
+    "home": 0.4309037866141278,
+    "draw": 0.27307116249579144,
+    "away": 0.2960250508900807
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26ALMMJA",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26ALMMJA-ALM",
+      "title": "Kairat wins",
+      "label": "Kairat",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.44,
+      "yes_ask": 0.45,
+      "no_bid": 0.55,
+      "no_ask": 0.56,
+      "volume": 657.4,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26ALMMJA-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.27,
+      "yes_ask": 0.28,
+      "no_bid": 0.72,
+      "no_ask": 0.73,
+      "volume": 275.06,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26ALMMJA-MJA",
+      "title": "Mjallby wins",
+      "label": "Mjallby",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.27,
+      "yes_ask": 0.28,
+      "no_bid": 0.72,
+      "no_ask": 0.73,
+      "volume": 366.43,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Kairat Almaty win",
+     "price": 0.45,
+     "bid": 0.44,
+     "fair": 0.4472743006328253,
+     "fee": 0.017325000000000007,
+     "edge": -0.020050699367174712,
+     "edge_rest": 0.0072743006328253035,
+     "volume": 657.4,
+     "ticker": "KXUECLGAME-26NOV26ALMMJA-ALM"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Kairat Almaty do not win",
+     "price": 0.56,
+     "bid": 0.55,
+     "fair": 0.5527256993671747,
+     "fee": 0.017248,
+     "edge": -0.024522300632825303,
+     "edge_rest": 0.0027256993671747054,
+     "volume": 657.4,
+     "ticker": "KXUECLGAME-26NOV26ALMMJA-ALM"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.28,
+     "bid": 0.27,
+     "fair": 0.2700459368556143,
+     "fee": 0.014112000000000001,
+     "edge": -0.024066063144385738,
+     "edge_rest": 4.59368556142703e-05,
+     "volume": 275.06,
+     "ticker": "KXUECLGAME-26NOV26ALMMJA-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.73,
+     "bid": 0.72,
+     "fair": 0.7299540631443857,
+     "fee": 0.013797000000000002,
+     "edge": -0.013842936855614272,
+     "edge_rest": 0.009954063144385739,
+     "volume": 275.06,
+     "ticker": "KXUECLGAME-26NOV26ALMMJA-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Mjällby win",
+     "price": 0.28,
+     "bid": 0.27,
+     "fair": 0.2826797625115605,
+     "fee": 0.014112000000000001,
+     "edge": -0.01143223748843951,
+     "edge_rest": 0.0126797625115605,
+     "volume": 366.43,
+     "ticker": "KXUECLGAME-26NOV26ALMMJA-MJA"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Mjällby do not win",
+     "price": 0.73,
+     "bid": 0.72,
+     "fair": 0.7173202374884395,
+     "fee": 0.013797000000000002,
+     "edge": -0.026476762511560448,
+     "edge_rest": -0.002679762511560435,
+     "volume": 366.43,
+     "ticker": "KXUECLGAME-26NOV26ALMMJA-MJA"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915739",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Kaunas",
+   "home": {
+    "id": "20028",
+    "name": "Kauno Zalgiris",
+    "short": "Kauno Zalgiris",
+    "abbr": "ZAL",
+    "record": "0-0-3",
+    "form": "LLLWL",
+    "score": 0,
+    "rank": 36,
+    "points": 0,
+    "goal_diff": -10
+   },
+   "away": {
+    "id": "19246",
+    "name": "Riga FC",
+    "short": "Riga FC",
+    "abbr": "RIG",
+    "record": "0-3-0",
+    "form": "DDDWD",
+    "score": 0,
+    "rank": 19,
+    "points": 3,
+    "goal_diff": 0
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 250,
+     "draw": 240,
+     "away": 115
+    },
+    "total": 2.5,
+    "over": -110,
+    "under": -115
+   },
+   "fair": {
+    "home": 0.27142416179800816,
+    "draw": 0.27973220297124424,
+    "away": 0.4488436352307476
+   },
+   "fair_open": {
+    "home": 0.2852165207745853,
+    "draw": 0.2852165207745853,
+    "away": 0.4295669584508293
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26KAZRFC",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26KAZRFC-KAZ",
+      "title": "Kauno wins",
+      "label": "Kauno",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.26,
+      "yes_ask": 0.27,
+      "no_bid": 0.73,
+      "no_ask": 0.74,
+      "volume": 32.04,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26KAZRFC-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.28,
+      "yes_ask": 0.29,
+      "no_bid": 0.71,
+      "no_ask": 0.72,
+      "volume": 1.68,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26KAZRFC-RFC",
+      "title": "Riga FC wins",
+      "label": "Riga FC",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.44,
+      "yes_ask": 0.45,
+      "no_bid": 0.55,
+      "no_ask": 0.56,
+      "volume": 41.25,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Kauno Zalgiris win",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.27142416179800816,
+     "fee": 0.013797000000000002,
+     "edge": -0.012372838201991863,
+     "edge_rest": 0.011424161798008148,
+     "volume": 32.04,
+     "ticker": "KXUECLGAME-26NOV26KAZRFC-KAZ"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Kauno Zalgiris do not win",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7285758382019918,
+     "fee": 0.013468000000000003,
+     "edge": -0.024892161798008204,
+     "edge_rest": -0.0014241617980081944,
+     "volume": 32.04,
+     "ticker": "KXUECLGAME-26NOV26KAZRFC-KAZ"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.29,
+     "bid": 0.28,
+     "fair": 0.27973220297124424,
+     "fee": 0.014413,
+     "edge": -0.024680797028755745,
+     "edge_rest": -0.0002677970287557896,
+     "volume": 1.68,
+     "ticker": "KXUECLGAME-26NOV26KAZRFC-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.72,
+     "bid": 0.71,
+     "fair": 0.7202677970287558,
+     "fee": 0.014112000000000001,
+     "edge": -0.013844202971244212,
+     "edge_rest": 0.010267797028755798,
+     "volume": 1.68,
+     "ticker": "KXUECLGAME-26NOV26KAZRFC-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Riga FC win",
+     "price": 0.45,
+     "bid": 0.44,
+     "fair": 0.4488436352307476,
+     "fee": 0.017325000000000007,
+     "edge": -0.018481364769252412,
+     "edge_rest": 0.008843635230747604,
+     "volume": 41.25,
+     "ticker": "KXUECLGAME-26NOV26KAZRFC-RFC"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Riga FC do not win",
+     "price": 0.56,
+     "bid": 0.55,
+     "fair": 0.5511563647692523,
+     "fee": 0.017248,
+     "edge": -0.026091635230747715,
+     "edge_rest": 0.0011563647692522938,
+     "volume": 41.25,
+     "ticker": "KXUECLGAME-26NOV26KAZRFC-RFC"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915808",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Bergen",
+   "home": {
+    "id": "620",
+    "name": "SK Brann",
+    "short": "SK Brann",
+    "abbr": "SKBR",
+    "record": "2-1-0",
+    "form": "DDDWL",
+    "score": 0,
+    "rank": 6,
+    "points": 7,
+    "goal_diff": 4
+   },
+   "away": {
+    "id": "7853",
+    "name": "AGF",
+    "short": "AGF",
+    "abbr": "AGF",
+    "record": "0-2-1",
+    "form": "WWDLW",
+    "score": 0,
+    "rank": 24,
+    "points": 2,
+    "goal_diff": -1
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 115,
+     "draw": 295,
+     "away": 200
+    },
+    "total": 3.5,
+    "over": 125,
+    "under": -160
+   },
+   "fair": {
+    "home": 0.4464588208270517,
+    "draw": 0.23720918632382815,
+    "away": 0.3163319928491201
+   },
+   "fair_open": {
+    "home": 0.48765628469738104,
+    "draw": 0.23927472167165295,
+    "away": 0.2730689936309661
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26SKBAGF",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26SKBAGF-SKB",
+      "title": "Brann wins",
+      "label": "Brann",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.44,
+      "yes_ask": 0.46,
+      "no_bid": 0.54,
+      "no_ask": 0.56,
+      "volume": 501.99,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26SKBAGF-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.24,
+      "yes_ask": 0.25,
+      "no_bid": 0.75,
+      "no_ask": 0.76,
+      "volume": 301.67,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26SKBAGF-AGF",
+      "title": "Aarhus wins",
+      "label": "Aarhus",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.3,
+      "yes_ask": 0.32,
+      "no_bid": 0.68,
+      "no_ask": 0.7,
+      "volume": 0.67,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "SK Brann win",
+     "price": 0.46,
+     "bid": 0.44,
+     "fair": 0.4464588208270517,
+     "fee": 0.017388000000000004,
+     "edge": -0.03092917917294834,
+     "edge_rest": 0.006458820827051681,
+     "volume": 501.99,
+     "ticker": "KXUECLGAME-26NOV26SKBAGF-SKB"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "SK Brann do not win",
+     "price": 0.56,
+     "bid": 0.54,
+     "fair": 0.5535411791729483,
+     "fee": 0.017248,
+     "edge": -0.023706820827051736,
+     "edge_rest": 0.013541179172948281,
+     "volume": 501.99,
+     "ticker": "KXUECLGAME-26NOV26SKBAGF-SKB"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.25,
+     "bid": 0.24,
+     "fair": 0.23720918632382815,
+     "fee": 0.013125000000000001,
+     "edge": -0.025915813676171854,
+     "edge_rest": -0.002790813676171844,
+     "volume": 301.67,
+     "ticker": "KXUECLGAME-26NOV26SKBAGF-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.76,
+     "bid": 0.75,
+     "fair": 0.7627908136761719,
+     "fee": 0.012768,
+     "edge": -0.009977186323828156,
+     "edge_rest": 0.012790813676171853,
+     "volume": 301.67,
+     "ticker": "KXUECLGAME-26NOV26SKBAGF-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "AGF win",
+     "price": 0.32,
+     "bid": 0.3,
+     "fair": 0.3163319928491201,
+     "fee": 0.015232,
+     "edge": -0.018900007150879895,
+     "edge_rest": 0.016331992849120125,
+     "volume": 0.67,
+     "ticker": "KXUECLGAME-26NOV26SKBAGF-AGF"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "AGF do not win",
+     "price": 0.7,
+     "bid": 0.68,
+     "fair": 0.6836680071508798,
+     "fee": 0.014700000000000003,
+     "edge": -0.03103199284912013,
+     "edge_rest": 0.003668007150879782,
+     "volume": 0.67,
+     "ticker": "KXUECLGAME-26NOV26SKBAGF-AGF"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915809",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Kolossi",
+   "home": {
+    "id": "22281",
+    "name": "Pafos",
+    "short": "Pafos",
+    "abbr": "PAF",
+    "record": "0-1-2",
+    "form": "LDLWD",
+    "score": 0,
+    "rank": 30,
+    "points": 1,
+    "goal_diff": -4
+   },
+   "away": {
+    "id": "572",
+    "name": "FC Midtjylland",
+    "short": "Midtjylland",
+    "abbr": "MID",
+    "record": "0-1-2",
+    "form": "WDLWW",
+    "score": 0,
+    "rank": 34,
+    "points": 1,
+    "goal_diff": -6
+   },
+   "book": null,
+   "fair": null,
+   "fair_open": null,
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26PAFFCM",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26PAFFCM-PAF",
+      "title": "Pafos wins",
+      "label": "Pafos",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.31,
+      "yes_ask": 0.33,
+      "no_bid": 0.67,
+      "no_ask": 0.69,
+      "volume": 22.87,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26PAFFCM-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.25,
+      "yes_ask": 0.27,
+      "no_bid": 0.73,
+      "no_ask": 0.75,
+      "volume": 1.68,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26PAFFCM-FCM",
+      "title": "Midtjylland wins",
+      "label": "Midtjylland",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.41,
+      "yes_ask": 0.42,
+      "no_bid": 0.58,
+      "no_ask": 0.59,
+      "volume": 49.05,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [],
+   "note": null
+  },
+  {
+   "id": "401915810",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Tirana",
+   "home": {
+    "id": "21943",
+    "name": "Egnatia",
+    "short": "Egnatia",
+    "abbr": "EGN",
+    "record": "0-2-1",
+    "form": "LDDLD",
+    "score": 0,
+    "rank": 26,
+    "points": 2,
+    "goal_diff": -2
+   },
+   "away": {
+    "id": "17856",
+    "name": "Lincoln Red Imps",
+    "short": "Red Imps",
+    "abbr": "LRI",
+    "record": "1-0-2",
+    "form": "WLLWL",
+    "score": 0,
+    "rank": 22,
+    "points": 3,
+    "goal_diff": -3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -165,
+     "draw": 350,
+     "away": 400
+    },
+    "total": 2.5,
+    "over": -165,
+    "under": 130
+   },
+   "fair": {
+    "home": 0.604676426670539,
+    "draw": 0.20863985375973348,
+    "away": 0.18668371956972749
+   },
+   "fair_open": {
+    "home": 0.5937735062373017,
+    "draw": 0.22761598373964723,
+    "away": 0.17861051002305098
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26EGRLIN",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26EGRLIN-EGR",
+      "title": "Egnatia Rrogozhine wins",
+      "label": "Egnatia Rrogozhine",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.59,
+      "yes_ask": 0.6,
+      "no_bid": 0.4,
+      "no_ask": 0.41,
+      "volume": 304.16,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26EGRLIN-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.21,
+      "yes_ask": 0.22,
+      "no_bid": 0.78,
+      "no_ask": 0.79,
+      "volume": 27.51,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26EGRLIN-LIN",
+      "title": "Lincoln Red Imps wins",
+      "label": "Lincoln Red Imps",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.18,
+      "yes_ask": 0.19,
+      "no_bid": 0.81,
+      "no_ask": 0.82,
+      "volume": 453.47,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Egnatia win",
+     "price": 0.6,
+     "bid": 0.59,
+     "fair": 0.604676426670539,
+     "fee": 0.016800000000000002,
+     "edge": -0.012123573329460978,
+     "edge_rest": 0.014676426670539033,
+     "volume": 304.16,
+     "ticker": "KXUECLGAME-26NOV26EGRLIN-EGR"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Egnatia do not win",
+     "price": 0.41,
+     "bid": 0.4,
+     "fair": 0.395323573329461,
+     "fee": 0.016933000000000004,
+     "edge": -0.03160942667053898,
+     "edge_rest": -0.0046764266705390245,
+     "volume": 304.16,
+     "ticker": "KXUECLGAME-26NOV26EGRLIN-EGR"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.22,
+     "bid": 0.21,
+     "fair": 0.20863985375973348,
+     "fee": 0.012012000000000002,
+     "edge": -0.02337214624026652,
+     "edge_rest": -0.0013601462402665077,
+     "volume": 27.51,
+     "ticker": "KXUECLGAME-26NOV26EGRLIN-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.79,
+     "bid": 0.78,
+     "fair": 0.7913601462402665,
+     "fee": 0.011613,
+     "edge": -0.01025285375973352,
+     "edge_rest": 0.011360146240266489,
+     "volume": 27.51,
+     "ticker": "KXUECLGAME-26NOV26EGRLIN-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Red Imps win",
+     "price": 0.19,
+     "bid": 0.18,
+     "fair": 0.18668371956972749,
+     "fee": 0.010773000000000001,
+     "edge": -0.014089280430272518,
+     "edge_rest": 0.006683719569727492,
+     "volume": 453.47,
+     "ticker": "KXUECLGAME-26NOV26EGRLIN-LIN"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Red Imps do not win",
+     "price": 0.82,
+     "bid": 0.81,
+     "fair": 0.8133162804302725,
+     "fee": 0.010332000000000003,
+     "edge": -0.017015719569727465,
+     "edge_rest": 0.0033162804302724336,
+     "volume": 453.47,
+     "ticker": "KXUECLGAME-26NOV26EGRLIN-LIN"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915811",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Edinburgh",
+   "home": {
+    "id": "262",
+    "name": "Heart of Midlothian",
+    "short": "Hearts",
+    "abbr": "HOM",
+    "record": "0-1-2",
+    "form": "DLLLD",
+    "score": 0,
+    "rank": 32,
+    "points": 1,
+    "goal_diff": -4
+   },
+   "away": {
+    "id": "174",
+    "name": "AS Monaco",
+    "short": "Monaco",
+    "abbr": "MON",
+    "record": "3-0-0",
+    "form": "DDWLD",
+    "score": 0,
+    "rank": 4,
+    "points": 9,
+    "goal_diff": 6
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 450,
+     "draw": 350,
+     "away": -180
+    },
+    "total": 3.5,
+    "over": 135,
+    "under": -170
+   },
+   "fair": {
+    "home": 0.16812615857233384,
+    "draw": 0.2080165980240878,
+    "away": 0.6238572434035783
+   },
+   "fair_open": {
+    "home": 0.21278650377402514,
+    "draw": 0.21278650377402514,
+    "away": 0.5744269924519498
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26HOMASM",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26HOMASM-HOM",
+      "title": "Heart of Midlothian wins",
+      "label": "Heart of Midlothian",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.16,
+      "yes_ask": 0.17,
+      "no_bid": 0.83,
+      "no_ask": 0.84,
+      "volume": 8.89,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26HOMASM-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.2,
+      "yes_ask": 0.21,
+      "no_bid": 0.79,
+      "no_ask": 0.8,
+      "volume": 1.66,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26HOMASM-ASM",
+      "title": "Monaco wins",
+      "label": "Monaco",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.62,
+      "yes_ask": 0.63,
+      "no_bid": 0.37,
+      "no_ask": 0.38,
+      "volume": 595.72,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Hearts win",
+     "price": 0.17,
+     "bid": 0.16,
+     "fair": 0.16812615857233384,
+     "fee": 0.009877000000000002,
+     "edge": -0.01175084142766617,
+     "edge_rest": 0.008126158572333841,
+     "volume": 8.89,
+     "ticker": "KXUECLGAME-26NOV26HOMASM-HOM"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Hearts do not win",
+     "price": 0.84,
+     "bid": 0.83,
+     "fair": 0.8318738414276662,
+     "fee": 0.009408000000000003,
+     "edge": -0.01753415857233379,
+     "edge_rest": 0.001873841427666223,
+     "volume": 8.89,
+     "ticker": "KXUECLGAME-26NOV26HOMASM-HOM"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.21,
+     "bid": 0.2,
+     "fair": 0.2080165980240878,
+     "fee": 0.011613000000000002,
+     "edge": -0.013596401975912182,
+     "edge_rest": 0.008016598024087801,
+     "volume": 1.66,
+     "ticker": "KXUECLGAME-26NOV26HOMASM-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.8,
+     "bid": 0.79,
+     "fair": 0.7919834019759122,
+     "fee": 0.0112,
+     "edge": -0.01921659802408783,
+     "edge_rest": 0.00198340197591218,
+     "volume": 1.66,
+     "ticker": "KXUECLGAME-26NOV26HOMASM-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Monaco win",
+     "price": 0.63,
+     "bid": 0.62,
+     "fair": 0.6238572434035783,
+     "fee": 0.016317,
+     "edge": -0.02245975659642172,
+     "edge_rest": 0.003857243403578292,
+     "volume": 595.72,
+     "ticker": "KXUECLGAME-26NOV26HOMASM-ASM"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Monaco do not win",
+     "price": 0.38,
+     "bid": 0.37,
+     "fair": 0.3761427565964217,
+     "fee": 0.016492,
+     "edge": -0.020349243403578292,
+     "edge_rest": 0.006142756596421717,
+     "volume": 595.72,
+     "ticker": "KXUECLGAME-26NOV26HOMASM-ASM"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915812",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Jablonec",
+   "home": {
+    "id": "7922",
+    "name": "Jablonec",
+    "short": "Jablonec",
+    "abbr": "JABL",
+    "record": "0-2-1",
+    "form": "DDLWL",
+    "score": 0,
+    "rank": 23,
+    "points": 2,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "7672",
+    "name": "FC Lugano",
+    "short": "FC Lugano",
+    "abbr": "LUG",
+    "record": "3-0-0",
+    "form": "WWWDW",
+    "score": 0,
+    "rank": 1,
+    "points": 9,
+    "goal_diff": 7
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 220,
+     "draw": 265,
+     "away": 115
+    },
+    "total": 2.5,
+    "over": -130,
+    "under": 105
+   },
+   "fair": {
+    "home": 0.29577753504368737,
+    "draw": 0.25775212574671486,
+    "away": 0.4464703392095979
+   },
+   "fair_open": {
+    "home": 0.2941595174591146,
+    "draw": 0.24429672707579664,
+    "away": 0.4615437554650888
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26FKJLUG",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26FKJLUG-FKJ",
+      "title": "Jablonec wins",
+      "label": "Jablonec",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.29,
+      "yes_ask": 0.3,
+      "no_bid": 0.7,
+      "no_ask": 0.71,
+      "volume": 21.74,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26FKJLUG-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.26,
+      "yes_ask": 0.27,
+      "no_bid": 0.73,
+      "no_ask": 0.74,
+      "volume": 18.88,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26FKJLUG-LUG",
+      "title": "Lugano wins",
+      "label": "Lugano",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.44,
+      "yes_ask": 0.45,
+      "no_bid": 0.55,
+      "no_ask": 0.56,
+      "volume": 2726.61,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Jablonec win",
+     "price": 0.3,
+     "bid": 0.29,
+     "fair": 0.29577753504368737,
+     "fee": 0.0147,
+     "edge": -0.01892246495631262,
+     "edge_rest": 0.005777535043687387,
+     "volume": 21.74,
+     "ticker": "KXUECLGAME-26NOV26FKJLUG-FKJ"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Jablonec do not win",
+     "price": 0.71,
+     "bid": 0.7,
+     "fair": 0.7042224649563127,
+     "fee": 0.014413000000000002,
+     "edge": -0.02019053504368728,
+     "edge_rest": 0.0042224649563127326,
+     "volume": 21.74,
+     "ticker": "KXUECLGAME-26NOV26FKJLUG-FKJ"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.25775212574671486,
+     "fee": 0.013797000000000002,
+     "edge": -0.026044874253285166,
+     "edge_rest": -0.0022478742532851537,
+     "volume": 18.88,
+     "ticker": "KXUECLGAME-26NOV26FKJLUG-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7422478742532852,
+     "fee": 0.013468000000000003,
+     "edge": -0.011220125746714793,
+     "edge_rest": 0.012247874253285218,
+     "volume": 18.88,
+     "ticker": "KXUECLGAME-26NOV26FKJLUG-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "FC Lugano win",
+     "price": 0.45,
+     "bid": 0.44,
+     "fair": 0.4464703392095979,
+     "fee": 0.017325000000000007,
+     "edge": -0.02085466079040213,
+     "edge_rest": 0.006470339209597886,
+     "volume": 2726.61,
+     "ticker": "KXUECLGAME-26NOV26FKJLUG-LUG"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "FC Lugano do not win",
+     "price": 0.56,
+     "bid": 0.55,
+     "fair": 0.5535296607904021,
+     "fee": 0.017248,
+     "edge": -0.02371833920959794,
+     "edge_rest": 0.003529660790402067,
+     "volume": 2726.61,
+     "ticker": "KXUECLGAME-26NOV26FKJLUG-LUG"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915813",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Tbilisi",
+   "home": {
+    "id": "20025",
+    "name": "Iberia 1999",
+    "short": "Iberia 1999",
+    "abbr": "IBE",
+    "record": "0-1-2",
+    "form": "LDLLL",
+    "score": 0,
+    "rank": 29,
+    "points": 1,
+    "goal_diff": -3
+   },
+   "away": {
+    "id": "2922",
+    "name": "Getafe",
+    "short": "Getafe",
+    "abbr": "GET",
+    "record": "0-1-2",
+    "form": "LLLWW",
+    "score": 0,
+    "rank": 31,
+    "points": 1,
+    "goal_diff": -4
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 600,
+     "draw": 340,
+     "away": -215
+    },
+    "total": 2.5,
+    "over": 100,
+    "under": -130
+   },
+   "fair": {
+    "home": 0.12806237556126662,
+    "draw": 0.21121475943436116,
+    "away": 0.6607228650043722
+   },
+   "fair_open": {
+    "home": 0.15292158844997736,
+    "draw": 0.22744672808653035,
+    "away": 0.6196316834634924
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26IBEGET",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26IBEGET-IBE",
+      "title": "Iberia wins",
+      "label": "Iberia",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.11,
+      "yes_ask": 0.12,
+      "no_bid": 0.88,
+      "no_ask": 0.89,
+      "volume": 3305.51,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26IBEGET-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.2,
+      "yes_ask": 0.21,
+      "no_bid": 0.79,
+      "no_ask": 0.8,
+      "volume": 435.46,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26IBEGET-GET",
+      "title": "Getafe wins",
+      "label": "Getafe",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.67,
+      "yes_ask": 0.68,
+      "no_bid": 0.32,
+      "no_ask": 0.33,
+      "volume": 1016.09,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Iberia 1999 win",
+     "price": 0.12,
+     "bid": 0.11,
+     "fair": 0.12806237556126662,
+     "fee": 0.007392000000000001,
+     "edge": 0.000670375561266626,
+     "edge_rest": 0.018062375561266622,
+     "volume": 3305.51,
+     "ticker": "KXUECLGAME-26NOV26IBEGET-IBE"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Iberia 1999 do not win",
+     "price": 0.89,
+     "bid": 0.88,
+     "fair": 0.8719376244387333,
+     "fee": 0.006853,
+     "edge": -0.02491537556126666,
+     "edge_rest": -0.008062375561266655,
+     "volume": 3305.51,
+     "ticker": "KXUECLGAME-26NOV26IBEGET-IBE"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.21,
+     "bid": 0.2,
+     "fair": 0.21121475943436116,
+     "fee": 0.011613000000000002,
+     "edge": -0.010398240565638834,
+     "edge_rest": 0.011214759434361149,
+     "volume": 435.46,
+     "ticker": "KXUECLGAME-26NOV26IBEGET-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.8,
+     "bid": 0.79,
+     "fair": 0.7887852405656388,
+     "fee": 0.0112,
+     "edge": -0.022414759434361234,
+     "edge_rest": -0.0012147594343612234,
+     "volume": 435.46,
+     "ticker": "KXUECLGAME-26NOV26IBEGET-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Getafe win",
+     "price": 0.68,
+     "bid": 0.67,
+     "fair": 0.6607228650043722,
+     "fee": 0.015232,
+     "edge": -0.03450913499562789,
+     "edge_rest": -0.009277134995627878,
+     "volume": 1016.09,
+     "ticker": "KXUECLGAME-26NOV26IBEGET-GET"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Getafe do not win",
+     "price": 0.33,
+     "bid": 0.32,
+     "fair": 0.33927713499562784,
+     "fee": 0.015477,
+     "edge": -0.006199865004372177,
+     "edge_rest": 0.01927713499562783,
+     "volume": 1016.09,
+     "ticker": "KXUECLGAME-26NOV26IBEGET-GET"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915814",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Falmer",
+   "home": {
+    "id": "331",
+    "name": "Brighton & Hove Albion",
+    "short": "Brighton",
+    "abbr": "BHA",
+    "record": "2-1-0",
+    "form": "DWWWL",
+    "score": 0,
+    "rank": 5,
+    "points": 7,
+    "goal_diff": 5
+   },
+   "away": {
+    "id": "8089",
+    "name": "CSU Craiova",
+    "short": "CSU Craiova",
+    "abbr": "UCRA",
+    "record": "2-1-0",
+    "form": "WWDLD",
+    "score": 0,
+    "rank": 8,
+    "points": 7,
+    "goal_diff": 4
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -800,
+     "draw": 850,
+     "away": 1800
+    },
+    "total": 3.5,
+    "over": 100,
+    "under": -125
+   },
+   "fair": {
+    "home": 0.8671289383518725,
+    "draw": 0.09209729725136606,
+    "away": 0.04077376439676127
+   },
+   "fair_open": {
+    "home": 0.8516523486926012,
+    "draw": 0.09875379470644725,
+    "away": 0.0495938566009514
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26BRICSU",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26BRICSU-BRI",
+      "title": "Brighton wins",
+      "label": "Brighton",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.87,
+      "yes_ask": 0.88,
+      "no_bid": 0.12,
+      "no_ask": 0.13,
+      "volume": 570.55,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26BRICSU-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.08,
+      "yes_ask": 0.09,
+      "no_bid": 0.91,
+      "no_ask": 0.92,
+      "volume": 277.11,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26BRICSU-CSU",
+      "title": "Uni Craiova wins",
+      "label": "Uni Craiova",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.03,
+      "yes_ask": 0.04,
+      "no_bid": 0.96,
+      "no_ask": 0.97,
+      "volume": 4588.28,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Brighton win",
+     "price": 0.88,
+     "bid": 0.87,
+     "fair": 0.8671289383518725,
+     "fee": 0.007392000000000001,
+     "edge": -0.02026306164812746,
+     "edge_rest": -0.0028710616481274487,
+     "volume": 570.55,
+     "ticker": "KXUECLGAME-26NOV26BRICSU-BRI"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Brighton do not win",
+     "price": 0.13,
+     "bid": 0.12,
+     "fair": 0.13287106164812745,
+     "fee": 0.007917,
+     "edge": -0.005045938351872552,
+     "edge_rest": 0.012871061648127458,
+     "volume": 570.55,
+     "ticker": "KXUECLGAME-26NOV26BRICSU-BRI"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.09,
+     "bid": 0.08,
+     "fair": 0.09209729725136606,
+     "fee": 0.005733,
+     "edge": -0.0036357027486339354,
+     "edge_rest": 0.01209729725136606,
+     "volume": 277.11,
+     "ticker": "KXUECLGAME-26NOV26BRICSU-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.92,
+     "bid": 0.91,
+     "fair": 0.9079027027486339,
+     "fee": 0.005151999999999999,
+     "edge": -0.0172492972513661,
+     "edge_rest": -0.0020972972513660926,
+     "volume": 277.11,
+     "ticker": "KXUECLGAME-26NOV26BRICSU-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "CSU Craiova win",
+     "price": 0.04,
+     "bid": 0.03,
+     "fair": 0.04077376439676127,
+     "fee": 0.0026880000000000003,
+     "edge": -0.0019142356032387344,
+     "edge_rest": 0.010773764396761268,
+     "volume": 4588.28,
+     "ticker": "KXUECLGAME-26NOV26BRICSU-CSU"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "CSU Craiova do not win",
+     "price": 0.97,
+     "bid": 0.96,
+     "fair": 0.9592262356032387,
+     "fee": 0.002037000000000002,
+     "edge": -0.012810764396761256,
+     "edge_rest": -0.0007737643967612451,
+     "volume": 4588.28,
+     "ticker": "KXUECLGAME-26NOV26BRICSU-CSU"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915815",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Amsterdam",
+   "home": {
+    "id": "139",
+    "name": "Ajax Amsterdam",
+    "short": "Ajax",
+    "abbr": "AJA",
+    "record": "2-0-1",
+    "form": "WDWWW",
+    "score": 0,
+    "rank": 11,
+    "points": 6,
+    "goal_diff": 6
+   },
+   "away": {
+    "id": "3024",
+    "name": "FC Thun",
+    "short": "FC Thun",
+    "abbr": "THUN",
+    "record": "1-0-2",
+    "form": "WLLDL",
+    "score": 0,
+    "rank": 20,
+    "points": 3,
+    "goal_diff": 0
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -575,
+     "draw": 750,
+     "away": 1200
+    },
+    "total": 3.5,
+    "over": -160,
+    "under": 125
+   },
+   "fair": {
+    "home": 0.8306860505563013,
+    "draw": 0.10463459680631068,
+    "away": 0.06467935263738789
+   },
+   "fair_open": {
+    "home": 0.8143966898391263,
+    "draw": 0.11337219372770699,
+    "away": 0.0722311164331667
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26AJATHU",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26AJATHU-AJA",
+      "title": "Ajax wins",
+      "label": "Ajax",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.83,
+      "yes_ask": 0.84,
+      "no_bid": 0.16,
+      "no_ask": 0.17,
+      "volume": 474.76,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26AJATHU-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.1,
+      "yes_ask": 0.11,
+      "no_bid": 0.89,
+      "no_ask": 0.9,
+      "volume": 53.29,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26AJATHU-THU",
+      "title": "Thun wins",
+      "label": "Thun",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.05,
+      "yes_ask": 0.06,
+      "no_bid": 0.94,
+      "no_ask": 0.95,
+      "volume": 814.88,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Ajax win",
+     "price": 0.84,
+     "bid": 0.83,
+     "fair": 0.8306860505563013,
+     "fee": 0.009408000000000003,
+     "edge": -0.01872194944369868,
+     "edge_rest": 0.0006860505563013319,
+     "volume": 474.76,
+     "ticker": "KXUECLGAME-26NOV26AJATHU-AJA"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Ajax do not win",
+     "price": 0.17,
+     "bid": 0.16,
+     "fair": 0.1693139494436987,
+     "fee": 0.009877000000000002,
+     "edge": -0.010563050556301306,
+     "edge_rest": 0.009313949443698705,
+     "volume": 474.76,
+     "ticker": "KXUECLGAME-26NOV26AJATHU-AJA"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.11,
+     "bid": 0.1,
+     "fair": 0.10463459680631068,
+     "fee": 0.0068530000000000015,
+     "edge": -0.01221840319368932,
+     "edge_rest": 0.004634596806310676,
+     "volume": 53.29,
+     "ticker": "KXUECLGAME-26NOV26AJATHU-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.9,
+     "bid": 0.89,
+     "fair": 0.8953654031936893,
+     "fee": 0.0063,
+     "edge": -0.010934596806310731,
+     "edge_rest": 0.005365403193689278,
+     "volume": 53.29,
+     "ticker": "KXUECLGAME-26NOV26AJATHU-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "FC Thun win",
+     "price": 0.06,
+     "bid": 0.05,
+     "fair": 0.06467935263738789,
+     "fee": 0.003948,
+     "edge": 0.0007313526373878901,
+     "edge_rest": 0.014679352637387885,
+     "volume": 814.88,
+     "ticker": "KXUECLGAME-26NOV26AJATHU-THU"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "FC Thun do not win",
+     "price": 0.95,
+     "bid": 0.94,
+     "fair": 0.9353206473626121,
+     "fee": 0.0033250000000000033,
+     "edge": -0.018004352637387845,
+     "edge_rest": -0.004679352637387835,
+     "volume": 814.88,
+     "ticker": "KXUECLGAME-26NOV26AJATHU-THU"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915506",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Batumi",
+   "home": {
+    "id": "1895",
+    "name": "Besiktas",
+    "short": "Besiktas",
+    "abbr": "BES",
+    "record": "2-1-1",
+    "form": "WWLDW",
+    "score": 0,
+    "rank": 8,
+    "points": 7,
+    "goal_diff": 3
+   },
+   "away": {
+    "id": "13083",
+    "name": "Hapoel Be'er",
+    "short": "Hapoel Be'er",
+    "abbr": "HBE",
+    "record": "0-1-3",
+    "form": "DLLDL",
+    "score": 0,
+    "rank": 33,
+    "points": 1,
+    "goal_diff": -7
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -425,
+     "draw": 550,
+     "away": 950
+    },
+    "total": 3.5,
+    "over": -105,
+    "under": -115
+   },
+   "fair": {
+    "home": 0.7834974214713396,
+    "draw": 0.13692986548840894,
+    "away": 0.07957271304025154
+   },
+   "fair_open": {
+    "home": 0.7683507590133206,
+    "draw": 0.14571898714683992,
+    "away": 0.08593025383983939
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26BESHBS",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26BESHBS-BES",
+      "title": "Besiktas wins",
+      "label": "Besiktas",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.77,
+      "yes_ask": 0.78,
+      "no_bid": 0.22,
+      "no_ask": 0.23,
+      "volume": 5915.33,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26BESHBS-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.13,
+      "yes_ask": 0.14,
+      "no_bid": 0.86,
+      "no_ask": 0.87,
+      "volume": 94.94,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26BESHBS-HBS",
+      "title": "Be'er Sheva wins",
+      "label": "Be'er Sheva",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.08,
+      "yes_ask": 0.09,
+      "no_bid": 0.91,
+      "no_ask": 0.92,
+      "volume": 2820.86,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Besiktas win",
+     "price": 0.78,
+     "bid": 0.77,
+     "fair": 0.7834974214713396,
+     "fee": 0.012012,
+     "edge": -0.008514578528660421,
+     "edge_rest": 0.013497421471339588,
+     "volume": 5915.33,
+     "ticker": "KXUELGAME-26NOV26BESHBS-BES"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Besiktas do not win",
+     "price": 0.23,
+     "bid": 0.22,
+     "fair": 0.2165025785286604,
+     "fee": 0.012397000000000004,
+     "edge": -0.02589442147133962,
+     "edge_rest": -0.003497421471339607,
+     "volume": 5915.33,
+     "ticker": "KXUELGAME-26NOV26BESHBS-BES"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.14,
+     "bid": 0.13,
+     "fair": 0.13692986548840894,
+     "fee": 0.008428000000000001,
+     "edge": -0.011498134511591079,
+     "edge_rest": 0.006929865488408932,
+     "volume": 94.94,
+     "ticker": "KXUELGAME-26NOV26BESHBS-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.87,
+     "bid": 0.86,
+     "fair": 0.8630701345115911,
+     "fee": 0.007917,
+     "edge": -0.014846865488408904,
+     "edge_rest": 0.003070134511591105,
+     "volume": 94.94,
+     "ticker": "KXUELGAME-26NOV26BESHBS-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Hapoel Be'er win",
+     "price": 0.09,
+     "bid": 0.08,
+     "fair": 0.07957271304025154,
+     "fee": 0.005733,
+     "edge": -0.016160286959748457,
+     "edge_rest": -0.0004272869597484602,
+     "volume": 2820.86,
+     "ticker": "KXUELGAME-26NOV26BESHBS-HBS"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Hapoel Be'er do not win",
+     "price": 0.92,
+     "bid": 0.91,
+     "fair": 0.9204272869597485,
+     "fee": 0.005151999999999999,
+     "edge": -0.0047247130402515245,
+     "edge_rest": 0.010427286959748483,
+     "volume": 2820.86,
+     "ticker": "KXUELGAME-26NOV26BESHBS-HBS"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915507",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Marseille",
+   "home": {
+    "id": "176",
+    "name": "Marseille",
+    "short": "Marseille",
+    "abbr": "OLM",
+    "record": "1-0-3",
+    "form": "LWWWW",
+    "score": 0,
+    "rank": 31,
+    "points": 3,
+    "goal_diff": -4
+   },
+   "away": {
+    "id": "490",
+    "name": "Levski Sofia",
+    "short": "Levski Sofia",
+    "abbr": "LEV",
+    "record": "2-1-1",
+    "form": "WWDLL",
+    "score": 0,
+    "rank": 10,
+    "points": 7,
+    "goal_diff": 1
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -285,
+     "draw": 450,
+     "away": 750
+    },
+    "total": 2.5,
+    "over": -170,
+    "under": 135
+   },
+   "fair": {
+    "home": 0.7231865226917128,
+    "draw": 0.17011618192148903,
+    "away": 0.10669729538679813
+   },
+   "fair_open": {
+    "home": 0.6481126701961214,
+    "draw": 0.2056234155337668,
+    "away": 0.1462639142701119
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26OLMLEV",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26OLMLEV-OLM",
+      "title": "Marseille wins",
+      "label": "Marseille",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.73,
+      "yes_ask": 0.74,
+      "no_bid": 0.26,
+      "no_ask": 0.27,
+      "volume": 1832.87,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26OLMLEV-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.16,
+      "yes_ask": 0.17,
+      "no_bid": 0.83,
+      "no_ask": 0.84,
+      "volume": 877.42,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26OLMLEV-LEV",
+      "title": "Levski Sofia wins",
+      "label": "Levski Sofia",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.1,
+      "yes_ask": 0.11,
+      "no_bid": 0.89,
+      "no_ask": 0.9,
+      "volume": 555.94,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Marseille win",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7231865226917128,
+     "fee": 0.013468000000000003,
+     "edge": -0.030281477308287195,
+     "edge_rest": -0.006813477308287186,
+     "volume": 1832.87,
+     "ticker": "KXUELGAME-26NOV26OLMLEV-OLM"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Marseille do not win",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.2768134773082872,
+     "fee": 0.013797000000000002,
+     "edge": -0.006983522691712816,
+     "edge_rest": 0.016813477308287195,
+     "volume": 1832.87,
+     "ticker": "KXUELGAME-26NOV26OLMLEV-OLM"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.17,
+     "bid": 0.16,
+     "fair": 0.17011618192148903,
+     "fee": 0.009877000000000002,
+     "edge": -0.009760818078510985,
+     "edge_rest": 0.010116181921489026,
+     "volume": 877.42,
+     "ticker": "KXUELGAME-26NOV26OLMLEV-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.84,
+     "bid": 0.83,
+     "fair": 0.829883818078511,
+     "fee": 0.009408000000000003,
+     "edge": -0.019524181921489,
+     "edge_rest": -0.0001161819214889892,
+     "volume": 877.42,
+     "ticker": "KXUELGAME-26NOV26OLMLEV-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Levski Sofia win",
+     "price": 0.11,
+     "bid": 0.1,
+     "fair": 0.10669729538679813,
+     "fee": 0.0068530000000000015,
+     "edge": -0.01015570461320187,
+     "edge_rest": 0.006697295386798127,
+     "volume": 555.94,
+     "ticker": "KXUELGAME-26NOV26OLMLEV-LEV"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Levski Sofia do not win",
+     "price": 0.9,
+     "bid": 0.89,
+     "fair": 0.8933027046132018,
+     "fee": 0.0063,
+     "edge": -0.012997295386798197,
+     "edge_rest": 0.0033027046132018123,
+     "volume": 555.94,
+     "ticker": "KXUELGAME-26NOV26OLMLEV-LEV"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915508",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Leuven",
+   "home": {
+    "id": "5807",
+    "name": "Union St.-Gilloise",
+    "short": "Union SG",
+    "abbr": "USG",
+    "record": "3-1-0",
+    "form": "WWWWW",
+    "score": 0,
+    "rank": 4,
+    "points": 10,
+    "goal_diff": 8
+   },
+   "away": {
+    "id": "2990",
+    "name": "Lech Poznan",
+    "short": "Lech Poznan",
+    "abbr": "LECH",
+    "record": "0-1-3",
+    "form": "LDLLD",
+    "score": 0,
+    "rank": 35,
+    "points": 1,
+    "goal_diff": -10
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -280,
+     "draw": 450,
+     "away": 650
+    },
+    "total": 3.5,
+    "over": 115,
+    "under": -140
+   },
+   "fair": {
+    "home": 0.714624576639944,
+    "draw": 0.16655007955883266,
+    "away": 0.1188253438012234
+   },
+   "fair_open": {
+    "home": 0.6902139052273186,
+    "draw": 0.17743087500072474,
+    "away": 0.13235521977195666
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26USGLPO",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26USGLPO-USG",
+      "title": "Union Gilloise wins",
+      "label": "Union Gilloise",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.72,
+      "yes_ask": 0.73,
+      "no_bid": 0.27,
+      "no_ask": 0.28,
+      "volume": 7461.62,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26USGLPO-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.15,
+      "yes_ask": 0.16,
+      "no_bid": 0.84,
+      "no_ask": 0.85,
+      "volume": 233.79,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26USGLPO-LPO",
+      "title": "Lech Poznan wins",
+      "label": "Lech Poznan",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.1,
+      "yes_ask": 0.11,
+      "no_bid": 0.89,
+      "no_ask": 0.9,
+      "volume": 2016.46,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Union SG win",
+     "price": 0.73,
+     "bid": 0.72,
+     "fair": 0.714624576639944,
+     "fee": 0.013797000000000002,
+     "edge": -0.029172423360055932,
+     "edge_rest": -0.00537542336005592,
+     "volume": 7461.62,
+     "ticker": "KXUELGAME-26NOV26USGLPO-USG"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Union SG do not win",
+     "price": 0.28,
+     "bid": 0.27,
+     "fair": 0.28537542336005595,
+     "fee": 0.014112000000000001,
+     "edge": -0.008736576639944081,
+     "edge_rest": 0.015375423360055929,
+     "volume": 7461.62,
+     "ticker": "KXUELGAME-26NOV26USGLPO-USG"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.16,
+     "bid": 0.15,
+     "fair": 0.16655007955883266,
+     "fee": 0.009408000000000001,
+     "edge": -0.0028579204411673404,
+     "edge_rest": 0.01655007955883267,
+     "volume": 233.79,
+     "ticker": "KXUELGAME-26NOV26USGLPO-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.85,
+     "bid": 0.84,
+     "fair": 0.8334499204411674,
+     "fee": 0.008925000000000002,
+     "edge": -0.02547507955883259,
+     "edge_rest": -0.006550079558832578,
+     "volume": 233.79,
+     "ticker": "KXUELGAME-26NOV26USGLPO-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Lech Poznan win",
+     "price": 0.11,
+     "bid": 0.1,
+     "fair": 0.1188253438012234,
+     "fee": 0.0068530000000000015,
+     "edge": 0.001972343801223391,
+     "edge_rest": 0.018825343801223388,
+     "volume": 2016.46,
+     "ticker": "KXUELGAME-26NOV26USGLPO-LPO"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Lech Poznan do not win",
+     "price": 0.9,
+     "bid": 0.89,
+     "fair": 0.8811746561987766,
+     "fee": 0.0063,
+     "edge": -0.02512534380122347,
+     "edge_rest": -0.008825343801223462,
+     "volume": 2016.46,
+     "ticker": "KXUELGAME-26NOV26USGLPO-LPO"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915517",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Zagreb",
+   "home": {
+    "id": "597",
+    "name": "Dinamo Zagreb",
+    "short": "Dinamo Zagreb",
+    "abbr": "DZG",
+    "record": "2-1-1",
+    "form": "WLWDL",
+    "score": 0,
+    "rank": 9,
+    "points": 7,
+    "goal_diff": 1
+   },
+   "away": {
+    "id": "131",
+    "name": "Bayer Leverkusen",
+    "short": "Leverkusen",
+    "abbr": "B04",
+    "record": "3-0-1",
+    "form": "WWLLW",
+    "score": 0,
+    "rank": 7,
+    "points": 9,
+    "goal_diff": 7
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 350,
+     "draw": 340,
+     "away": -150
+    },
+    "total": 3.5,
+    "over": 120,
+    "under": -150
+   },
+   "fair": {
+    "home": 0.20726865942577857,
+    "draw": 0.21225298238615,
+    "away": 0.5804783581880715
+   },
+   "fair_open": {
+    "home": 0.20112656411289487,
+    "draw": 0.21126565564086477,
+    "away": 0.5876077802462403
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26DINLEV",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26DINLEV-DIN",
+      "title": "Dinamo Zagreb wins",
+      "label": "Dinamo Zagreb",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.2,
+      "yes_ask": 0.21,
+      "no_bid": 0.79,
+      "no_ask": 0.8,
+      "volume": 1756.79,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26DINLEV-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.21,
+      "yes_ask": 0.22,
+      "no_bid": 0.78,
+      "no_ask": 0.79,
+      "volume": 240.25,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26DINLEV-LEV",
+      "title": "Leverkusen wins",
+      "label": "Leverkusen",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.57,
+      "yes_ask": 0.58,
+      "no_bid": 0.42,
+      "no_ask": 0.43,
+      "volume": 3138.48,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Dinamo Zagreb win",
+     "price": 0.21,
+     "bid": 0.2,
+     "fair": 0.20726865942577857,
+     "fee": 0.011613000000000002,
+     "edge": -0.014344340574221421,
+     "edge_rest": 0.007268659425778562,
+     "volume": 1756.79,
+     "ticker": "KXUELGAME-26NOV26DINLEV-DIN"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Dinamo Zagreb do not win",
+     "price": 0.8,
+     "bid": 0.79,
+     "fair": 0.7927313405742215,
+     "fee": 0.0112,
+     "edge": -0.01846865942577859,
+     "edge_rest": 0.002731340574221419,
+     "volume": 1756.79,
+     "ticker": "KXUELGAME-26NOV26DINLEV-DIN"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.22,
+     "bid": 0.21,
+     "fair": 0.21225298238615,
+     "fee": 0.012012000000000002,
+     "edge": -0.019759017613849995,
+     "edge_rest": 0.0022529823861500153,
+     "volume": 240.25,
+     "ticker": "KXUELGAME-26NOV26DINLEV-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.79,
+     "bid": 0.78,
+     "fair": 0.78774701761385,
+     "fee": 0.011613,
+     "edge": -0.013865982386150015,
+     "edge_rest": 0.0077470176138499935,
+     "volume": 240.25,
+     "ticker": "KXUELGAME-26NOV26DINLEV-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Leverkusen win",
+     "price": 0.58,
+     "bid": 0.57,
+     "fair": 0.5804783581880715,
+     "fee": 0.017052000000000005,
+     "edge": -0.01657364181192849,
+     "edge_rest": 0.010478358188071524,
+     "volume": 3138.48,
+     "ticker": "KXUELGAME-26NOV26DINLEV-LEV"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Leverkusen do not win",
+     "price": 0.43,
+     "bid": 0.42,
+     "fair": 0.4195216418119285,
+     "fee": 0.017157000000000002,
+     "edge": -0.02763535818807147,
+     "edge_rest": -0.00047835818807145936,
+     "volume": 3138.48,
+     "ticker": "KXUELGAME-26NOV26DINLEV-LEV"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915518",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Plzen",
+   "home": {
+    "id": "11706",
+    "name": "Viktoria Plzen",
+    "short": "Viktoria Plzen",
+    "abbr": "PLZ",
+    "record": "1-0-3",
+    "form": "WLLLW",
+    "score": 0,
+    "rank": 30,
+    "points": 3,
+    "goal_diff": -4
+   },
+   "away": {
+    "id": "1929",
+    "name": "Benfica",
+    "short": "Benfica",
+    "abbr": "SLB",
+    "record": "4-0-0",
+    "form": "WWWWW",
+    "score": 0,
+    "rank": 1,
+    "points": 12,
+    "goal_diff": 10
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 475,
+     "draw": 400,
+     "away": -205
+    },
+    "total": 3.5,
+    "over": 110,
+    "under": -135
+   },
+   "fair": {
+    "home": 0.16054953213708723,
+    "draw": 0.1863044485241638,
+    "away": 0.653146019338749
+   },
+   "fair_open": {
+    "home": 0.17823401117690607,
+    "draw": 0.19073360174768722,
+    "away": 0.6310323870754067
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26VIKBEN",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26VIKBEN-VIK",
+      "title": "Plzen wins",
+      "label": "Plzen",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.15,
+      "yes_ask": 0.16,
+      "no_bid": 0.84,
+      "no_ask": 0.85,
+      "volume": 671.18,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26VIKBEN-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.17,
+      "yes_ask": 0.18,
+      "no_bid": 0.82,
+      "no_ask": 0.83,
+      "volume": 165.35,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26VIKBEN-BEN",
+      "title": "SL Benfica wins",
+      "label": "SL Benfica",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.65,
+      "yes_ask": 0.66,
+      "no_bid": 0.34,
+      "no_ask": 0.35,
+      "volume": 4329.76,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Viktoria Plzen win",
+     "price": 0.16,
+     "bid": 0.15,
+     "fair": 0.16054953213708723,
+     "fee": 0.009408000000000001,
+     "edge": -0.00885846786291278,
+     "edge_rest": 0.01054953213708723,
+     "volume": 671.18,
+     "ticker": "KXUELGAME-26NOV26VIKBEN-VIK"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Viktoria Plzen do not win",
+     "price": 0.85,
+     "bid": 0.84,
+     "fair": 0.8394504678629128,
+     "fee": 0.008925000000000002,
+     "edge": -0.019474532137087205,
+     "edge_rest": -0.0005495321370871942,
+     "volume": 671.18,
+     "ticker": "KXUELGAME-26NOV26VIKBEN-VIK"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.18,
+     "bid": 0.17,
+     "fair": 0.1863044485241638,
+     "fee": 0.010332000000000001,
+     "edge": -0.004027551475836187,
+     "edge_rest": 0.016304448524163795,
+     "volume": 165.35,
+     "ticker": "KXUELGAME-26NOV26VIKBEN-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.83,
+     "bid": 0.82,
+     "fair": 0.8136955514758362,
+     "fee": 0.009877000000000004,
+     "edge": -0.0261814485241638,
+     "edge_rest": -0.006304448524163786,
+     "volume": 165.35,
+     "ticker": "KXUELGAME-26NOV26VIKBEN-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Benfica win",
+     "price": 0.66,
+     "bid": 0.65,
+     "fair": 0.653146019338749,
+     "fee": 0.015708,
+     "edge": -0.02256198066125098,
+     "edge_rest": 0.0031460193387490287,
+     "volume": 4329.76,
+     "ticker": "KXUELGAME-26NOV26VIKBEN-BEN"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Benfica do not win",
+     "price": 0.35,
+     "bid": 0.34,
+     "fair": 0.34685398066125095,
+     "fee": 0.015925,
+     "edge": -0.01907101933874903,
+     "edge_rest": 0.006853980661250925,
+     "volume": 4329.76,
+     "ticker": "KXUELGAME-26NOV26VIKBEN-BEN"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915519",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Vigo",
+   "home": {
+    "id": "85",
+    "name": "Celta Vigo",
+    "short": "Celta Vigo",
+    "abbr": "CEL",
+    "record": "1-0-3",
+    "form": "LWDLL",
+    "score": 0,
+    "rank": 27,
+    "points": 3,
+    "goal_diff": -2
+   },
+   "away": {
+    "id": "349",
+    "name": "AFC Bournemouth",
+    "short": "Bournemouth",
+    "abbr": "BOU",
+    "record": "4-0-0",
+    "form": "WWWWW",
+    "score": 0,
+    "rank": 2,
+    "points": 12,
+    "goal_diff": 9
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 245,
+     "draw": 250,
+     "away": 110
+    },
+    "total": 2.5,
+    "over": -115,
+    "under": -110
+   },
+   "fair": {
+    "home": 0.27337096038973885,
+    "draw": 0.2692844453235521,
+    "away": 0.45734459428670915
+   },
+   "fair_open": {
+    "home": 0.23388926461598852,
+    "draw": 0.25869016461365174,
+    "away": 0.5074205707703598
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26RCCBOU",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26RCCBOU-RCC",
+      "title": "Celta Vigo wins",
+      "label": "Celta Vigo",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.26,
+      "yes_ask": 0.27,
+      "no_bid": 0.73,
+      "no_ask": 0.74,
+      "volume": 1929.95,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26RCCBOU-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.27,
+      "yes_ask": 0.28,
+      "no_bid": 0.72,
+      "no_ask": 0.73,
+      "volume": 374.03,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26RCCBOU-BOU",
+      "title": "Bournemouth wins",
+      "label": "Bournemouth",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.46,
+      "yes_ask": 0.47,
+      "no_bid": 0.53,
+      "no_ask": 0.54,
+      "volume": 51216.68,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Celta Vigo win",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.27337096038973885,
+     "fee": 0.013797000000000002,
+     "edge": -0.010426039610261171,
+     "edge_rest": 0.01337096038973884,
+     "volume": 1929.95,
+     "ticker": "KXUELGAME-26NOV26RCCBOU-RCC"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Celta Vigo do not win",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7266290396102612,
+     "fee": 0.013468000000000003,
+     "edge": -0.02683896038973884,
+     "edge_rest": -0.0033709603897388307,
+     "volume": 1929.95,
+     "ticker": "KXUELGAME-26NOV26RCCBOU-RCC"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.28,
+     "bid": 0.27,
+     "fair": 0.2692844453235521,
+     "fee": 0.014112000000000001,
+     "edge": -0.024827554676447913,
+     "edge_rest": -0.0007155546764479048,
+     "volume": 374.03,
+     "ticker": "KXUELGAME-26NOV26RCCBOU-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.73,
+     "bid": 0.72,
+     "fair": 0.7307155546764479,
+     "fee": 0.013797000000000002,
+     "edge": -0.013081445323552097,
+     "edge_rest": 0.010715554676447914,
+     "volume": 374.03,
+     "ticker": "KXUELGAME-26NOV26RCCBOU-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Bournemouth win",
+     "price": 0.47,
+     "bid": 0.46,
+     "fair": 0.45734459428670915,
+     "fee": 0.017437,
+     "edge": -0.030092405713290825,
+     "edge_rest": -0.0026554057132908704,
+     "volume": 51216.68,
+     "ticker": "KXUELGAME-26NOV26RCCBOU-BOU"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Bournemouth do not win",
+     "price": 0.54,
+     "bid": 0.53,
+     "fair": 0.5426554057132909,
+     "fee": 0.017388,
+     "edge": -0.014732594286709186,
+     "edge_rest": 0.012655405713290824,
+     "volume": 51216.68,
+     "ticker": "KXUELGAME-26NOV26RCCBOU-BOU"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915520",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Salzburg",
+   "home": {
+    "id": "2790",
+    "name": "RB Salzburg",
+    "short": "RB Salzburg",
+    "abbr": "SLZ",
+    "record": "1-1-2",
+    "form": "LWLWW",
+    "score": 0,
+    "rank": 26,
+    "points": 4,
+    "goal_diff": -5
+   },
+   "away": {
+    "id": "20024",
+    "name": "Ararat-Armenia",
+    "short": "Ararat-Armenia",
+    "abbr": "ARA",
+    "record": "0-0-4",
+    "form": "LLLLW",
+    "score": 0,
+    "rank": 36,
+    "points": 0,
+    "goal_diff": -10
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -650,
+     "draw": 750,
+     "away": 1400
+    },
+    "total": 3.5,
+    "over": -130,
+    "under": 105
+   },
+   "fair": {
+    "home": 0.8432671281133656,
+    "draw": 0.10326279315833556,
+    "away": 0.05347007872829898
+   },
+   "fair_open": {
+    "home": 0.8032330493487412,
+    "draw": 0.12365039292676314,
+    "away": 0.07311655772449556
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26RBSARA",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26RBSARA-RBS",
+      "title": "Salzburg wins",
+      "label": "Salzburg",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.85,
+      "yes_ask": 0.86,
+      "no_bid": 0.14,
+      "no_ask": 0.15,
+      "volume": 842.02,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26RBSARA-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.09,
+      "yes_ask": 0.1,
+      "no_bid": 0.9,
+      "no_ask": 0.91,
+      "volume": 247.6,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26RBSARA-ARA",
+      "title": "Ararat-Armenia wins",
+      "label": "Ararat-Armenia",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.05,
+      "yes_ask": 0.06,
+      "no_bid": 0.94,
+      "no_ask": 0.95,
+      "volume": 7331.78,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "RB Salzburg win",
+     "price": 0.86,
+     "bid": 0.85,
+     "fair": 0.8432671281133656,
+     "fee": 0.008428000000000001,
+     "edge": -0.025160871886634417,
+     "edge_rest": -0.006732871886634406,
+     "volume": 842.02,
+     "ticker": "KXUELGAME-26NOV26RBSARA-RBS"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "RB Salzburg do not win",
+     "price": 0.15,
+     "bid": 0.14,
+     "fair": 0.15673287188663443,
+     "fee": 0.008925,
+     "edge": -0.0021921281133655667,
+     "edge_rest": 0.016732871886634415,
+     "volume": 842.02,
+     "ticker": "KXUELGAME-26NOV26RBSARA-RBS"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.1,
+     "bid": 0.09,
+     "fair": 0.10326279315833556,
+     "fee": 0.006300000000000001,
+     "edge": -0.003037206841664448,
+     "edge_rest": 0.013262793158335562,
+     "volume": 247.6,
+     "ticker": "KXUELGAME-26NOV26RBSARA-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.91,
+     "bid": 0.9,
+     "fair": 0.8967372068416645,
+     "fee": 0.0057329999999999985,
+     "edge": -0.01899579315833556,
+     "edge_rest": -0.003262793158335553,
+     "volume": 247.6,
+     "ticker": "KXUELGAME-26NOV26RBSARA-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Ararat-Armenia win",
+     "price": 0.06,
+     "bid": 0.05,
+     "fair": 0.05347007872829898,
+     "fee": 0.003948,
+     "edge": -0.010477921271701017,
+     "edge_rest": 0.003470078728298978,
+     "volume": 7331.78,
+     "ticker": "KXUELGAME-26NOV26RBSARA-ARA"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Ararat-Armenia do not win",
+     "price": 0.95,
+     "bid": 0.94,
+     "fair": 0.946529921271701,
+     "fee": 0.0033250000000000033,
+     "edge": -0.0067950787282989675,
+     "edge_rest": 0.006529921271701045,
+     "volume": 7331.78,
+     "ticker": "KXUELGAME-26NOV26RBSARA-ARA"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915521",
+   "competition": "uel",
+   "kickoff": "2026-11-26T17:45Z",
+   "status": "scheduled",
+   "venue": "Piraeus",
+   "home": {
+    "id": "435",
+    "name": "Olympiacos",
+    "short": "Olympiacos",
+    "abbr": "OLY",
+    "record": "3-1-0",
+    "form": "WDDWW",
+    "score": 0,
+    "rank": 6,
+    "points": 10,
+    "goal_diff": 3
+   },
+   "away": {
+    "id": "103",
+    "name": "AC Milan",
+    "short": "Milan",
+    "abbr": "MIL",
+    "record": "1-0-3",
+    "form": "WWLWL",
+    "score": 0,
+    "rank": 28,
+    "points": 3,
+    "goal_diff": -3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 185,
+     "draw": 245,
+     "away": 145
+    },
+    "total": 2.5,
+    "over": -120,
+    "under": -105
+   },
+   "fair": {
+    "home": 0.3345591703809326,
+    "draw": 0.274281589476021,
+    "away": 0.39115924014304654
+   },
+   "fair_open": {
+    "home": 0.4008377175294164,
+    "draw": 0.2717014967704577,
+    "away": 0.327460785700126
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26OLYACM",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26OLYACM-OLY",
+      "title": "Olympiacos wins",
+      "label": "Olympiacos",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.33,
+      "yes_ask": 0.34,
+      "no_bid": 0.66,
+      "no_ask": 0.67,
+      "volume": 4048.38,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26OLYACM-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.27,
+      "yes_ask": 0.28,
+      "no_bid": 0.72,
+      "no_ask": 0.73,
+      "volume": 17662.82,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26OLYACM-ACM",
+      "title": "Milan wins",
+      "label": "Milan",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.38,
+      "yes_ask": 0.39,
+      "no_bid": 0.61,
+      "no_ask": 0.62,
+      "volume": 32185.21,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Olympiacos win",
+     "price": 0.34,
+     "bid": 0.33,
+     "fair": 0.3345591703809326,
+     "fee": 0.015708000000000003,
+     "edge": -0.021148829619067448,
+     "edge_rest": 0.0045591703809325645,
+     "volume": 4048.38,
+     "ticker": "KXUELGAME-26NOV26OLYACM-OLY"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Olympiacos do not win",
+     "price": 0.67,
+     "bid": 0.66,
+     "fair": 0.6654408296190675,
+     "fee": 0.015477,
+     "edge": -0.020036170380932562,
+     "edge_rest": 0.005440829619067444,
+     "volume": 4048.38,
+     "ticker": "KXUELGAME-26NOV26OLYACM-OLY"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.28,
+     "bid": 0.27,
+     "fair": 0.274281589476021,
+     "fee": 0.014112000000000001,
+     "edge": -0.019830410523979033,
+     "edge_rest": 0.004281589476020975,
+     "volume": 17662.82,
+     "ticker": "KXUELGAME-26NOV26OLYACM-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.73,
+     "bid": 0.72,
+     "fair": 0.725718410523979,
+     "fee": 0.013797000000000002,
+     "edge": -0.01807858947602098,
+     "edge_rest": 0.005718410523979034,
+     "volume": 17662.82,
+     "ticker": "KXUELGAME-26NOV26OLYACM-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Milan win",
+     "price": 0.39,
+     "bid": 0.38,
+     "fair": 0.39115924014304654,
+     "fee": 0.016653,
+     "edge": -0.015493759856953476,
+     "edge_rest": 0.011159240143046534,
+     "volume": 32185.21,
+     "ticker": "KXUELGAME-26NOV26OLYACM-ACM"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Milan do not win",
+     "price": 0.62,
+     "bid": 0.61,
+     "fair": 0.6088407598569534,
+     "fee": 0.016492,
+     "edge": -0.02765124014304659,
+     "edge_rest": -0.0011592401430465804,
+     "volume": 32185.21,
+     "ticker": "KXUELGAME-26NOV26OLYACM-ACM"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915738",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Encamp",
+   "home": {
+    "id": "20703",
+    "name": "Inter D'Escaldes",
+    "short": "Inter D'Escaldes",
+    "abbr": "IDE",
+    "record": "0-0-3",
+    "form": "LLLDD",
+    "score": 0,
+    "rank": 35,
+    "points": 0,
+    "goal_diff": -5
+   },
+   "away": {
+    "id": "909",
+    "name": "F.C. København",
+    "short": "København",
+    "abbr": "KBH",
+    "record": "2-1-0",
+    "form": "LWWWD",
+    "score": 0,
+    "rank": 7,
+    "points": 7,
+    "goal_diff": 4
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 1100,
+     "draw": 550,
+     "away": -425
+    },
+    "total": 3.5,
+    "over": 135,
+    "under": -170
+   },
+   "fair": {
+    "home": 0.07097464559275295,
+    "draw": 0.14032284440752638,
+    "away": 0.7887025099997207
+   },
+   "fair_open": {
+    "home": 0.09278428265213191,
+    "draw": 0.15412204874459676,
+    "away": 0.7530936686032714
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26ESCFCC",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26ESCFCC-ESC",
+      "title": "IC Escaldes wins",
+      "label": "IC Escaldes",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.06,
+      "yes_ask": 0.07,
+      "no_bid": 0.93,
+      "no_ask": 0.94,
+      "volume": 1627.69,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26ESCFCC-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.14,
+      "yes_ask": 0.15,
+      "no_bid": 0.85,
+      "no_ask": 0.86,
+      "volume": 1.77,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26ESCFCC-FCC",
+      "title": "Copenhagen wins",
+      "label": "Copenhagen",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.78,
+      "yes_ask": 0.79,
+      "no_bid": 0.21,
+      "no_ask": 0.22,
+      "volume": 25.5,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Inter D'Escaldes win",
+     "price": 0.07,
+     "bid": 0.06,
+     "fair": 0.07097464559275295,
+     "fee": 0.004557,
+     "edge": -0.00358235440724706,
+     "edge_rest": 0.010974645592752949,
+     "volume": 1627.69,
+     "ticker": "KXUECLGAME-26NOV26ESCFCC-ESC"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Inter D'Escaldes do not win",
+     "price": 0.94,
+     "bid": 0.93,
+     "fair": 0.9290253544072471,
+     "fee": 0.003948000000000004,
+     "edge": -0.014922645592752855,
+     "edge_rest": -0.000974645592752954,
+     "volume": 1627.69,
+     "ticker": "KXUECLGAME-26NOV26ESCFCC-ESC"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.15,
+     "bid": 0.14,
+     "fair": 0.14032284440752638,
+     "fee": 0.008925,
+     "edge": -0.01860215559247362,
+     "edge_rest": 0.00032284440752636256,
+     "volume": 1.77,
+     "ticker": "KXUECLGAME-26NOV26ESCFCC-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.86,
+     "bid": 0.85,
+     "fair": 0.8596771555924736,
+     "fee": 0.008428000000000001,
+     "edge": -0.008750844407526392,
+     "edge_rest": 0.009677155592473619,
+     "volume": 1.77,
+     "ticker": "KXUECLGAME-26NOV26ESCFCC-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "København win",
+     "price": 0.79,
+     "bid": 0.78,
+     "fair": 0.7887025099997207,
+     "fee": 0.011613,
+     "edge": -0.012910490000279344,
+     "edge_rest": 0.008702509999720665,
+     "volume": 25.5,
+     "ticker": "KXUECLGAME-26NOV26ESCFCC-FCC"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "København do not win",
+     "price": 0.22,
+     "bid": 0.21,
+     "fair": 0.2112974900002793,
+     "fee": 0.012012000000000002,
+     "edge": -0.020714509999720694,
+     "edge_rest": 0.0012974900002793166,
+     "volume": 25.5,
+     "ticker": "KXUECLGAME-26NOV26ESCFCC-FCC"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915801",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Freiburg im Breisgau",
+   "home": {
+    "id": "126",
+    "name": "SC Freiburg",
+    "short": "Freiburg",
+    "abbr": "SCF",
+    "record": "2-0-1",
+    "form": "WWWWW",
+    "score": 0,
+    "rank": 14,
+    "points": 6,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "152",
+    "name": "FC Twente",
+    "short": "FC Twente",
+    "abbr": "TWE",
+    "record": "3-0-0",
+    "form": "WDWWW",
+    "score": 0,
+    "rank": 3,
+    "points": 9,
+    "goal_diff": 6
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 105,
+     "draw": 295,
+     "away": 220
+    },
+    "total": 2.5,
+    "over": -175,
+    "under": 135
+   },
+   "fair": {
+    "home": 0.46819187831789666,
+    "draw": 0.23663969881903846,
+    "away": 0.2951684228630648
+   },
+   "fair_open": {
+    "home": 0.4864094883550079,
+    "draw": 0.24159169516438828,
+    "away": 0.2719988164806039
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26SCFTWE",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26SCFTWE-SCF",
+      "title": "Freiburg wins",
+      "label": "Freiburg",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.48,
+      "yes_ask": 0.49,
+      "no_bid": 0.51,
+      "no_ask": 0.52,
+      "volume": 1726.36,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26SCFTWE-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.23,
+      "yes_ask": 0.24,
+      "no_bid": 0.76,
+      "no_ask": 0.77,
+      "volume": 10.66,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26SCFTWE-TWE",
+      "title": "Enschede wins",
+      "label": "Enschede",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.28,
+      "yes_ask": 0.29,
+      "no_bid": 0.71,
+      "no_ask": 0.72,
+      "volume": 166.0,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Freiburg win",
+     "price": 0.49,
+     "bid": 0.48,
+     "fair": 0.46819187831789666,
+     "fee": 0.017493,
+     "edge": -0.039301121682103334,
+     "edge_rest": -0.011808121682103323,
+     "volume": 1726.36,
+     "ticker": "KXUECLGAME-26NOV26SCFTWE-SCF"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Freiburg do not win",
+     "price": 0.52,
+     "bid": 0.51,
+     "fair": 0.5318081216821033,
+     "fee": 0.017472,
+     "edge": -0.005663878317896678,
+     "edge_rest": 0.021808121682103332,
+     "volume": 1726.36,
+     "ticker": "KXUECLGAME-26NOV26SCFTWE-SCF"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.24,
+     "bid": 0.23,
+     "fair": 0.23663969881903846,
+     "fee": 0.012768000000000002,
+     "edge": -0.016128301180961535,
+     "edge_rest": 0.006639698819038448,
+     "volume": 10.66,
+     "ticker": "KXUECLGAME-26NOV26SCFTWE-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.77,
+     "bid": 0.76,
+     "fair": 0.7633603011809615,
+     "fee": 0.012397,
+     "edge": -0.019036698819038474,
+     "edge_rest": 0.0033603011809615335,
+     "volume": 10.66,
+     "ticker": "KXUECLGAME-26NOV26SCFTWE-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "FC Twente win",
+     "price": 0.29,
+     "bid": 0.28,
+     "fair": 0.2951684228630648,
+     "fee": 0.014413,
+     "edge": -0.009244577136935153,
+     "edge_rest": 0.015168422863064801,
+     "volume": 166.0,
+     "ticker": "KXUECLGAME-26NOV26SCFTWE-TWE"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "FC Twente do not win",
+     "price": 0.72,
+     "bid": 0.71,
+     "fair": 0.7048315771369351,
+     "fee": 0.014112000000000001,
+     "edge": -0.029280422863064856,
+     "edge_rest": -0.005168422863064848,
+     "volume": 166.0,
+     "ticker": "KXUECLGAME-26NOV26SCFTWE-TWE"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915802",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Braga",
+   "home": {
+    "id": "2994",
+    "name": "Braga",
+    "short": "Braga",
+    "abbr": "SCB",
+    "record": "1-1-1",
+    "form": "WWDWL",
+    "score": 0,
+    "rank": 17,
+    "points": 4,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "8169",
+    "name": "KuPS Kuopio",
+    "short": "KuPS Kuopio",
+    "abbr": "KUPS",
+    "record": "0-1-2",
+    "form": "DLLWD",
+    "score": 0,
+    "rank": 33,
+    "points": 1,
+    "goal_diff": -4
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -750,
+     "draw": 800,
+     "away": 1700
+    },
+    "total": 3.5,
+    "over": 100,
+    "under": -125
+   },
+   "fair": {
+    "home": 0.8596463642183209,
+    "draw": 0.09725737184020858,
+    "away": 0.043096263941470675
+   },
+   "fair_open": {
+    "home": 0.8516523486926012,
+    "draw": 0.09875379470644725,
+    "away": 0.0495938566009514
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26BRAKUPS",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26BRAKUPS-BRA",
+      "title": "Braga wins",
+      "label": "Braga",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.86,
+      "yes_ask": 0.87,
+      "no_bid": 0.13,
+      "no_ask": 0.14,
+      "volume": 307.44,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26BRAKUPS-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.08,
+      "yes_ask": 0.09,
+      "no_bid": 0.91,
+      "no_ask": 0.92,
+      "volume": 426.52,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26BRAKUPS-KUPS",
+      "title": "Kuopion Palloseura wins",
+      "label": "Kuopion Palloseura",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.04,
+      "yes_ask": 0.05,
+      "no_bid": 0.95,
+      "no_ask": 0.96,
+      "volume": 705.62,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Braga win",
+     "price": 0.87,
+     "bid": 0.86,
+     "fair": 0.8596463642183209,
+     "fee": 0.007917,
+     "edge": -0.01827063578167914,
+     "edge_rest": -0.0003536357816791291,
+     "volume": 307.44,
+     "ticker": "KXUECLGAME-26NOV26BRAKUPS-BRA"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Braga do not win",
+     "price": 0.14,
+     "bid": 0.13,
+     "fair": 0.14035363578167914,
+     "fee": 0.008428000000000001,
+     "edge": -0.008074364218320872,
+     "edge_rest": 0.010353635781679138,
+     "volume": 307.44,
+     "ticker": "KXUECLGAME-26NOV26BRAKUPS-BRA"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.09,
+     "bid": 0.08,
+     "fair": 0.09725737184020858,
+     "fee": 0.005733,
+     "edge": 0.0015243718402085816,
+     "edge_rest": 0.017257371840208577,
+     "volume": 426.52,
+     "ticker": "KXUECLGAME-26NOV26BRAKUPS-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.92,
+     "bid": 0.91,
+     "fair": 0.9027426281597914,
+     "fee": 0.005151999999999999,
+     "edge": -0.022409371840208588,
+     "edge_rest": -0.007257371840208582,
+     "volume": 426.52,
+     "ticker": "KXUECLGAME-26NOV26BRAKUPS-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "KuPS Kuopio win",
+     "price": 0.05,
+     "bid": 0.04,
+     "fair": 0.043096263941470675,
+     "fee": 0.0033250000000000003,
+     "edge": -0.010228736058529328,
+     "edge_rest": 0.003096263941470674,
+     "volume": 705.62,
+     "ticker": "KXUECLGAME-26NOV26BRAKUPS-KUPS"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "KuPS Kuopio do not win",
+     "price": 0.96,
+     "bid": 0.95,
+     "fair": 0.9569037360585293,
+     "fee": 0.002688000000000003,
+     "edge": -0.00578426394147067,
+     "edge_rest": 0.006903736058529342,
+     "volume": 705.62,
+     "ticker": "KXUECLGAME-26NOV26BRAKUPS-KUPS"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915803",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Sofia",
+   "home": {
+    "id": "10834",
+    "name": "CSKA Sofia",
+    "short": "CSKA Sofia",
+    "abbr": "CSKA",
+    "record": "0-1-2",
+    "form": "LDLLL",
+    "score": 0,
+    "rank": 28,
+    "points": 1,
+    "goal_diff": -2
+   },
+   "away": {
+    "id": "997",
+    "name": "Trabzonspor",
+    "short": "Trabzonspor",
+    "abbr": "TRAB",
+    "record": "2-0-1",
+    "form": "WWLWW",
+    "score": 0,
+    "rank": 12,
+    "points": 6,
+    "goal_diff": 3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 320,
+     "draw": 300,
+     "away": -130
+    },
+    "total": 2.5,
+    "over": -175,
+    "under": 140
+   },
+   "fair": {
+    "home": 0.22179991460752607,
+    "draw": 0.23353894602862577,
+    "away": 0.5446611393638482
+   },
+   "fair_open": {
+    "home": 0.2600375516033415,
+    "draw": 0.24183365833811407,
+    "away": 0.4981287900585444
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26CSKTRA",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26CSKTRA-CSK",
+      "title": "CSKA Sofia wins",
+      "label": "CSKA Sofia",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.21,
+      "yes_ask": 0.22,
+      "no_bid": 0.78,
+      "no_ask": 0.79,
+      "volume": 246.22,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26CSKTRA-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.23,
+      "yes_ask": 0.24,
+      "no_bid": 0.76,
+      "no_ask": 0.77,
+      "volume": 1.65,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26CSKTRA-TRA",
+      "title": "Trabzonspor wins",
+      "label": "Trabzonspor",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.54,
+      "yes_ask": 0.55,
+      "no_bid": 0.45,
+      "no_ask": 0.46,
+      "volume": 2449.84,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "CSKA Sofia win",
+     "price": 0.22,
+     "bid": 0.21,
+     "fair": 0.22179991460752607,
+     "fee": 0.012012000000000002,
+     "edge": -0.010212085392473931,
+     "edge_rest": 0.01179991460752608,
+     "volume": 246.22,
+     "ticker": "KXUECLGAME-26NOV26CSKTRA-CSK"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "CSKA Sofia do not win",
+     "price": 0.79,
+     "bid": 0.78,
+     "fair": 0.778200085392474,
+     "fee": 0.011613,
+     "edge": -0.02341291460752605,
+     "edge_rest": -0.001799914607526043,
+     "volume": 246.22,
+     "ticker": "KXUECLGAME-26NOV26CSKTRA-CSK"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.24,
+     "bid": 0.23,
+     "fair": 0.23353894602862577,
+     "fee": 0.012768000000000002,
+     "edge": -0.019229053971374227,
+     "edge_rest": 0.0035389460286257557,
+     "volume": 1.65,
+     "ticker": "KXUECLGAME-26NOV26CSKTRA-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.77,
+     "bid": 0.76,
+     "fair": 0.7664610539713742,
+     "fee": 0.012397,
+     "edge": -0.01593594602862581,
+     "edge_rest": 0.006461053971374198,
+     "volume": 1.65,
+     "ticker": "KXUECLGAME-26NOV26CSKTRA-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Trabzonspor win",
+     "price": 0.55,
+     "bid": 0.54,
+     "fair": 0.5446611393638482,
+     "fee": 0.017325,
+     "edge": -0.022663860636151854,
+     "edge_rest": 0.004661139363848155,
+     "volume": 2449.84,
+     "ticker": "KXUECLGAME-26NOV26CSKTRA-TRA"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Trabzonspor do not win",
+     "price": 0.46,
+     "bid": 0.45,
+     "fair": 0.4553388606361518,
+     "fee": 0.017388000000000004,
+     "edge": -0.022049139363848214,
+     "edge_rest": 0.005338860636151799,
+     "volume": 2449.84,
+     "ticker": "KXUECLGAME-26NOV26CSKTRA-TRA"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915804",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Ghent",
+   "home": {
+    "id": "3611",
+    "name": "KAA Gent",
+    "short": "KAA Gent",
+    "abbr": "GENT",
+    "record": "1-1-1",
+    "form": "LWDLW",
+    "score": 0,
+    "rank": 18,
+    "points": 4,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "2290",
+    "name": "Red Star Belgrade",
+    "short": "Red Star",
+    "abbr": "RSB",
+    "record": "1-1-1",
+    "form": "WDLLW",
+    "score": 0,
+    "rank": 15,
+    "points": 4,
+    "goal_diff": 0
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 115,
+     "draw": 255,
+     "away": 230
+    },
+    "total": 2.5,
+    "over": -125,
+    "under": 100
+   },
+   "fair": {
+    "home": 0.44709610777494296,
+    "draw": 0.26591612633947115,
+    "away": 0.286987765885586
+   },
+   "fair_open": {
+    "home": 0.4410212136098266,
+    "draw": 0.2728168333088603,
+    "away": 0.2861619530813132
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26KAACZV",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26KAACZV-KAA",
+      "title": "Gent wins",
+      "label": "Gent",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.43,
+      "yes_ask": 0.44,
+      "no_bid": 0.56,
+      "no_ask": 0.57,
+      "volume": 56.86,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26KAACZV-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.26,
+      "yes_ask": 0.27,
+      "no_bid": 0.73,
+      "no_ask": 0.74,
+      "volume": 1.58,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26KAACZV-CZV",
+      "title": "Crvena Zvezda wins",
+      "label": "Crvena Zvezda",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.28,
+      "yes_ask": 0.3,
+      "no_bid": 0.7,
+      "no_ask": 0.72,
+      "volume": 155.65,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "KAA Gent win",
+     "price": 0.44,
+     "bid": 0.43,
+     "fair": 0.44709610777494296,
+     "fee": 0.017248000000000003,
+     "edge": -0.010151892225057042,
+     "edge_rest": 0.01709610777494297,
+     "volume": 56.86,
+     "ticker": "KXUECLGAME-26NOV26KAACZV-KAA"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "KAA Gent do not win",
+     "price": 0.57,
+     "bid": 0.56,
+     "fair": 0.5529038922250571,
+     "fee": 0.017157000000000002,
+     "edge": -0.034253107774942865,
+     "edge_rest": -0.007096107774942961,
+     "volume": 56.86,
+     "ticker": "KXUECLGAME-26NOV26KAACZV-KAA"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.26591612633947115,
+     "fee": 0.013797000000000002,
+     "edge": -0.017880873660528873,
+     "edge_rest": 0.005916126339471139,
+     "volume": 1.58,
+     "ticker": "KXUECLGAME-26NOV26KAACZV-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7340838736605289,
+     "fee": 0.013468000000000003,
+     "edge": -0.01938412633947114,
+     "edge_rest": 0.0040838736605288695,
+     "volume": 1.58,
+     "ticker": "KXUECLGAME-26NOV26KAACZV-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Red Star win",
+     "price": 0.3,
+     "bid": 0.28,
+     "fair": 0.286987765885586,
+     "fee": 0.0147,
+     "edge": -0.027712234114413987,
+     "edge_rest": 0.0069877658855859726,
+     "volume": 155.65,
+     "ticker": "KXUECLGAME-26NOV26KAACZV-CZV"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Red Star do not win",
+     "price": 0.72,
+     "bid": 0.7,
+     "fair": 0.7130122341144141,
+     "fee": 0.014112000000000001,
+     "edge": -0.021099765885585917,
+     "edge_rest": 0.0130122341144141,
+     "volume": 155.65,
+     "ticker": "KXUECLGAME-26NOV26KAACZV-CZV"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915805",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Split",
+   "home": {
+    "id": "489",
+    "name": "Hajduk Split",
+    "short": "Hajduk Split",
+    "abbr": "HAJ",
+    "record": "2-0-1",
+    "form": "LWWWD",
+    "score": 0,
+    "rank": 13,
+    "points": 6,
+    "goal_diff": 1
+   },
+   "away": {
+    "id": "936",
+    "name": "Sint-Truidense",
+    "short": "Sint-Truidense",
+    "abbr": "STVV",
+    "record": "2-1-0",
+    "form": "DWDLL",
+    "score": 0,
+    "rank": 10,
+    "points": 7,
+    "goal_diff": 3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 115,
+     "draw": 265,
+     "away": 225
+    },
+    "total": 2.5,
+    "over": -140,
+    "under": 110
+   },
+   "fair": {
+    "home": 0.4481875113195393,
+    "draw": 0.2592455021259185,
+    "away": 0.2925669865545422
+   },
+   "fair_open": {
+    "home": 0.4598928965670601,
+    "draw": 0.2615643479858037,
+    "away": 0.2785427554471362
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26HAJSTT",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26HAJSTT-HAJ",
+      "title": "Hajduk wins",
+      "label": "Hajduk",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.45,
+      "yes_ask": 0.46,
+      "no_bid": 0.54,
+      "no_ask": 0.55,
+      "volume": 90.12,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26HAJSTT-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.25,
+      "yes_ask": 0.26,
+      "no_bid": 0.74,
+      "no_ask": 0.75,
+      "volume": 1.31,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26HAJSTT-STT",
+      "title": "St. Truidense wins",
+      "label": "St. Truidense",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.28,
+      "yes_ask": 0.29,
+      "no_bid": 0.71,
+      "no_ask": 0.72,
+      "volume": 0.0,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Hajduk Split win",
+     "price": 0.46,
+     "bid": 0.45,
+     "fair": 0.4481875113195393,
+     "fee": 0.017388000000000004,
+     "edge": -0.029200488680460702,
+     "edge_rest": -0.0018124886804606888,
+     "volume": 90.12,
+     "ticker": "KXUECLGAME-26NOV26HAJSTT-HAJ"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Hajduk Split do not win",
+     "price": 0.55,
+     "bid": 0.54,
+     "fair": 0.5518124886804607,
+     "fee": 0.017325,
+     "edge": -0.015512511319539311,
+     "edge_rest": 0.011812488680460698,
+     "volume": 90.12,
+     "ticker": "KXUECLGAME-26NOV26HAJSTT-HAJ"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.26,
+     "bid": 0.25,
+     "fair": 0.2592455021259185,
+     "fee": 0.013468,
+     "edge": -0.014222497874081495,
+     "edge_rest": 0.009245502125918514,
+     "volume": 1.31,
+     "ticker": "KXUECLGAME-26NOV26HAJSTT-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.75,
+     "bid": 0.74,
+     "fair": 0.7407544978740814,
+     "fee": 0.013125000000000001,
+     "edge": -0.02237050212591857,
+     "edge_rest": 0.000754497874081439,
+     "volume": 1.31,
+     "ticker": "KXUECLGAME-26NOV26HAJSTT-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Sint-Truidense win",
+     "price": 0.29,
+     "bid": 0.28,
+     "fair": 0.2925669865545422,
+     "fee": 0.014413,
+     "edge": -0.011846013445457762,
+     "edge_rest": 0.012566986554542192,
+     "volume": 0.0,
+     "ticker": "KXUECLGAME-26NOV26HAJSTT-STT"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Sint-Truidense do not win",
+     "price": 0.72,
+     "bid": 0.71,
+     "fair": 0.7074330134454578,
+     "fee": 0.014112000000000001,
+     "edge": -0.026678986554542136,
+     "edge_rest": -0.0025669865545421278,
+     "volume": 0.0,
+     "ticker": "KXUECLGAME-26NOV26HAJSTT-STT"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915806",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Banja Luka",
+   "home": {
+    "id": "20710",
+    "name": "Borac Banja Luka",
+    "short": "Borac",
+    "abbr": "BBL",
+    "record": "1-0-2",
+    "form": "LWLWW",
+    "score": 0,
+    "rank": 21,
+    "points": 3,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "105",
+    "name": "Atalanta",
+    "short": "Atalanta",
+    "abbr": "ATA",
+    "record": "1-1-1",
+    "form": "DWDLD",
+    "score": 0,
+    "rank": 16,
+    "points": 4,
+    "goal_diff": 0
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 500,
+     "draw": 400,
+     "away": -220
+    },
+    "total": 3.5,
+    "over": 125,
+    "under": -160
+   },
+   "fair": {
+    "home": 0.15108138150487974,
+    "draw": 0.1839019640913779,
+    "away": 0.6650166544037424
+   },
+   "fair_open": {
+    "home": 0.20682715042182748,
+    "draw": 0.21201615224612386,
+    "away": 0.5811566973320488
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26BBLATA",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26BBLATA-BBL",
+      "title": "Banja Luka wins",
+      "label": "Banja Luka",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.14,
+      "yes_ask": 0.15,
+      "no_bid": 0.85,
+      "no_ask": 0.86,
+      "volume": 197.87,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26BBLATA-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.18,
+      "yes_ask": 0.19,
+      "no_bid": 0.81,
+      "no_ask": 0.82,
+      "volume": 0.0,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26BBLATA-ATA",
+      "title": "Atalanta wins",
+      "label": "Atalanta",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.67,
+      "yes_ask": 0.68,
+      "no_bid": 0.32,
+      "no_ask": 0.33,
+      "volume": 257.87,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Borac win",
+     "price": 0.15,
+     "bid": 0.14,
+     "fair": 0.15108138150487974,
+     "fee": 0.008925,
+     "edge": -0.00784361849512026,
+     "edge_rest": 0.011081381504879723,
+     "volume": 197.87,
+     "ticker": "KXUECLGAME-26NOV26BBLATA-BBL"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Borac do not win",
+     "price": 0.86,
+     "bid": 0.85,
+     "fair": 0.8489186184951203,
+     "fee": 0.008428000000000001,
+     "edge": -0.019509381504879696,
+     "edge_rest": -0.001081381504879686,
+     "volume": 197.87,
+     "ticker": "KXUECLGAME-26NOV26BBLATA-BBL"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.19,
+     "bid": 0.18,
+     "fair": 0.1839019640913779,
+     "fee": 0.010773000000000001,
+     "edge": -0.016871035908622097,
+     "edge_rest": 0.003901964091377913,
+     "volume": 0.0,
+     "ticker": "KXUECLGAME-26NOV26BBLATA-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.82,
+     "bid": 0.81,
+     "fair": 0.8160980359086221,
+     "fee": 0.010332000000000003,
+     "edge": -0.014233964091377888,
+     "edge_rest": 0.006098035908622013,
+     "volume": 0.0,
+     "ticker": "KXUECLGAME-26NOV26BBLATA-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Atalanta win",
+     "price": 0.68,
+     "bid": 0.67,
+     "fair": 0.6650166544037424,
+     "fee": 0.015232,
+     "edge": -0.030215345596257694,
+     "edge_rest": -0.004983345596257682,
+     "volume": 257.87,
+     "ticker": "KXUECLGAME-26NOV26BBLATA-ATA"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Atalanta do not win",
+     "price": 0.33,
+     "bid": 0.32,
+     "fair": 0.33498334559625764,
+     "fee": 0.015477,
+     "edge": -0.010493654403742373,
+     "edge_rest": 0.014983345596257636,
+     "volume": 257.87,
+     "ticker": "KXUECLGAME-26NOV26BBLATA-ATA"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915807",
+   "competition": "uecl",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Farum",
+   "home": {
+    "id": "3101",
+    "name": "FC Nordsjælland",
+    "short": "Nordsjælland",
+    "abbr": "FCN",
+    "record": "0-2-1",
+    "form": "WWLLD",
+    "score": 0,
+    "rank": 25,
+    "points": 2,
+    "goal_diff": -2
+   },
+   "away": {
+    "id": "443",
+    "name": "Panathinaikos",
+    "short": "Panathinaikos",
+    "abbr": "PAO",
+    "record": "3-0-0",
+    "form": "DWWWW",
+    "score": 0,
+    "rank": 2,
+    "points": 9,
+    "goal_diff": 6
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 160,
+     "draw": 260,
+     "away": 160
+    },
+    "total": 2.5,
+    "over": -150,
+    "under": 115
+   },
+   "fair": {
+    "home": 0.3685294552632393,
+    "draw": 0.26294108947352135,
+    "away": 0.3685294552632393
+   },
+   "fair_open": {
+    "home": 0.3414860064884226,
+    "draw": 0.26484764576638486,
+    "away": 0.3936663477451925
+   },
+   "kalshi": {
+    "event": "KXUECLGAME-26NOV26NJAPAN",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUECLGAME-26NOV26NJAPAN-NJA",
+      "title": "Nordsjaelland wins",
+      "label": "Nordsjaelland",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.35,
+      "yes_ask": 0.36,
+      "no_bid": 0.64,
+      "no_ask": 0.65,
+      "volume": 102.99,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUECLGAME-26NOV26NJAPAN-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.26,
+      "yes_ask": 0.27,
+      "no_bid": 0.73,
+      "no_ask": 0.74,
+      "volume": 1.58,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUECLGAME-26NOV26NJAPAN-PAN",
+      "title": "Panathinaikos wins",
+      "label": "Panathinaikos",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.37,
+      "yes_ask": 0.38,
+      "no_bid": 0.62,
+      "no_ask": 0.63,
+      "volume": 7996.06,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Nordsjælland win",
+     "price": 0.36,
+     "bid": 0.35,
+     "fair": 0.3685294552632393,
+     "fee": 0.016128,
+     "edge": -0.007598544736760662,
+     "edge_rest": 0.018529455263239347,
+     "volume": 102.99,
+     "ticker": "KXUECLGAME-26NOV26NJAPAN-NJA"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Nordsjælland do not win",
+     "price": 0.65,
+     "bid": 0.64,
+     "fair": 0.6314705447367607,
+     "fee": 0.015925,
+     "edge": -0.03445445526323935,
+     "edge_rest": -0.008529455263239338,
+     "volume": 102.99,
+     "ticker": "KXUECLGAME-26NOV26NJAPAN-NJA"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.26294108947352135,
+     "fee": 0.013797000000000002,
+     "edge": -0.02085591052647867,
+     "edge_rest": 0.002941089473521341,
+     "volume": 1.58,
+     "ticker": "KXUECLGAME-26NOV26NJAPAN-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7370589105264787,
+     "fee": 0.013468000000000003,
+     "edge": -0.016409089473521342,
+     "edge_rest": 0.007058910526478668,
+     "volume": 1.58,
+     "ticker": "KXUECLGAME-26NOV26NJAPAN-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Panathinaikos win",
+     "price": 0.38,
+     "bid": 0.37,
+     "fair": 0.3685294552632393,
+     "fee": 0.016492,
+     "edge": -0.02796254473676068,
+     "edge_rest": -0.0014705447367606705,
+     "volume": 7996.06,
+     "ticker": "KXUECLGAME-26NOV26NJAPAN-PAN"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Panathinaikos do not win",
+     "price": 0.63,
+     "bid": 0.62,
+     "fair": 0.6314705447367607,
+     "fee": 0.016317,
+     "edge": -0.014846455263239331,
+     "edge_rest": 0.01147054473676068,
+     "volume": 7996.06,
+     "ticker": "KXUECLGAME-26NOV26NJAPAN-PAN"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915501",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Lyon",
+   "home": {
+    "id": "167",
+    "name": "Lyon",
+    "short": "Lyon",
+    "abbr": "LYON",
+    "record": "2-1-1",
+    "form": "WLDWL",
+    "score": 0,
+    "rank": 13,
+    "points": 7,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "987",
+    "name": "Lillestrom",
+    "short": "Lillestrom",
+    "abbr": "LSK",
+    "record": "0-1-3",
+    "form": "WWLWW",
+    "score": 0,
+    "rank": 34,
+    "points": 1,
+    "goal_diff": -8
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -475,
+     "draw": 600,
+     "away": 1100
+    },
+    "total": 3.5,
+    "over": 100,
+    "under": -120
+   },
+   "fair": {
+    "home": 0.8026150943010625,
+    "draw": 0.12786433815663822,
+    "away": 0.06952056754229922
+   },
+   "fair_open": {
+    "home": 0.8068594372845381,
+    "draw": 0.12173088595383869,
+    "away": 0.0714096767616231
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26OLLSK",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26OLLSK-OL",
+      "title": "Lyon wins",
+      "label": "Lyon",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.8,
+      "yes_ask": 0.81,
+      "no_bid": 0.19,
+      "no_ask": 0.2,
+      "volume": 222.56,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26OLLSK-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.12,
+      "yes_ask": 0.13,
+      "no_bid": 0.87,
+      "no_ask": 0.88,
+      "volume": 53.87,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26OLLSK-LSK",
+      "title": "Lillestroem wins",
+      "label": "Lillestroem",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.07,
+      "yes_ask": 0.08,
+      "no_bid": 0.92,
+      "no_ask": 0.93,
+      "volume": 1447.21,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Lyon win",
+     "price": 0.81,
+     "bid": 0.8,
+     "fair": 0.8026150943010625,
+     "fee": 0.010772999999999998,
+     "edge": -0.01815790569893757,
+     "edge_rest": 0.0026150943010624372,
+     "volume": 222.56,
+     "ticker": "KXUELGAME-26NOV26OLLSK-OL"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Lyon do not win",
+     "price": 0.2,
+     "bid": 0.19,
+     "fair": 0.19738490569893752,
+     "fee": 0.011200000000000002,
+     "edge": -0.013815094301062494,
+     "edge_rest": 0.007384905698937516,
+     "volume": 222.56,
+     "ticker": "KXUELGAME-26NOV26OLLSK-OL"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.13,
+     "bid": 0.12,
+     "fair": 0.12786433815663822,
+     "fee": 0.007917,
+     "edge": -0.01005266184336178,
+     "edge_rest": 0.007864338156638229,
+     "volume": 53.87,
+     "ticker": "KXUELGAME-26NOV26OLLSK-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.88,
+     "bid": 0.87,
+     "fair": 0.8721356618433618,
+     "fee": 0.007392000000000001,
+     "edge": -0.01525633815663823,
+     "edge_rest": 0.0021356618433617802,
+     "volume": 53.87,
+     "ticker": "KXUELGAME-26NOV26OLLSK-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Lillestrom win",
+     "price": 0.08,
+     "bid": 0.07,
+     "fair": 0.06952056754229922,
+     "fee": 0.005152000000000001,
+     "edge": -0.015631432457700777,
+     "edge_rest": -0.0004794324577007819,
+     "volume": 1447.21,
+     "ticker": "KXUELGAME-26NOV26OLLSK-LSK"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Lillestrom do not win",
+     "price": 0.93,
+     "bid": 0.92,
+     "fair": 0.9304794324577008,
+     "fee": 0.004556999999999997,
+     "edge": -0.004077567542299229,
+     "edge_rest": 0.010479432457700777,
+     "volume": 1447.21,
+     "ticker": "KXUELGAME-26NOV26OLLSK-LSK"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915502",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Torino",
+   "home": {
+    "id": "111",
+    "name": "Juventus",
+    "short": "Juventus",
+    "abbr": "JUV",
+    "record": "3-1-0",
+    "form": "WDWWL",
+    "score": 0,
+    "rank": 5,
+    "points": 10,
+    "goal_diff": 7
+   },
+   "away": {
+    "id": "617",
+    "name": "Omonia Nicosia",
+    "short": "Omonia",
+    "abbr": "OMON",
+    "record": "2-0-2",
+    "form": "LLWWW",
+    "score": 0,
+    "rank": 18,
+    "points": 6,
+    "goal_diff": -1
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -575,
+     "draw": 700,
+     "away": 1400
+    },
+    "total": 3.5,
+    "over": -105,
+    "under": -120
+   },
+   "fair": {
+    "home": 0.8319840454825714,
+    "draw": 0.11265380117213969,
+    "away": 0.055362153345288795
+   },
+   "fair_open": {
+    "home": 0.8135236163737968,
+    "draw": 0.12205283640519773,
+    "away": 0.06442354722100553
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26JUVOMO",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26JUVOMO-JUV",
+      "title": "Juventus wins",
+      "label": "Juventus",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.83,
+      "yes_ask": 0.84,
+      "no_bid": 0.16,
+      "no_ask": 0.17,
+      "volume": 3710.43,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26JUVOMO-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.1,
+      "yes_ask": 0.11,
+      "no_bid": 0.89,
+      "no_ask": 0.9,
+      "volume": 194.68,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26JUVOMO-OMO",
+      "title": "Omonia Nicosia wins",
+      "label": "Omonia Nicosia",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.05,
+      "yes_ask": 0.06,
+      "no_bid": 0.94,
+      "no_ask": 0.95,
+      "volume": 10785.22,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Juventus win",
+     "price": 0.84,
+     "bid": 0.83,
+     "fair": 0.8319840454825714,
+     "fee": 0.009408000000000003,
+     "edge": -0.01742395451742854,
+     "edge_rest": 0.0019840454825714726,
+     "volume": 3710.43,
+     "ticker": "KXUELGAME-26NOV26JUVOMO-JUV"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Juventus do not win",
+     "price": 0.17,
+     "bid": 0.16,
+     "fair": 0.16801595451742857,
+     "fee": 0.009877000000000002,
+     "edge": -0.011861045482571447,
+     "edge_rest": 0.008015954517428564,
+     "volume": 3710.43,
+     "ticker": "KXUELGAME-26NOV26JUVOMO-JUV"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.11,
+     "bid": 0.1,
+     "fair": 0.11265380117213969,
+     "fee": 0.0068530000000000015,
+     "edge": -0.004199198827860313,
+     "edge_rest": 0.012653801172139684,
+     "volume": 194.68,
+     "ticker": "KXUELGAME-26NOV26JUVOMO-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.9,
+     "bid": 0.89,
+     "fair": 0.8873461988278604,
+     "fee": 0.0063,
+     "edge": -0.018953801172139656,
+     "edge_rest": -0.002653801172139647,
+     "volume": 194.68,
+     "ticker": "KXUELGAME-26NOV26JUVOMO-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Omonia win",
+     "price": 0.06,
+     "bid": 0.05,
+     "fair": 0.055362153345288795,
+     "fee": 0.003948,
+     "edge": -0.008585846654711203,
+     "edge_rest": 0.005362153345288792,
+     "volume": 10785.22,
+     "ticker": "KXUELGAME-26NOV26JUVOMO-OMO"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Omonia do not win",
+     "price": 0.95,
+     "bid": 0.94,
+     "fair": 0.9446378466547112,
+     "fee": 0.0033250000000000033,
+     "edge": -0.008687153345288781,
+     "edge_rest": 0.004637846654711231,
+     "volume": 10785.22,
+     "ticker": "KXUELGAME-26NOV26JUVOMO-OMO"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915503",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Crete",
+   "home": {
+    "id": "1010",
+    "name": "OFI Crete",
+    "short": "OFI Crete",
+    "abbr": "OFI",
+    "record": "2-0-2",
+    "form": "DDWWW",
+    "score": 0,
+    "rank": 16,
+    "points": 6,
+    "goal_diff": 1
+   },
+   "away": {
+    "id": "441",
+    "name": "Anderlecht",
+    "short": "Anderlecht",
+    "abbr": "AND",
+    "record": "2-0-2",
+    "form": "DDWWL",
+    "score": 0,
+    "rank": 15,
+    "points": 6,
+    "goal_diff": 3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 340,
+     "draw": 290,
+     "away": -130
+    },
+    "total": 2.5,
+    "over": -145,
+    "under": 115
+   },
+   "fair": {
+    "home": 0.21244711285636123,
+    "draw": 0.24121339980331535,
+    "away": 0.5463394873403233
+   },
+   "fair_open": {
+    "home": 0.23622949966853166,
+    "draw": 0.2534949359910135,
+    "away": 0.5102755643404547
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26OFIRSC",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26OFIRSC-OFI",
+      "title": "OFI Crete wins",
+      "label": "OFI Crete",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.21,
+      "yes_ask": 0.22,
+      "no_bid": 0.78,
+      "no_ask": 0.79,
+      "volume": 323.02,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26OFIRSC-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.25,
+      "yes_ask": 0.26,
+      "no_bid": 0.74,
+      "no_ask": 0.75,
+      "volume": 11268.9,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26OFIRSC-RSC",
+      "title": "Anderlecht wins",
+      "label": "Anderlecht",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.53,
+      "yes_ask": 0.54,
+      "no_bid": 0.46,
+      "no_ask": 0.47,
+      "volume": 564.9,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "OFI Crete win",
+     "price": 0.22,
+     "bid": 0.21,
+     "fair": 0.21244711285636123,
+     "fee": 0.012012000000000002,
+     "edge": -0.019564887143638778,
+     "edge_rest": 0.002447112856361233,
+     "volume": 323.02,
+     "ticker": "KXUELGAME-26NOV26OFIRSC-OFI"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "OFI Crete do not win",
+     "price": 0.79,
+     "bid": 0.78,
+     "fair": 0.7875528871436388,
+     "fee": 0.011613,
+     "edge": -0.014060112856361233,
+     "edge_rest": 0.007552887143638776,
+     "volume": 323.02,
+     "ticker": "KXUELGAME-26NOV26OFIRSC-OFI"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.26,
+     "bid": 0.25,
+     "fair": 0.24121339980331535,
+     "fee": 0.013468,
+     "edge": -0.032254600196684656,
+     "edge_rest": -0.008786600196684646,
+     "volume": 11268.9,
+     "ticker": "KXUELGAME-26NOV26OFIRSC-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.75,
+     "bid": 0.74,
+     "fair": 0.7587866001966846,
+     "fee": 0.013125000000000001,
+     "edge": -0.004338399803315355,
+     "edge_rest": 0.018786600196684655,
+     "volume": 11268.9,
+     "ticker": "KXUELGAME-26NOV26OFIRSC-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Anderlecht win",
+     "price": 0.54,
+     "bid": 0.53,
+     "fair": 0.5463394873403233,
+     "fee": 0.017388,
+     "edge": -0.011048512659676699,
+     "edge_rest": 0.01633948734032331,
+     "volume": 564.9,
+     "ticker": "KXUELGAME-26NOV26OFIRSC-RSC"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Anderlecht do not win",
+     "price": 0.47,
+     "bid": 0.46,
+     "fair": 0.45366051265967666,
+     "fee": 0.017437,
+     "edge": -0.03377648734032331,
+     "edge_rest": -0.006339487340323358,
+     "volume": 564.9,
+     "ticker": "KXUELGAME-26NOV26OFIRSC-RSC"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915504",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "London",
+   "home": {
+    "id": "384",
+    "name": "Crystal Palace",
+    "short": "C Palace",
+    "abbr": "CRY",
+    "record": "1-2-1",
+    "form": "LLDLW",
+    "score": 0,
+    "rank": 21,
+    "points": 5,
+    "goal_diff": 3
+   },
+   "away": {
+    "id": "89",
+    "name": "Real Sociedad",
+    "short": "Real Sociedad",
+    "abbr": "RSO",
+    "record": "1-2-1",
+    "form": "LWDLW",
+    "score": 0,
+    "rank": 20,
+    "points": 5,
+    "goal_diff": 5
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 105,
+     "draw": 295,
+     "away": 220
+    },
+    "total": 3.5,
+    "over": 140,
+    "under": -170
+   },
+   "fair": {
+    "home": 0.46819187831789666,
+    "draw": 0.23663969881903846,
+    "away": 0.2951684228630648
+   },
+   "fair_open": {
+    "home": 0.46403028198235813,
+    "draw": 0.23960258612349283,
+    "away": 0.29636713189414915
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26CRYRSO",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26CRYRSO-CRY",
+      "title": "Crystal Palace wins",
+      "label": "Crystal Palace",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.46,
+      "yes_ask": 0.47,
+      "no_bid": 0.53,
+      "no_ask": 0.54,
+      "volume": 2491.96,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26CRYRSO-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.24,
+      "yes_ask": 0.25,
+      "no_bid": 0.75,
+      "no_ask": 0.76,
+      "volume": 389.26,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26CRYRSO-RSO",
+      "title": "Real Sociedad wins",
+      "label": "Real Sociedad",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.29,
+      "yes_ask": 0.3,
+      "no_bid": 0.7,
+      "no_ask": 0.71,
+      "volume": 3114.9,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "C Palace win",
+     "price": 0.47,
+     "bid": 0.46,
+     "fair": 0.46819187831789666,
+     "fee": 0.017437,
+     "edge": -0.019245121682103315,
+     "edge_rest": 0.00819187831789664,
+     "volume": 2491.96,
+     "ticker": "KXUELGAME-26NOV26CRYRSO-CRY"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "C Palace do not win",
+     "price": 0.54,
+     "bid": 0.53,
+     "fair": 0.5318081216821033,
+     "fee": 0.017388,
+     "edge": -0.025579878317896695,
+     "edge_rest": 0.0018081216821033141,
+     "volume": 2491.96,
+     "ticker": "KXUELGAME-26NOV26CRYRSO-CRY"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.25,
+     "bid": 0.24,
+     "fair": 0.23663969881903846,
+     "fee": 0.013125000000000001,
+     "edge": -0.026485301180961544,
+     "edge_rest": -0.0033603011809615335,
+     "volume": 389.26,
+     "ticker": "KXUELGAME-26NOV26CRYRSO-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.76,
+     "bid": 0.75,
+     "fair": 0.7633603011809615,
+     "fee": 0.012768,
+     "edge": -0.009407698819038466,
+     "edge_rest": 0.013360301180961542,
+     "volume": 389.26,
+     "ticker": "KXUELGAME-26NOV26CRYRSO-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Real Sociedad win",
+     "price": 0.3,
+     "bid": 0.29,
+     "fair": 0.2951684228630648,
+     "fee": 0.0147,
+     "edge": -0.01953157713693516,
+     "edge_rest": 0.005168422863064848,
+     "volume": 3114.9,
+     "ticker": "KXUELGAME-26NOV26CRYRSO-RSO"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Real Sociedad do not win",
+     "price": 0.71,
+     "bid": 0.7,
+     "fair": 0.7048315771369351,
+     "fee": 0.014413000000000002,
+     "edge": -0.01958142286306485,
+     "edge_rest": 0.004831577136935161,
+     "volume": 3114.9,
+     "ticker": "KXUELGAME-26NOV26CRYRSO-RSO"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915505",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Nijmegen",
+   "home": {
+    "id": "147",
+    "name": "NEC Nijmegen",
+    "short": "NEC",
+    "abbr": "NEC",
+    "record": "2-1-1",
+    "form": "LWWLD",
+    "score": 0,
+    "rank": 12,
+    "points": 7,
+    "goal_diff": -1
+   },
+   "away": {
+    "id": "169",
+    "name": "Stade Rennais",
+    "short": "Rennes",
+    "abbr": "REN",
+    "record": "1-3-0",
+    "form": "DLDLW",
+    "score": 0,
+    "rank": 17,
+    "points": 6,
+    "goal_diff": 1
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 210,
+     "draw": 295,
+     "away": 110
+    },
+    "total": 3.5,
+    "over": 125,
+    "under": -155
+   },
+   "fair": {
+    "home": 0.3056117244735949,
+    "draw": 0.23710938708144746,
+    "away": 0.45727888844495773
+   },
+   "fair_open": {
+    "home": 0.3393780651146243,
+    "draw": 0.2513414878520729,
+    "away": 0.4092804470333029
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26NIJREN",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26NIJREN-NIJ",
+      "title": "Nijmegen wins",
+      "label": "Nijmegen",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.3,
+      "yes_ask": 0.31,
+      "no_bid": 0.69,
+      "no_ask": 0.7,
+      "volume": 27.63,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26NIJREN-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.24,
+      "yes_ask": 0.25,
+      "no_bid": 0.75,
+      "no_ask": 0.76,
+      "volume": 230.29,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26NIJREN-REN",
+      "title": "Stade Rennais wins",
+      "label": "Stade Rennais",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.45,
+      "yes_ask": 0.46,
+      "no_bid": 0.54,
+      "no_ask": 0.55,
+      "volume": 6988.78,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "NEC win",
+     "price": 0.31,
+     "bid": 0.3,
+     "fair": 0.3056117244735949,
+     "fee": 0.014972999999999998,
+     "edge": -0.019361275526405083,
+     "edge_rest": 0.005611724473594926,
+     "volume": 27.63,
+     "ticker": "KXUELGAME-26NOV26NIJREN-NIJ"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "NEC do not win",
+     "price": 0.7,
+     "bid": 0.69,
+     "fair": 0.694388275526405,
+     "fee": 0.014700000000000003,
+     "edge": -0.02031172447359493,
+     "edge_rest": 0.004388275526405083,
+     "volume": 27.63,
+     "ticker": "KXUELGAME-26NOV26NIJREN-NIJ"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.25,
+     "bid": 0.24,
+     "fair": 0.23710938708144746,
+     "fee": 0.013125000000000001,
+     "edge": -0.026015612918552537,
+     "edge_rest": -0.0028906129185525264,
+     "volume": 230.29,
+     "ticker": "KXUELGAME-26NOV26NIJREN-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.76,
+     "bid": 0.75,
+     "fair": 0.7628906129185525,
+     "fee": 0.012768,
+     "edge": -0.009877387081447473,
+     "edge_rest": 0.012890612918552535,
+     "volume": 230.29,
+     "ticker": "KXUELGAME-26NOV26NIJREN-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Rennes win",
+     "price": 0.46,
+     "bid": 0.45,
+     "fair": 0.45727888844495773,
+     "fee": 0.017388000000000004,
+     "edge": -0.020109111555042292,
+     "edge_rest": 0.007278888444957721,
+     "volume": 6988.78,
+     "ticker": "KXUELGAME-26NOV26NIJREN-REN"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Rennes do not win",
+     "price": 0.55,
+     "bid": 0.54,
+     "fair": 0.5427211115550423,
+     "fee": 0.017325,
+     "edge": -0.02460388844495772,
+     "edge_rest": 0.002721111555042288,
+     "volume": 6988.78,
+     "ticker": "KXUELGAME-26NOV26NIJREN-REN"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915512",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Leiria",
+   "home": {
+    "id": "21615",
+    "name": "Torreense",
+    "short": "Torreense",
+    "abbr": "TOR",
+    "record": "2-0-2",
+    "form": "LWLLW",
+    "score": 0,
+    "rank": 19,
+    "points": 6,
+    "goal_diff": -2
+   },
+   "away": {
+    "id": "256",
+    "name": "Celtic",
+    "short": "Celtic",
+    "abbr": "CEL",
+    "record": "1-0-3",
+    "form": "WWWLD",
+    "score": 0,
+    "rank": 32,
+    "points": 3,
+    "goal_diff": -5
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 370,
+     "draw": 330,
+     "away": -155
+    },
+    "total": 3.5,
+    "over": 135,
+    "under": -170
+   },
+   "fair": {
+    "home": 0.1968477040536981,
+    "draw": 0.21635921112250936,
+    "away": 0.5867930848237926
+   },
+   "fair_open": {
+    "home": 0.2163535001712698,
+    "draw": 0.2280320445779549,
+    "away": 0.5556144552507752
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26TORCEL",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26TORCEL-TOR",
+      "title": "Torreense wins",
+      "label": "Torreense",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.18,
+      "yes_ask": 0.2,
+      "no_bid": 0.8,
+      "no_ask": 0.82,
+      "volume": 316.84,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26TORCEL-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.22,
+      "yes_ask": 0.23,
+      "no_bid": 0.77,
+      "no_ask": 0.78,
+      "volume": 233.14,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26TORCEL-CEL",
+      "title": "Celtic wins",
+      "label": "Celtic",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.58,
+      "yes_ask": 0.6,
+      "no_bid": 0.4,
+      "no_ask": 0.42,
+      "volume": 2815.11,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Torreense win",
+     "price": 0.2,
+     "bid": 0.18,
+     "fair": 0.1968477040536981,
+     "fee": 0.011200000000000002,
+     "edge": -0.014352295946301899,
+     "edge_rest": 0.01684770405369812,
+     "volume": 316.84,
+     "ticker": "KXUELGAME-26NOV26TORCEL-TOR"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Torreense do not win",
+     "price": 0.82,
+     "bid": 0.8,
+     "fair": 0.8031522959463019,
+     "fee": 0.010332000000000003,
+     "edge": -0.027179704053698066,
+     "edge_rest": 0.003152295946301842,
+     "volume": 316.84,
+     "ticker": "KXUELGAME-26NOV26TORCEL-TOR"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.23,
+     "bid": 0.22,
+     "fair": 0.21635921112250936,
+     "fee": 0.012397000000000004,
+     "edge": -0.026037788877490656,
+     "edge_rest": -0.0036407888774906416,
+     "volume": 233.14,
+     "ticker": "KXUELGAME-26NOV26TORCEL-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.78,
+     "bid": 0.77,
+     "fair": 0.7836407888774907,
+     "fee": 0.012012,
+     "edge": -0.008371211122509358,
+     "edge_rest": 0.01364078887749065,
+     "volume": 233.14,
+     "ticker": "KXUELGAME-26NOV26TORCEL-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Celtic win",
+     "price": 0.6,
+     "bid": 0.58,
+     "fair": 0.5867930848237926,
+     "fee": 0.016800000000000002,
+     "edge": -0.030006915176207426,
+     "edge_rest": 0.0067930848237925945,
+     "volume": 2815.11,
+     "ticker": "KXUELGAME-26NOV26TORCEL-CEL"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Celtic do not win",
+     "price": 0.42,
+     "bid": 0.4,
+     "fair": 0.41320691517620745,
+     "fee": 0.017052000000000005,
+     "edge": -0.023845084823792544,
+     "edge_rest": 0.013206915176207423,
+     "volume": 2815.11,
+     "ticker": "KXUELGAME-26NOV26TORCEL-CEL"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915513",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Sunderland",
+   "home": {
+    "id": "366",
+    "name": "Sunderland",
+    "short": "Sunderland",
+    "abbr": "SUN",
+    "record": "2-1-1",
+    "form": "DWLLW",
+    "score": 0,
+    "rank": 11,
+    "points": 7,
+    "goal_diff": 0
+   },
+   "away": {
+    "id": "11505",
+    "name": "Jagiellonia Bialystok",
+    "short": "Jagiellonia ",
+    "abbr": "JAG",
+    "record": "1-0-3",
+    "form": "LLWLW",
+    "score": 0,
+    "rank": 29,
+    "points": 3,
+    "goal_diff": -3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -390,
+     "draw": 500,
+     "away": 1000
+    },
+    "total": 3.5,
+    "over": 140,
+    "under": -175
+   },
+   "fair": {
+    "home": 0.7722942039514143,
+    "draw": 0.15102572668119715,
+    "away": 0.07668006936738861
+   },
+   "fair_open": {
+    "home": 0.762879903060429,
+    "draw": 0.1546568955728017,
+    "away": 0.0824632013667692
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26SUNJAG",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26SUNJAG-SUN",
+      "title": "Sunderland wins",
+      "label": "Sunderland",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.77,
+      "yes_ask": 0.79,
+      "no_bid": 0.21,
+      "no_ask": 0.23,
+      "volume": 466.97,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26SUNJAG-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.14,
+      "yes_ask": 0.15,
+      "no_bid": 0.85,
+      "no_ask": 0.86,
+      "volume": 769.37,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26SUNJAG-JAG",
+      "title": "Jagiellonia wins",
+      "label": "Jagiellonia",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.07,
+      "yes_ask": 0.08,
+      "no_bid": 0.92,
+      "no_ask": 0.93,
+      "volume": 341.14,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Sunderland win",
+     "price": 0.79,
+     "bid": 0.77,
+     "fair": 0.7722942039514143,
+     "fee": 0.011613,
+     "edge": -0.029318796048585685,
+     "edge_rest": 0.002294203951414331,
+     "volume": 466.97,
+     "ticker": "KXUELGAME-26NOV26SUNJAG-SUN"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Sunderland do not win",
+     "price": 0.23,
+     "bid": 0.21,
+     "fair": 0.22770579604858565,
+     "fee": 0.012397000000000004,
+     "edge": -0.014691203951414362,
+     "edge_rest": 0.01770579604858566,
+     "volume": 466.97,
+     "ticker": "KXUELGAME-26NOV26SUNJAG-SUN"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.15,
+     "bid": 0.14,
+     "fair": 0.15102572668119715,
+     "fee": 0.008925,
+     "edge": -0.007899273318802842,
+     "edge_rest": 0.01102572668119714,
+     "volume": 769.37,
+     "ticker": "KXUELGAME-26NOV26SUNJAG-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.86,
+     "bid": 0.85,
+     "fair": 0.8489742733188028,
+     "fee": 0.008428000000000001,
+     "edge": -0.01945372668119717,
+     "edge_rest": -0.0010257266811971588,
+     "volume": 769.37,
+     "ticker": "KXUELGAME-26NOV26SUNJAG-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Jagiellonia  win",
+     "price": 0.08,
+     "bid": 0.07,
+     "fair": 0.07668006936738861,
+     "fee": 0.005152000000000001,
+     "edge": -0.008471930632611393,
+     "edge_rest": 0.0066800693673886025,
+     "volume": 341.14,
+     "ticker": "KXUELGAME-26NOV26SUNJAG-JAG"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Jagiellonia  do not win",
+     "price": 0.93,
+     "bid": 0.92,
+     "fair": 0.9233199306326114,
+     "fee": 0.004556999999999997,
+     "edge": -0.011237069367388627,
+     "edge_rest": 0.0033199306326113787,
+     "volume": 341.14,
+     "ticker": "KXUELGAME-26NOV26SUNJAG-JAG"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915514",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Prague",
+   "home": {
+    "id": "433",
+    "name": "Sparta Prague",
+    "short": "Sparta",
+    "abbr": "SPP",
+    "record": "1-1-2",
+    "form": "DLDWL",
+    "score": 0,
+    "rank": 22,
+    "points": 4,
+    "goal_diff": 0
+   },
+   "away": {
+    "id": "140",
+    "name": "AZ Alkmaar",
+    "short": "AZ Alkmaar",
+    "abbr": "AZ",
+    "record": "2-0-2",
+    "form": "WWLLL",
+    "score": 0,
+    "rank": 14,
+    "points": 6,
+    "goal_diff": 3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": 190,
+     "draw": 275,
+     "away": 130
+    },
+    "total": 2.5,
+    "over": -150,
+    "under": 120
+   },
+   "fair": {
+    "home": 0.3294386813302765,
+    "draw": 0.2521854976802704,
+    "away": 0.41837582098945314
+   },
+   "fair_open": {
+    "home": 0.35324864644073184,
+    "draw": 0.2632292748234161,
+    "away": 0.38352207873585215
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26SPAAZA",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26SPAAZA-SPA",
+      "title": "Sparta Prague wins",
+      "label": "Sparta Prague",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.31,
+      "yes_ask": 0.33,
+      "no_bid": 0.67,
+      "no_ask": 0.69,
+      "volume": 78.98,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26SPAAZA-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.26,
+      "yes_ask": 0.27,
+      "no_bid": 0.73,
+      "no_ask": 0.74,
+      "volume": 292.15,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26SPAAZA-AZA",
+      "title": "Alkmaar wins",
+      "label": "Alkmaar",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.41,
+      "yes_ask": 0.42,
+      "no_bid": 0.58,
+      "no_ask": 0.59,
+      "volume": 1553.75,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Sparta win",
+     "price": 0.33,
+     "bid": 0.31,
+     "fair": 0.3294386813302765,
+     "fee": 0.015477,
+     "edge": -0.01603831866972353,
+     "edge_rest": 0.019438681330276486,
+     "volume": 78.98,
+     "ticker": "KXUELGAME-26NOV26SPAAZA-SPA"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Sparta do not win",
+     "price": 0.69,
+     "bid": 0.67,
+     "fair": 0.6705613186697235,
+     "fee": 0.014973000000000004,
+     "edge": -0.034411681330276486,
+     "edge_rest": 0.0005613186697234207,
+     "volume": 78.98,
+     "ticker": "KXUELGAME-26NOV26SPAAZA-SPA"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.2521854976802704,
+     "fee": 0.013797000000000002,
+     "edge": -0.031611502319729645,
+     "edge_rest": -0.007814502319729633,
+     "volume": 292.15,
+     "ticker": "KXUELGAME-26NOV26SPAAZA-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7478145023197296,
+     "fee": 0.013468000000000003,
+     "edge": -0.0056534976802704254,
+     "edge_rest": 0.017814502319729586,
+     "volume": 292.15,
+     "ticker": "KXUELGAME-26NOV26SPAAZA-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "AZ Alkmaar win",
+     "price": 0.42,
+     "bid": 0.41,
+     "fair": 0.41837582098945314,
+     "fee": 0.017052000000000005,
+     "edge": -0.01867617901054685,
+     "edge_rest": 0.008375820989453164,
+     "volume": 1553.75,
+     "ticker": "KXUELGAME-26NOV26SPAAZA-AZA"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "AZ Alkmaar do not win",
+     "price": 0.59,
+     "bid": 0.58,
+     "fair": 0.5816241790105469,
+     "fee": 0.016933000000000004,
+     "edge": -0.025308820989453112,
+     "edge_rest": 0.0016241790105469,
+     "volume": 1553.75,
+     "ticker": "KXUELGAME-26NOV26SPAAZA-AZA"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915515",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Sinsheim",
+   "home": {
+    "id": "7911",
+    "name": "TSG Hoffenheim",
+    "short": "Hoffenheim",
+    "abbr": "TSG",
+    "record": "1-1-2",
+    "form": "LWDLL",
+    "score": 0,
+    "rank": 23,
+    "points": 4,
+    "goal_diff": 0
+   },
+   "away": {
+    "id": "3746",
+    "name": "SK Sturm Graz",
+    "short": "Sturm Graz",
+    "abbr": "STG",
+    "record": "1-1-2",
+    "form": "LLLDD",
+    "score": 0,
+    "rank": 24,
+    "points": 4,
+    "goal_diff": -3
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -285,
+     "draw": 475,
+     "away": 650
+    },
+    "total": 3.5,
+    "over": -105,
+    "under": -120
+   },
+   "fair": {
+    "home": 0.7198941609250399,
+    "draw": 0.1600541214731645,
+    "away": 0.12005171760179564
+   },
+   "fair_open": {
+    "home": 0.7144521346845004,
+    "draw": 0.161836658560413,
+    "away": 0.12371120675508655
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26TSGSTU",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26TSGSTU-TSG",
+      "title": "Hoffenheim wins",
+      "label": "Hoffenheim",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.73,
+      "yes_ask": 0.74,
+      "no_bid": 0.26,
+      "no_ask": 0.27,
+      "volume": 169.1,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26TSGSTU-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.15,
+      "yes_ask": 0.16,
+      "no_bid": 0.84,
+      "no_ask": 0.85,
+      "volume": 394.68,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26TSGSTU-STU",
+      "title": "Sturm Graz wins",
+      "label": "Sturm Graz",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.1,
+      "yes_ask": 0.11,
+      "no_bid": 0.89,
+      "no_ask": 0.9,
+      "volume": 231.35,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Hoffenheim win",
+     "price": 0.74,
+     "bid": 0.73,
+     "fair": 0.7198941609250399,
+     "fee": 0.013468000000000003,
+     "edge": -0.03357383907496011,
+     "edge_rest": -0.010105839074960099,
+     "volume": 169.1,
+     "ticker": "KXUELGAME-26NOV26TSGSTU-TSG"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Hoffenheim do not win",
+     "price": 0.27,
+     "bid": 0.26,
+     "fair": 0.2801058390749601,
+     "fee": 0.013797000000000002,
+     "edge": -0.003691160925039903,
+     "edge_rest": 0.020105839074960108,
+     "volume": 169.1,
+     "ticker": "KXUELGAME-26NOV26TSGSTU-TSG"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.16,
+     "bid": 0.15,
+     "fair": 0.1600541214731645,
+     "fee": 0.009408000000000001,
+     "edge": -0.009353878526835504,
+     "edge_rest": 0.010054121473164507,
+     "volume": 394.68,
+     "ticker": "KXUELGAME-26NOV26TSGSTU-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.85,
+     "bid": 0.84,
+     "fair": 0.8399458785268354,
+     "fee": 0.008925000000000002,
+     "edge": -0.018979121473164537,
+     "edge_rest": -5.4121473164525646e-05,
+     "volume": 394.68,
+     "ticker": "KXUELGAME-26NOV26TSGSTU-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "Sturm Graz win",
+     "price": 0.11,
+     "bid": 0.1,
+     "fair": 0.12005171760179564,
+     "fee": 0.0068530000000000015,
+     "edge": 0.0031987176017956413,
+     "edge_rest": 0.020051717601795638,
+     "volume": 231.35,
+     "ticker": "KXUELGAME-26NOV26TSGSTU-STU"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "Sturm Graz do not win",
+     "price": 0.9,
+     "bid": 0.89,
+     "fair": 0.8799482823982043,
+     "fee": 0.0063,
+     "edge": -0.026351717601795693,
+     "edge_rest": -0.010051717601795684,
+     "volume": 231.35,
+     "ticker": "KXUELGAME-26NOV26TSGSTU-STU"
+    }
+   ],
+   "note": null
+  },
+  {
+   "id": "401915516",
+   "competition": "uel",
+   "kickoff": "2026-11-26T20:00Z",
+   "status": "scheduled",
+   "venue": "Budapest",
+   "home": {
+    "id": "622",
+    "name": "Ferencvaros",
+    "short": "Ferencvaros",
+    "abbr": "FER",
+    "record": "4-0-0",
+    "form": "WWWWW",
+    "score": 0,
+    "rank": 3,
+    "points": 12,
+    "goal_diff": 8
+   },
+   "away": {
+    "id": "3362",
+    "name": "NK Celje",
+    "short": "NK Celje",
+    "abbr": "NKC",
+    "record": "1-1-2",
+    "form": "WDLLL",
+    "score": 0,
+    "rank": 25,
+    "points": 4,
+    "goal_diff": -4
+   },
+   "book": {
+    "provider": "DraftKings",
+    "ml": {
+     "home": -270,
+     "draw": 450,
+     "away": 650
+    },
+    "total": 3.5,
+    "over": 135,
+    "under": -165
+   },
+   "fair": {
+    "home": 0.7105879225749463,
+    "draw": 0.1686289745675068,
+    "away": 0.1207831028575469
+   },
+   "fair_open": {
+    "home": 0.7108376769578941,
+    "draw": 0.16780604883165548,
+    "away": 0.12135627421045037
+   },
+   "kalshi": {
+    "event": "KXUELGAME-26NOV26FTCCEL",
+    "fee_type": "quadratic",
+    "markets": {
+     "home": {
+      "ticker": "KXUELGAME-26NOV26FTCCEL-FTC",
+      "title": "Ferencvarosi wins",
+      "label": "Ferencvarosi",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.71,
+      "yes_ask": 0.72,
+      "no_bid": 0.28,
+      "no_ask": 0.29,
+      "volume": 482.38,
+      "quoted": true
+     },
+     "draw": {
+      "ticker": "KXUELGAME-26NOV26FTCCEL-TIE",
+      "title": "Tie is the result",
+      "label": "Tie",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.17,
+      "yes_ask": 0.18,
+      "no_bid": 0.82,
+      "no_ask": 0.83,
+      "volume": 52.15,
+      "quoted": true
+     },
+     "away": {
+      "ticker": "KXUELGAME-26NOV26FTCCEL-CEL",
+      "title": "NK Celje wins",
+      "label": "NK Celje",
+      "status": "active",
+      "strike": null,
+      "yes_bid": 0.11,
+      "yes_ask": 0.12,
+      "no_bid": 0.88,
+      "no_ask": 0.89,
+      "volume": 54.92,
+      "quoted": true
+     }
+    }
+   },
+   "contracts": [
+    {
+     "outcome": "home",
+     "side": "yes",
+     "text": "Ferencvaros win",
+     "price": 0.72,
+     "bid": 0.71,
+     "fair": 0.7105879225749463,
+     "fee": 0.014112000000000001,
+     "edge": -0.023524077425053677,
+     "edge_rest": 0.0005879225749463313,
+     "volume": 482.38,
+     "ticker": "KXUELGAME-26NOV26FTCCEL-FTC"
+    },
+    {
+     "outcome": "home",
+     "side": "no",
+     "text": "Ferencvaros do not win",
+     "price": 0.29,
+     "bid": 0.28,
+     "fair": 0.2894120774250537,
+     "fee": 0.014413,
+     "edge": -0.015000922574946276,
+     "edge_rest": 0.009412077425053678,
+     "volume": 482.38,
+     "ticker": "KXUELGAME-26NOV26FTCCEL-FTC"
+    },
+    {
+     "outcome": "draw",
+     "side": "yes",
+     "text": "Draw",
+     "price": 0.18,
+     "bid": 0.17,
+     "fair": 0.1686289745675068,
+     "fee": 0.010332000000000001,
+     "edge": -0.021703025432493188,
+     "edge_rest": -0.0013710254324932059,
+     "volume": 52.15,
+     "ticker": "KXUELGAME-26NOV26FTCCEL-TIE"
+    },
+    {
+     "outcome": "draw",
+     "side": "no",
+     "text": "No draw (either team wins)",
+     "price": 0.83,
+     "bid": 0.82,
+     "fair": 0.8313710254324932,
+     "fee": 0.009877000000000004,
+     "edge": -0.00850597456750677,
+     "edge_rest": 0.011371025432493242,
+     "volume": 52.15,
+     "ticker": "KXUELGAME-26NOV26FTCCEL-TIE"
+    },
+    {
+     "outcome": "away",
+     "side": "yes",
+     "text": "NK Celje win",
+     "price": 0.12,
+     "bid": 0.11,
+     "fair": 0.1207831028575469,
+     "fee": 0.007392000000000001,
+     "edge": -0.006608897142453099,
+     "edge_rest": 0.010783102857546897,
+     "volume": 54.92,
+     "ticker": "KXUELGAME-26NOV26FTCCEL-CEL"
+    },
+    {
+     "outcome": "away",
+     "side": "no",
+     "text": "NK Celje do not win",
+     "price": 0.89,
+     "bid": 0.88,
+     "fair": 0.8792168971424531,
+     "fee": 0.006853,
+     "edge": -0.01763610285754691,
+     "edge_rest": -0.0007831028575469023,
+     "volume": 54.92,
+     "ticker": "KXUELGAME-26NOV26FTCCEL-CEL"
+    }
+   ],
+   "note": null
+  }
+ ],
+ "warnings": []
+}
