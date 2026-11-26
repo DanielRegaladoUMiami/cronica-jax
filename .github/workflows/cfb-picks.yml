@@ -1,7 +1,7 @@
 name: CFB Picks
 
-# Runs the college football and NFL pipelines and publishes the site to the gh-pages
-# branch, which GitHub Pages serves.
+# Runs the college football, NFL and European soccer pipelines and publishes the site to
+# the gh-pages branch, which GitHub Pages serves.
 # Scheduled runs only fire from the repository's default branch.
 on:
   schedule:
@@ -11,6 +11,11 @@ on:
     # the first one here began almost seven hours after its time. The early run is the
     # insurance; the later one, when it is on time, has fresher lines.
     - cron: "17 6,13 * 8-12,1,2 0,4,6"
+    # Tuesday and Wednesday of the European season: the Champions League plays then (the
+    # Europa and Conference Leagues play on Thursday, which the line above covers until
+    # February and this one from March).
+    - cron: "17 13 * 9-12,1-5 2,3"
+    - cron: "17 13 * 3-5 4"
   workflow_dispatch:
     inputs:
       week:
@@ -89,6 +94,33 @@ jobs:
           else
             echo "The NFL is out of season: nothing to generate."
           fi
+
+      # Player projections need the schedule the step above just refreshed. If ESPN or Kalshi
+      # do not answer, the site keeps the last ones (the page shows when they were made).
+      # The record of flagged contracts lives on the published site: fetch it first, so
+      # this run adds to it instead of starting over.
+      - name: Generate NFL player projections
+        env:
+          WEEK: ${{ inputs.nfl_week }}
+        run: |
+          month=$(date -u +%-m)
+          if [ -z "$WEEK" ] && [ "$month" -gt 2 ] && [ "$month" -lt 9 ]; then
+            echo "The NFL is out of season: nothing to generate."
+            exit 0
+          fi
+          site="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}"
+          curl -fsS --max-time 30 "$site/data/nfl_props_log.json" -o /tmp/props_log.json \
+            && python -c "import json; json.load(open('/tmp/props_log.json'))" \
+            && cp /tmp/props_log.json site/data/nfl_props_log.json \
+            || echo "No published record to continue from: using the one in the repository."
+          python -m src.players.week ${WEEK:+--week "$WEEK"} \
+            || echo "::warning::Player projections were not generated: the site keeps the last ones."
+
+      # European cups: market odds next to Kalshi's prices. No model, so nothing to tune.
+      - name: Generate the soccer board
+        run: |
+          python -m src.soccer.board \
+            || echo "::warning::The soccer board was not generated: the site keeps the last one."
 
       # The branch only ever holds the latest build, so each run replaces it.
       - name: Publish the site to gh-pages

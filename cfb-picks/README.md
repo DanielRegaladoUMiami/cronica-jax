@@ -1,14 +1,20 @@
-# CFB Picks (and NFL)
+# CFB Picks (NFL, college football and European soccer)
 
-A weekly football prediction system for two leagues. It downloads every game
-from ESPN's public API, fits a ratings model, checks it with a walk-forward
-backtest, and publishes the picks as a static site.
+A weekly betting-research site with three sections. It downloads every game
+from ESPN's public API, fits its models, checks them with walk-forward
+backtests, and publishes the result as a static site.
 
-- **College football**: every FBS game. The rest of this page describes it.
-- **NFL**: the same pipeline with `--league nfl`. See [NFL](#nfl).
+- **College football**: every FBS game. Most of this page describes it.
+- **NFL**: the same team pipeline with `--league nfl` (see [NFL](#nfl)), plus
+  projections for every player compared with DraftKings lines and Kalshi's
+  prices (see [NFL players](#nfl-players)).
+- **European soccer**: Champions League, Europa League and Conference League.
+  No model: the sportsbook's odds next to what Kalshi charges (see
+  [European soccer](#european-soccer)).
 
 **Live site:** https://danielregaladoumiami.github.io/cronica-jax/ (the switch
-at the top changes league; `#nfl-picks` links straight to the NFL).
+at the top changes section; `#nfl-players` or `#soccer-picks` link straight to
+a tab).
 
 ## College football: how good it is, and how good it is not
 
@@ -48,6 +54,8 @@ pip install -r requirements.txt
 
 python -m src.picks --week 12     # download data, run the backtest, generate the picks
 python -m src.picks --league nfl  # the same for the NFL, current week
+python -m src.players.week        # NFL players (run it after the NFL picks)
+python -m src.soccer.board        # European soccer: odds and Kalshi prices
 python -m http.server -d site     # then open http://localhost:8000
 ```
 
@@ -64,6 +72,8 @@ Other commands:
 | `python -m src.data.odds_history` | Only download closing lines for games already played (`--season` picks the year) |
 | `python -m src.compare` | Model comparison table (`--select` saves the lowest-error model) |
 | `python -m src.model.tune` | Re-tune hyperparameters on past seasons |
+| `python -m src.players.fetch --seasons 2025 2026` | Only download per-player box scores into `data/nfl_player_games.parquet` |
+| `python -m src.players.backtest --ablation` | Player model: error by statistic, and what each ingredient adds |
 | `python -m pytest` | Tests |
 
 ## Updating odds by hand
@@ -195,14 +205,130 @@ went 103-47.
   gap between PLAY and AVOID is a best case.
 - **"Clear favorite" means 7+ points**, not 14.
 
+## NFL players
+
+`python -m src.players.week` projects every quarterback, runner and receiver of
+the week (passing, rushing and receiving yards, attempts, completions,
+receptions, touchdowns, interceptions) and puts the result next to what the
+market says: the DraftKings line for each player, and Kalshi's ladder of
+yes/no contracts ("250+ passing yards" at 65 cents). It writes
+`site/data/nfl_players.json`, which the **Players** tab of the site reads.
+
+### How a projection is built
+
+Top-down, in the order things happen on the field (`src/players/model.py`):
+
+1. **The team.** How many passes and runs the offense calls and how efficient
+   it is (yards per pass, completion rate, touchdown and interception rates,
+   yards per carry). Each team gets an offense effect and a defense effect per
+   statistic, estimated together from all games so far, so the projection is
+   adjusted for **the opponent**.
+2. **The quarterback.** The passing numbers belong to whoever starts. A backup
+   changes every receiver's projection, and the team throws less with him.
+3. **The role.** Each player's share of the team's targets and carries in the
+   games he played, weighted toward the recent ones.
+4. **Who is available.** Rosters, injury statuses and depth charts come from
+   ESPN. Shares are split among the players who will play; when a teammate is
+   out, the man who replaces him takes most of the vacancy.
+5. **His own efficiency.** Catch rate, yards per target and per carry, pulled
+   toward the average of his position when he has had few chances.
+
+A projection is an average, and a bet asks about a threshold. The probability
+of "250+ passing yards" comes from how real results have spread around
+projections of that size in the backtest (`src/players/dist.py`), so it carries
+the model's real error.
+
+### How good it is, and how good it is not
+
+Walk-forward backtest over 2025 and 2026 (448 games): every week projected
+with only what was known before it. The yardstick is the simplest thing a
+bettor would do, the player's average per game so far. Average miss:
+
+| Statistic | Model, both seasons | Season average | Model, 2026 | Season average, 2026 |
+|---|---|---|---|---|
+| Passing yards | 58.18 | 63.92 | 58.44 | 64.95 |
+| Passing touchdowns | 0.93 | 1.02 | 0.91 | 1.01 |
+| Interceptions thrown | 0.66 | 0.69 | 0.66 | 0.66 |
+| Carries | 3.82 | 4.13 | 3.76 | 4.19 |
+| Rushing yards | 23.31 | 24.49 | 22.44 | 24.03 |
+| Receptions | 1.57 | 1.64 | 1.60 | 1.69 |
+| Receiving yards | 21.34 | 22.71 | 21.85 | 23.65 |
+
+- **Who is out matters most.** When a team is missing a main running back
+  (13% of team games), the backs who are left carry 4 more times and gain
+  16 more yards than their average says. Knowing who is out cuts the miss on
+  carries from 5.4 to 4.0. When a main receiver is out (21% of team
+  games) the others gain about 8 receiving yards each.
+- **The opponent matters less than it seems.** Dropping the defense adjustment
+  moves the miss on passing yards from 58.2 to 58.6: one game is too noisy
+  for the defense to show.
+- **The percentages hold up.** Fitted on 2025 and checked on 2026, what the model
+  called 65% happened between 62% and 71% of the time (off by 1 to 4 points on
+  average, depending on the statistic).
+- **Against the market.** In week 12 of 2026 the projections sat about 5 yards
+  from the DraftKings line on receiving yards, 8 on rushing and 13 on passing,
+  closer than the season averages do. That says the model is sane, not that it
+  beats the line.
+- **There is no betting record yet.** ESPN does not keep past player lines and
+  the history of Kalshi's prices was not downloaded, so nothing here has been
+  tested against the prices you would have paid. Every flagged contract is
+  written to `site/data/nfl_props_log.json` before kickoff and settled once
+  the game is played; the site shows that record as it grows.
+
+### The flags
+
+A contract is a rung of Kalshi's ladder, bought as Yes or No.
+
+- **PLAY**: the model leaves 5+ points after Kalshi's fee, the DraftKings
+  line agrees, the price is between 15 and 85 cents with bid and ask no more
+  than 5 cents apart, at least 50 contracts have traded, and the player is
+  not questionable, just back from injury or playing with a new quarterback.
+- **LEAN**: an edge that only the model sees (no DraftKings line to confirm it,
+  or a thin market).
+- **CHECK**: the model is more than 12 points from the market, or something
+  about the player changed. A gap that size usually means the market knows
+  something: read the news first.
+
+The same step also tells the team picks which teams start a different
+quarterback than usual, and moves those picks from PLAY to AVOID: the team
+model rates a team by its season and does not know the starter is out.
+
+Kalshi charges about 7% x price x (1 - price) per contract (1.7 cents at 50
+cents, almost nothing near 0 or 100). Every edge on the site is after that fee.
+
+## European soccer
+
+`python -m src.soccer.board` builds the **Soccer** section: every Champions
+League, Europa League and Conference League match of the next few days, with
+no prediction of ours. Nothing in this project has been tested on European cup
+matches, so the board shows the market instead:
+
+1. The sportsbook's three-way odds (home, draw, away) from ESPN, with the
+   bookmaker's margin removed by Shin's method (an even split overstates the
+   long shot, where most of the margin sits).
+2. Kalshi's price for each result, Yes and No. **"No" on a team wins if it
+   draws or loses**, so it is the same as backing the other team and the draw.
+3. What each contract leaves after Kalshi's fee: its market chance, minus the
+   price, minus the fee.
+
+A positive number means Kalshi charges less than the sportsbook implies. That
+is two markets disagreeing, not a tested edge; most weeks nothing is positive.
+"No" is not safer either: "No" on a 14% underdog costs about 86 cents to win
+14, and comes in exactly as often as it needs to.
+
+Matches are paired with Kalshi's by day and club names (`match_kalshi`); a
+weak or ambiguous pairing is left without a price rather than guessed. Team
+news can be added by hand in `data/soccer_notes.csv` (`date,team,note`).
+
 ## Publishing
 
 The site is served by GitHub Pages from the `gh-pages` branch, which holds
 nothing but the contents of `site/`.
 
-The workflow `.github/workflows/cfb-picks.yml` reruns both pipelines every
-Thursday, Saturday and Sunday from August through February and replaces that
-branch with the new build. It is scheduled twice on those days (1:17 and 8:17
+The workflow `.github/workflows/cfb-picks.yml` reruns every pipeline (team
+picks for both leagues, NFL players, the soccer board) every Thursday,
+Saturday and Sunday from August through February, plus Tuesday and Wednesday
+during the European season, and replaces that branch with the new build. It is scheduled twice on those days (1:17 and 8:17
 AM Eastern in winter) because GitHub can start a scheduled run hours late; the
 header of the site shows when the picks were last updated. College football is generated from
 August to January and the NFL from September to February; out of season a
@@ -215,13 +341,25 @@ If the site ever stops being served, check **Settings → Pages** and make sure
 the source is *Deploy from a branch*, branch `gh-pages`, folder `/ (root)`.
 GitHub pauses scheduled workflows after 60 days without repository activity;
 they can be re-enabled from the Actions tab. If ESPN's API fails, the workflow
-fails and the site keeps its previous version: no data is made up.
+fails and the site keeps its previous version: no data is made up. If only the
+player projections or the soccer board fail (Kalshi not answering, say), the
+run goes on with the previous ones and the page shows when they were made.
+
+The record of flagged player contracts lives with the published site: before
+generating, the workflow downloads `data/nfl_props_log.json` from the live
+site so each run adds to it.
 
 ## Known limits
 
-- It only uses final scores. It does not see plays, yards, injuries or weather.
-  In the NFL that includes the one thing that moves a line most: who is at
-  quarterback.
+- The team models only use final scores. They do not see plays, yards,
+  injuries or weather. In the NFL the player step covers the biggest gap, a
+  change of quarterback, by flagging those games; college football has no
+  such check.
+- The player model knows who is out from ESPN's injury list. It does not know
+  a snap count, a game plan or the weather, and it cannot tell a healthy
+  scratch from a starter until he has played.
+- Player props have no betting record yet (see [NFL players](#nfl-players)).
+- The soccer board has no model at all.
 - FCS opponents are treated as one average team.
 - The simulated ROI uses the closing line, not the line you see on Thursday.
 - ESPN's historical closing lines are only complete for 2021, 2022 and 2026,

@@ -1,5 +1,6 @@
-/* Picks site for two leagues. The URL names the league and the section
-   (#cfb-picks, #nfl-record ...) and the page reads that league's JSON from data/.
+/* Picks site for three sections: NFL, college football and European soccer.
+   The URL names the section and the tab (#nfl-players, #cfb-record, #soccer-picks ...)
+   and the page reads that section's JSON from data/.
    No dependencies. Any text that comes from the data goes in through textContent. */
 (function () {
   'use strict';
@@ -86,11 +87,14 @@
   };
 
   // ----------------------------------------------------------------- leagues
-  // Both leagues share every view; what differs is the data and a few words.
+  // The two football leagues share every view; what differs is the data and a few words.
+  // Soccer is a different kind of page: a board of market odds and Kalshi prices, no model.
+  const FOOTBALL_TABS = [['picks', 'Picks'], ['parlay', 'Parlay'], ['record', 'Track record'], ['how', 'How it works']];
+  const DEFAULT_SPORT = 'nfl';
   const SPORTS = {
     cfb: {
-      title: 'CFB Picks', name: 'College football', college: true,
-      files: ['data/picks.json', 'data/backtest.json'], command: 'python -m src.picks', notes: 'data/notes.csv',
+      title: 'CFB Picks', name: 'College football', college: true, tabs: FOOTBALL_TABS,
+      files: { picks: 'data/picks.json', backtest: 'data/backtest.json' }, command: 'python -m src.picks', notes: 'data/notes.csv',
       playoffs: {},
       blowout: 'one 63–0',
       blind: [
@@ -102,7 +106,9 @@
     },
     nfl: {
       title: 'NFL Picks', name: 'NFL', college: false,
-      files: ['data/nfl_picks.json', 'data/nfl_backtest.json'], command: 'python -m src.picks --league nfl', notes: 'data/nfl_notes.csv',
+      tabs: [['picks', 'Picks'], ['players', 'Players'], ['parlay', 'Parlay'], ['record', 'Track record'], ['how', 'How it works']],
+      files: { picks: 'data/nfl_picks.json', backtest: 'data/nfl_backtest.json', players: 'data/nfl_players.json' }, optional: ['players'],
+      command: 'python -m src.picks --league nfl', notes: 'data/nfl_notes.csv',
       playoffs: { 19: ['WC', 'Wild Card'], 20: ['Div', 'Divisional round'], 21: ['Conf', 'Conference championships'], 22: ['SB', 'Super Bowl'] },
       blowout: 'one 45–3',
       blind: [
@@ -112,18 +118,28 @@
       ],
       spread: 'A bet on the margin. Jaguars −6 wins if Jacksonville wins by 7 or more; if it wins by exactly 6 the stake comes back.',
     },
+    soccer: {
+      title: 'Soccer Board', name: 'European cups', kind: 'board', tabs: [['picks', 'Matches'], ['how', 'How it works']],
+      files: { board: 'data/soccer.json' }, command: 'python -m src.soccer.board',
+    },
   };
-  const DATA = {};   // league -> { picks, backtest } or { error }
+  const DATA = {};   // section -> { picks, backtest, players } or { board }, or { error }
 
   // ------------------------------------------------------------------- state
   const state = {
-    sport: 'cfb',
+    sport: DEFAULT_SPORT,
     picks: null,
     backtest: null,
+    players: null,
+    board: null,
     error: null,
+    playersGame: null,
+    playerOpen: null,
+    soccerComp: store.get('soccerComp', 'all'),
+    soccerPlayed: store.get('soccerPlayed', false),
     scope: store.get('scope', 'mine'),
     market: store.get('market', 'all'),
-    allMarkets: store.get('allMarkets', false),
+    allMarkets: store.get('allMarkets', true),
     playsOnly: store.get('playsOnly', false),
     bankroll: store.get('bankroll', 1000),
     stake: store.get('stake', 10),
@@ -155,7 +171,7 @@
   const mineCount = () => allGames().filter((g) => g.on_my_list).length;
   const useMine = () => state.scope === 'mine' && mineCount() > 0;
   const scopedGames = () => (useMine() ? allGames().filter((g) => g.on_my_list) : allGames());
-  // The site is about who wins: moneylines only, unless the visitor asks for spreads and totals too.
+  // Moneyline, spread and total are all on by default; unticking the box leaves only who wins.
   const mlOnly = () => !state.allMarkets;
   const visibleMarkets = () => (mlOnly() ? ['ml'] : state.market === 'all' ? ['ml', 'spread', 'total'] : [state.market]);
   const countText = (right, wrong, ties) => right + ' right · ' + wrong + ' wrong' + (ties ? ' · ' + plural(ties, 'tie') : '');
@@ -251,6 +267,7 @@
   }
   function updateParlayCount() {
     const el = document.getElementById('parlay-count');
+    if (!el) return;   // this section has no parlay tab
     const n = state.picks ? selectedLegs().length : 0;
     el.hidden = n === 0;
     el.textContent = String(n);
@@ -1065,7 +1082,7 @@
     ];
     for (const [term, text] of terms) gloss.append(h('div', null, h('dt', null, term), h('dd', null, text)));
     const lines = B.bets && B.bets.seasons_with_lines && B.bets.seasons_with_lines.length ? B.bets.seasons_with_lines.join(', ') : null;
-    return [
+    const out = [
       sec('The model in plain words', h('div', { class: 'prose' },
         p('Each team gets a rating: its average scoring margin, adjusted for how good its opponents were. A team’s rating depends on its opponents’ ratings and theirs on it, so all of them are solved together from the ' +
           m.training_games + ' games played this season.'),
@@ -1086,36 +1103,449 @@
           (lines ? ', for the seasons ESPN kept closing lines for (' + lines + ').' : '.')))),
       sec('Glossary', gloss),
     ];
+    if (state.players) out.splice(out.length - 1, 0, playersHow(sec, p));
+    return out;
+  }
+
+  // ================================================================= PLAYERS
+  // NFL player projections next to the market: DraftKings lines and Kalshi's yes/no prices.
+  const cents = (x) => (x == null ? '–' : Math.round(x * 100) + '¢');
+  const points = (x) => (x == null ? '–' : signed(x * 100, 1));
+  const FLAG_PILL = { PLAY: 'play', LEAN: 'pass', CHECK: 'avoid' };
+  const flagPill = (label) => h('span', { class: 'pill ' + (FLAG_PILL[label] || 'none') }, label);
+  const statName = (stat) => (state.players.stat_names[stat] || stat);
+  const shortStat = { pass_yds: 'pass yds', pass_td: 'pass TD', pass_int: 'INT', pass_att: 'att', pass_cmp: 'cmp', rush_yds: 'rush yds', rush_att: 'carries', rec: 'rec', rec_yds: 'rec yds', td: 'TD' };
+  const HEADLINE = { QB: ['pass_yds', 'pass_td', 'rush_yds'], RB: ['rush_yds', 'rec_yds', 'td'], WR: ['rec', 'rec_yds', 'td'], TE: ['rec', 'rec_yds', 'td'] };
+  // A contract the way Kalshi words it: "Yes · 3+ receptions", "No · 50+ receiving yards".
+  const contractText = (f) => (f.side === 'yes' ? 'Yes' : 'No') + ' · ' + f.t + '+ ' + statName(f.stat).toLowerCase();
+  const anyTd = (lambda) => 1 - Math.exp(-lambda);   // chance of at least one touchdown from the expected number
+  const share = (x) => Math.round(x * 100) + '%';
+
+  function playersGames() { return state.players.games; }
+  function currentGame() {
+    const games = playersGames();
+    return games.find((g) => g.game_id === state.playersGame) || games.find((g) => g.status === 'scheduled') || games[0];
+  }
+  function openPlayer(gameId, playerId) {
+    state.playersGame = gameId;
+    state.playerOpen = playerId;
+    render();
+    const el = document.getElementById('pl-' + playerId);
+    if (el) {
+      el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 1800);
+    }
+  }
+
+  function renderPlayers() {
+    const P = state.players;
+    if (!P) {
+      return [h('section', { class: 'callout' }, h('b', { class: 't' }, 'No player projections yet'),
+        h('p', null, 'Generate them with python -m src.players.week after the week’s picks.'))];
+    }
+    const out = [playersCheck(P)];
+    if (P.warnings && P.warnings.length) {
+      out.push(h('section', { class: 'callout' }, h('b', { class: 't' }, 'Data warnings'), h('ul', { class: 'alerts' }, P.warnings.map((w) => h('li', null, w)))));
+    }
+    out.push(flaggedPanel(P));
+    out.push(gamePicker(P));
+    const game = currentGame();
+    if (game) out.push(h('div', { class: 'cards wide' }, game.teams.map((t) => teamSheet(game, t))));
+    out.push(playersEvidence(P));
+    return out;
+  }
+
+  function playersCheck(P) {
+    const err = P.backtest.error_season || {}, rec = P.record || {};
+    const box = h('section', { class: 'callout', 'aria-label': 'Reality check' }, h('b', { class: 't' }, 'Reality check'));
+    const line = h('p', null, 'These are projections for each player, tested on ' + P.backtest.games + ' past games. ');
+    if (err.rec_yds && err.rush_yds) {
+      line.append('This season they miss by ', b(trim(err.rec_yds.mae) + ' receiving yards'), ' and ', b(trim(err.rush_yds.mae) + ' rushing yards'),
+        ' on a typical player, a little better than his season average (' + trim(err.rec_yds.mae_avg) + ' and ' + trim(err.rush_yds.mae_avg) + '). ');
+    }
+    const n = (rec.plays && rec.plays.n) || 0;
+    line.append(n
+      ? 'Flagged contracts settled so far: ' + rec.plays.won + ' won and ' + rec.plays.lost + ' lost.'
+      : b('No flagged contract has been settled yet'), n ? '' : ': the betting record starts this week, so nothing here is proven against Kalshi’s prices.');
+    box.append(line);
+    return box;
+  }
+
+  function flaggedPanel(P) {
+    const by = (label) => P.flagged.filter((f) => f.label === label);
+    const plays = by('PLAY'), leans = by('LEAN'), checks = by('CHECK');
+    const box = h('section', { class: 'panel' }, h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, 'Kalshi contracts the model flags')));
+    const rule = P.rule;
+    if (!plays.length) {
+      box.append(h('p', { class: 'empty' }, 'No contract clears the bar this week: ' + (rule.edge_play * 100).toFixed(0) + ' points of edge after the fee, backed by the DraftKings line.'));
+    } else {
+      box.append(h('p', { class: 'sub' }, plural(plays.length, 'contract') + ' with ' + (rule.edge_play * 100).toFixed(0) +
+        '+ points left after Kalshi’s fee, where the DraftKings line agrees and the player is not in doubt. Tap one to see the player.'));
+      box.append(h('div', { class: 'plays' }, plays.map((f, i) => flagRow(f, i + 1))));
+    }
+    const fold = (rows, one, many, text) => (rows.length ? h('details', null, h('summary', { class: 'h3' }, plural(rows.length, one, many)),
+      h('p', { class: 'small', style: 'margin-top:8px' }, text), h('div', { class: 'plays' }, rows.slice(0, 25).map((f) => flagRow(f, null)))) : null);
+    box.append(fold(leans, 'lean', 'leans', 'An edge on paper that only the model sees: no DraftKings line to confirm it, or too few contracts traded for the price to mean much.'));
+    box.append(fold(checks, 'contract to check first', 'contracts to check first', 'The model is far from the market here, or the player’s situation changed. A big gap usually means the market knows something: read the news before touching these.'));
+    return box;
+  }
+
+  function flagRow(f, rank) {
+    let ctx = f.name + ' · ' + f.team + ' · ' + f.game + ' · ' + kickFmt(f.kickoff) + ' · projection ' + trim(f.proj, 1) + (f.dk != null ? ' (DraftKings ' + trim(f.dk, 1) + ')' : '');
+    if (!rank && f.reasons.length) ctx += ' · ' + f.reasons[0];
+    return h('button', { type: 'button', class: 'playrow', onclick: () => openPlayer(f.game_id, f.athlete_id) },
+      rank ? h('span', { class: 'rankno' }, String(rank)) : flagPill(f.label),
+      h('span', { class: 'what' }, contractText(f), ' ', h('span', { class: 'price' }, '(' + cents(f.price) + ')')),
+      h('span', { class: 'edge' }, points(f.edge), h('small', null, pct(f.p) + ' vs ' + cents(f.price))),
+      h('span', { class: 'ctx' }, ctx));
+  }
+
+  function gamePicker(P) {
+    const game = currentGame();
+    const select = h('select', { id: 'players-game', 'aria-label': 'Game', onchange: (e) => { state.playersGame = e.target.value; state.playerOpen = null; refocus = 'players-game'; render(); } },
+      playersGames().map((g) => h('option', { value: g.game_id, selected: game && g.game_id === game.game_id },
+        g.away + ' @ ' + g.home + ' · ' + kickFmt(g.kickoff) + (g.status === 'scheduled' ? '' : ' · ' + (g.status === 'final' ? 'played' : 'started')))));
+    const note = !game ? null : game.status !== 'scheduled' ? 'This game has started: the numbers are what the model said before kickoff.'
+      : !game.has_kalshi && !game.has_dk ? 'No player lines or Kalshi prices for this game yet.'
+      : !game.has_kalshi ? 'No Kalshi prices for this game yet.' : null;
+    return h('section', { class: 'controls', 'aria-label': 'Choose a game' },
+      h('div', { class: 'controls-row' }, h('label', { class: 'h3', for: 'players-game' }, 'Game'), h('div', { class: 'pick' }, select)),
+      h('p', { class: 'small' }, 'Projections and prices as of ' + stamp(P.generated_at) + '.' + (note ? ' ' + note : '')));
+  }
+
+  function teamSheet(game, t) {
+    const opp = game.teams.find((x) => x.id !== t.id);
+    const card = h('article', { class: 'panel game' });
+    const tags = h('div', { class: 'tags' });
+    if (t.implied_points != null) tags.append(h('span', { class: 'tag' }, 'Line implies ' + trim(t.implied_points, 1) + ' pts'));
+    card.append(h('div', { class: 'game-top' },
+      h('div', { class: 'team fav' }, badge(t), h('div', { class: 'team-name' }, h('b', null, t.name), h('span', null, (t.side === 'home' ? 'home vs ' : 'at ') + opp.name))), tags));
+    const lines = h('dl', { class: 'lines' });
+    lines.append(h('dt', null, 'Quarterback'), h('dd', null, t.qb || 'not known'));
+    lines.append(h('dt', null, 'Plan'), h('dd', null, trim(t.pass_att, 0) + ' passes for ' + t.pass_yds + ' yds · ' + trim(t.rush_att, 0) + ' runs for ' + t.rush_yds + ' yds'));
+    lines.append(h('dt', null, opp.abbr + ' defense'), h('dd', null,
+      'vs the pass: ' + defText(t.opp_pass, 'yards per pass') + ' · vs the run: ' + defText(t.opp_rush, 'yards per carry')));
+    card.append(lines);
+    const alerts = [];
+    if (t.qb_change) alerts.push(h('li', null, t.qb + ' starts instead of ' + t.usual_qb + ': fewer passes and a wider margin of error for everyone.'));
+    for (const m of t.missing) {
+      const part = m.pos === 'RB' ? share(m.carry_share) + ' of the carries' : share(m.target_share) + ' of the targets';
+      alerts.push(h('li', null, m.name + ' (' + m.pos + ') is out: he had ' + part + ', now split among the others.'));
+    }
+    const others = t.out.filter((o) => o.name);
+    if (others.length) alerts.push(h('li', { class: 'cmp' }, 'Also out: ' + others.map((o) => o.name + ' (' + o.pos + ')').join(', ')));
+    if (alerts.length) card.append(h('ul', { class: 'alerts' }, alerts));
+    const list = h('div', { class: 'markets' });
+    for (const p of t.players) list.append(playerRow(game, t, p));
+    card.append(list);
+    return card;
+  }
+  function defText(x, unit) {
+    if (Math.abs(x) < 0.01) return 'average';
+    return Math.abs(x * 100).toFixed(0) + '% ' + (x > 0 ? 'more' : 'fewer') + ' ' + unit + ' than average';
+  }
+
+  function playerRow(game, t, p) {
+    const head = HEADLINE[p.pos] || HEADLINE.WR;
+    const bits = [];
+    for (const stat of head) {
+      const e = p.stats[stat];
+      if (!e) continue;
+      bits.push(stat === 'td' ? h('span', null, 'TD ', b(pct(anyTd(e.proj)))) : h('span', null, b(trim(e.proj, e.proj < 10 ? 1 : 0)), ' ' + shortStat[stat]));
+    }
+    const flags = Object.values(p.stats).map((e) => e.best).filter(Boolean);
+    const top = flags.sort((x, y) => (x.label === 'PLAY' ? -1 : 1) - (y.label === 'PLAY' ? -1 : 1) || y.edge - x.edge)[0];
+    const det = h('details', { class: 'mkt pl' + (top && top.label === 'PLAY' ? ' is-play' : ''), id: 'pl-' + p.id, open: state.playerOpen === p.id });
+    det.addEventListener('toggle', () => { if (det.open) state.playerOpen = p.id; else if (state.playerOpen === p.id) state.playerOpen = null; });
+    det.append(h('summary', null,
+      h('span', { class: 'mkt-type' }, h('span', null, p.pos + (p.status ? ' · ' + p.status : '') + (p.flags.includes('returning') ? ' · back after missing games' : ''))),
+      h('span', { class: 'mkt-pick' }, p.name), top ? flagPill(top.label) : h('span', null),
+      h('span', { class: 'mkt-sub' }, bits)));
+    const body = h('div', { class: 'mkt-body' });
+    const rows = [];
+    for (const [stat, e] of Object.entries(p.stats)) {
+      // Under the name: where half of his games land, or his chance to score.
+      const hint = stat === 'td' ? pct(anyTd(e.proj)) + ' to score' : e.lo != null && e.hi != null ? 'half the time ' + trim(e.lo, 0) + '–' + trim(e.hi, 0) : null;
+      rows.push(h('tr', null,
+        h('td', { class: 'cell2 wrapcell' }, LONG_STAT[stat] || statName(stat), hint ? h('small', null, hint) : null),
+        h('td', null, b(trim(e.proj, e.proj < 10 ? 2 : 1))),
+        h('td', null, e.avg == null ? '–' : trim(e.avg, 1)),
+        h('td', { class: 'cell2' }, e.dk == null ? '–' : trim(e.dk, 1), e.dk != null && e.p_over_dk != null ? h('small', null, pct(e.p_over_dk) + ' over') : null)));
+    }
+    body.append(h('div', { class: 'scroll' }, h('table', { class: 'mini' },
+      h('thead', null, h('tr', null, h('th', null, 'Statistic'), h('th', null, 'Model'), h('th', null, 'Avg'), h('th', null, 'DraftKings'))),
+      h('tbody', null, rows))));
+    for (const [stat, e] of Object.entries(p.stats)) {
+      if (!e.ladder.length) continue;
+      if (e.best) {
+        const cls = e.best.label === 'PLAY' ? ' play' : e.best.label === 'CHECK' ? ' avoid' : '';
+        body.append(h('div', { class: 'why' + cls }, flagPill(e.best.label), ' ', b(contractText({ side: e.best.side, t: e.best.t, stat }) + ' at ' + cents(e.best.price)),
+          ': the model gives it ' + pct(e.best.p) + ', which leaves ' + points(e.best.edge) + ' points after the fee.' +
+          (e.best.reasons.length ? ' ' + cap(e.best.reasons.join('; ')) + '.' : '')));
+      }
+      body.append(h('details', { class: 'ladder' }, h('summary', { class: 'small' }, 'Kalshi prices for ' + statName(stat).toLowerCase() + ' (' + e.ladder.length + ')'),
+        h('div', { class: 'scroll' }, h('table', { class: 'mini' },
+          h('thead', null, h('tr', null, h('th', null, 'Contract'), h('th', null, 'Model'), h('th', null, 'Yes'), h('th', null, 'No'), h('th', null, 'Edge yes'), h('th', null, 'Edge no'))),
+          h('tbody', null, e.ladder.map((r) => h('tr', null,
+            h('td', null, r.t + '+'), h('td', null, pct(r.p)), h('td', null, cents(r.yes_ask)), h('td', null, cents(r.no_ask)),
+            h('td', { class: r.edge_yes >= P_EDGE ? 'pos' : null }, points(r.edge_yes)), h('td', { class: r.edge_no >= P_EDGE ? 'pos' : null }, points(r.edge_no)))))))));
+    }
+    if (p.games < 4) body.append(h('p', { class: 'small' }, 'Only ' + plural(p.games, 'game') + ' this season: his role is not established, so treat these numbers as rough.'));
+    det.append(body);
+    return det;
+  }
+  const P_EDGE = 0.03;
+  const LONG_STAT = { td: 'Touchdowns', pass_int: 'Interceptions' };
+
+  function playersEvidence(P) {
+    const E = P.backtest, ing = E.ingredients || {};
+    const box = h('section', { class: 'panel' }, h('h2', { class: 'h2' }, 'How far to trust these'));
+    const rows = [];
+    for (const stat of ['pass_yds', 'pass_td', 'rush_yds', 'rush_att', 'rec', 'rec_yds']) {
+      const e = (E.error_season || {})[stat] || (E.error || {})[stat];
+      if (!e) continue;
+      rows.push(h('tr', null, h('td', null, statName(stat)), h('td', null, b(trim(e.mae, 2))), h('td', null, trim(e.mae_avg, 2)),
+        h('td', { class: e.mae < e.mae_avg ? 'pos' : 'neg' }, signed((1 - e.mae / e.mae_avg) * 100, 0, '%')), h('td', { class: 'opt' }, String(e.n))));
+    }
+    const left = h('div', null, h('h3', { class: 'h3' }, 'Typical miss, ' + P.season),
+      h('div', { class: 'scroll' }, h('table', { class: 'mini' },
+        h('thead', null, h('tr', null, h('th', null, 'Statistic'), h('th', null, 'Model'), h('th', null, 'Season avg'), h('th', null, 'Gain'), h('th', { class: 'opt' }, 'Player-games'))),
+        h('tbody', null, rows))),
+      h('p', { class: 'small' }, 'How far the projection landed from what the player did, against simply using his average per game. Every week was projected with only what was known before it.'));
+    const facts = h('ul', null);
+    const run = ing.absent_runners && ing.absent_runners.rush_att, runY = ing.absent_runners && ing.absent_runners.rush_yds;
+    if (run && runY) {
+      facts.append(h('li', null, b('Who is out matters most. '), 'When a team is missing a main running back, the ones left carry ' + trim(-run.bias_without, 0) + ' more times and gain ' +
+        trim(-runY.bias_without, 0) + ' more yards than their average says. Knowing who is out cuts the miss on carries from ' + trim(run.mae_without, 1) + ' to ' + trim(run.mae, 1) + '.'));
+    }
+    const recv = ing.absent_receivers && ing.absent_receivers.rec_yds;
+    if (recv) facts.append(h('li', null, 'When a main receiver is out, the others gain about ' + trim(-recv.bias_without, 0) + ' receiving yards each. It happens in ' + share(ing.share_absent_receivers) + ' of team games.'));
+    const opp = ing.opponent && ing.opponent.pass_yds;
+    if (opp) {
+      facts.append(h('li', null, b('The opponent matters less than it seems. '), 'Dropping the defense adjustment moves the miss on passing yards from ' + trim(opp.mae, 1) + ' to ' + trim(opp.mae_without, 1) +
+        ': one game is too noisy for the defense to show.'));
+    }
+    const cal = E.calibration || {};
+    const gaps = Object.values(cal).map((c) => c.gap);
+    if (gaps.length) facts.append(h('li', null, 'The percentages hold up: across ' + Object.values(cal).reduce((a, c) => a + c.n, 0).toLocaleString('en-US') + ' threshold checks, what the model called 60% happened about 60% of the time (off by ' +
+      (Math.max(...gaps) * 100).toFixed(0) + ' point at most on these games, 1 to 4 on a season it had not seen).'));
+    facts.append(h('li', null, 'What it cannot know: a game plan, the weather, a player on a snap count. When the model is far from the market, assume the market knows.'));
+    box.append(h('div', { class: 'two' }, left, h('div', { class: 'prose' }, h('h3', { class: 'h3' }, 'What moves the numbers'), facts)));
+    return box;
+  }
+
+
+  function playersHow(sec, p) {
+    const r = state.players.rule;
+    return sec('How the player projections work', h('div', { class: 'prose' },
+      p('Each player’s numbers are built from the top down, in the order things happen on the field.'),
+      h('ul', null,
+        h('li', null, b('The team. '), 'How many passes and runs it calls and how efficient it is, adjusted for the defense it faces.'),
+        h('li', null, b('The quarterback. '), 'The passing numbers belong to whoever starts. A backup changes every receiver’s projection too.'),
+        h('li', null, b('The role. '), 'Each player’s share of the targets and carries in his recent games.'),
+        h('li', null, b('Who is available. '), 'Shares are split among the players who will play. When a teammate is out, the man who replaces him takes most of the vacancy.'),
+        h('li', null, b('His own efficiency. '), 'Catch rate, yards per target and per carry, pulled toward the average of his position when he has had few chances.')),
+      p('A projection is an average. To price a contract such as “250+ passing yards”, the model uses how real results have spread around projections of that size in the backtest.'),
+      p(b('PLAY'), ': the model leaves ' + (r.edge_play * 100).toFixed(0) + '+ points after Kalshi’s fee, the DraftKings line agrees, the price is between ' + cents(r.price_range[0]) + ' and ' + cents(r.price_range[1]) +
+        ' with bid and ask close together, enough contracts have traded, and the player is not questionable, just back from injury or playing with a new quarterback. ',
+        b('LEAN'), ': the model is alone. ', b('CHECK'), ': the model is more than ' + (r.max_gap * 100).toFixed(0) + ' points from the market, which usually means the market knows something.')));
+  }
+
+  // ================================================================== SOCCER
+  // European cups: the sportsbook's odds with the margin removed, next to Kalshi's prices.
+  const COMP_NAME = { ucl: 'Champions League', uel: 'Europa League', uecl: 'Conference League' };
+  const OUTCOMES = ['home', 'draw', 'away'];
+  const upcoming = (m) => m.status === 'scheduled';
+  const boardMatches = () => state.board.matches.filter((m) => state.soccerComp === 'all' || m.competition === state.soccerComp);
+
+  function renderSoccer() {
+    const B = state.board;
+    const out = [h('section', { class: 'callout', 'aria-label': 'Read this first' }, h('b', { class: 't' }, 'Read this first'),
+      h('p', null, b('There is no model here. '), 'The percentages are the sportsbook’s odds with its margin taken out: what the betting market thinks. ',
+        'Next to them is what Kalshi charges for each result, including “No” on a team, which wins when that team draws or loses. ',
+        'A price below the market’s chance means the two disagree. It is not a tested edge.'))];
+    if (B.warnings && B.warnings.length) {
+      out.push(h('section', { class: 'callout' }, h('b', { class: 't' }, 'Data warnings'), h('ul', { class: 'alerts' }, B.warnings.map((w) => h('li', null, w)))));
+    }
+    out.push(bargains(B));
+    out.push(soccerControls(B));
+    const list = h('div', { class: 'stack' });
+    fillMatches(list);
+    out.push(list);
+    return out;
+  }
+
+  function bargains(B) {
+    const rows = [];
+    for (const m of B.matches) {
+      if (!upcoming(m)) continue;
+      for (const c of m.contracts) if (c.price >= 0.05 && c.price <= 0.95) rows.push({ c, m });
+    }
+    rows.sort((x, y) => y.c.edge - x.c.edge);
+    const box = h('section', { class: 'panel' }, h('div', { class: 'panel-head' }, h('h2', { class: 'h2' }, 'Kalshi against the sportsbook')));
+    if (!rows.length) {
+      box.append(h('p', { class: 'empty' }, 'No match to play has both sportsbook odds and Kalshi prices right now.'));
+      return box;
+    }
+    const best = rows[0].c.edge, n = rows.length;
+    box.append(h('p', { class: 'verdict' }, best < 0.01
+      ? ['Nothing is cheap. Of ' + n + ' contracts on matches still to play, the best one leaves ', b(signed(best * 100, 1, '¢')), ' after Kalshi’s fee. Kalshi is priced where the sportsbooks are.']
+      : [plural(rows.filter((r) => r.c.edge >= 0.01).length, 'contract') + ' cost less than the sportsbook’s fair price after the fee. The widest gap is ', b(signed(best * 100, 1, '¢')), '.']));
+    box.append(h('div', { class: 'plays' }, rows.slice(0, 6).map(({ c, m }) => h('button', { type: 'button', class: 'playrow', onclick: () => goToMatch(m.id) },
+      h('span', { class: 'rankno' }, cents(c.price)),
+      h('span', { class: 'what' }, c.text),
+      h('span', { class: 'edge' + (c.edge > 0 ? ' pos' : '') }, signed(c.edge * 100, 1, '¢'), h('small', null, 'worth ' + (c.fair * 100).toFixed(1) + '¢')),
+      h('span', { class: 'ctx' }, m.home.short + ' v ' + m.away.short + ' · ' + COMP_NAME[m.competition] + ' · ' + kickFmt(m.kickoff))))));
+    box.append(h('p', { class: 'small' }, 'Price is what you pay now. “Worth” is the market’s chance of that result. The gap is what is left after a fee of about ' +
+      (B.fee.taker_rate * 100).toFixed(0) + '% × price × (1 − price) per contract.'));
+    return box;
+  }
+
+  function goToMatch(id) {
+    const card = document.getElementById('m-' + id);
+    if (!card) return;
+    card.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    card.classList.add('flash');
+    setTimeout(() => card.classList.remove('flash'), 1800);
+  }
+
+  function soccerControls(B) {
+    const options = [['all', 'All']].concat(B.competitions.filter((c) => c.matches).map((c) => [c.key, c.name.replace(' League', '')]));
+    const row = h('div', { class: 'controls-row' }, seg('Competition', options, state.soccerComp, (v, id) => setState('soccerComp', v, id)),
+      h('label', { class: 'toggle', for: 'played' },
+        h('input', { id: 'played', type: 'checkbox', checked: state.soccerPlayed, onchange: (e) => setState('soccerPlayed', e.target.checked, 'played') }), 'Show played matches'));
+    return h('section', { class: 'controls', 'aria-label': 'Filter matches' }, row);
+  }
+
+  function fillMatches(container) {
+    const matches = boardMatches().filter((m) => state.soccerPlayed || m.status !== 'final').slice().sort((x, y) => x.kickoff.localeCompare(y.kickoff));
+    const out = [];
+    if (!matches.length) out.push(h('p', { class: 'empty' }, 'No matches to play in the next few days. Tick “Show played matches” to see the last results.'));
+    let current = null, grid = null;
+    for (const m of matches) {
+      const key = dayKey(new Date(m.kickoff));
+      if (key !== current) {
+        current = key;
+        const count = matches.filter((x) => dayKey(new Date(x.kickoff)) === key).length;
+        out.push(h('div', { class: 'day' }, h('h2', { class: 'h2' }, dayLabel(m.kickoff)), h('span', { class: 'small' }, plural(count, 'match', 'matches'))));
+        grid = h('div', { class: 'cards' });
+        out.push(grid);
+      }
+      grid.append(matchCard(m));
+    }
+    container.replaceChildren(...out);
+  }
+
+  function matchCard(m) {
+    const card = h('article', { class: 'panel game', id: 'm-' + m.id });
+    const played = m.status === 'final', live = m.status === 'in_progress';
+    card.append(h('div', { class: 'game-top' }, h('span', { class: 'kick' }, played ? dateFmt(m.kickoff) + ' · full time' : live ? 'Being played' : timeFmt(m.kickoff)),
+      h('div', { class: 'tags' }, h('span', { class: 'tag' }, COMP_NAME[m.competition]))));
+    const fair = m.fair;
+    const favKey = fair ? OUTCOMES.reduce((a, k) => (fair[k] > fair[a] ? k : a), 'home') : null;
+    const teams = h('div', { class: 'teams' });
+    for (const key of ['home', 'away']) {
+      const t = m[key];
+      const meta = [t.rank ? '#' + t.rank + ' of 36' : null, t.record ? t.record + ' (W-D-L)' : null, key === 'home' ? 'home' : null].filter(Boolean).join(' · ');
+      teams.append(
+        h('div', { class: 'team' + (favKey === key ? ' fav' : '') }, h('span', { class: 'badge plain', 'aria-hidden': 'true' }, t.abbr || ''),
+          h('div', { class: 'team-name' }, h('b', null, t.name), h('span', null, meta))),
+        h('div', { class: 'proj' }, t.score == null ? '' : String(t.score)),
+        h('div', { class: 'wp' }, fair ? pct(fair[key]) : '–'));
+    }
+    card.append(teams);
+    if (fair) {
+      card.append(h('div', { class: 'wpbar three', role: 'img', 'aria-label': 'Market chance: ' + m.home.short + ' ' + pct(fair.home) + ', draw ' + pct(fair.draw) + ', ' + m.away.short + ' ' + pct(fair.away) },
+        OUTCOMES.map((k) => h('i', { class: k === favKey ? 'fav' : k === 'draw' ? 'draw' : null, style: 'flex:' + Math.max(fair[k], 0.02) }))));
+      const open = m.fair_open;
+      const moved = open && OUTCOMES.some((k) => Math.abs(open[k] - fair[k]) >= 0.03);
+      card.append(h('div', { class: 'cap' }, h('span', null, 'Market chance · draw ' + pct(fair.draw)),
+        moved ? h('span', null, 'opened ' + OUTCOMES.map((k) => Math.round(open[k] * 100)).join(' / ')) : h('span', null, (m.book && m.book.provider) || '')));
+    } else if (!played) {
+      card.append(h('p', { class: 'small' }, 'No sportsbook odds for this match yet, so there is nothing to compare Kalshi with.'));
+    }
+    if (m.note) card.append(h('p', { class: 'note' }, m.note));
+    if (played || !fair) return card;
+    if (!m.contracts.length) {
+      card.append(h('p', { class: 'small' }, 'No Kalshi prices for this match.'));
+      return card;
+    }
+    const find = (outcome, side) => m.contracts.find((c) => c.outcome === outcome && c.side === side);
+    const cell = (c) => (c ? h('td', { class: 'cell2' }, b(cents(c.price)), h('small', { class: c.edge > 0 ? 'pos' : null }, signed(c.edge * 100, 1, '¢'))) : h('td', null, '–'));
+    const label = { home: m.home.short + ' win', draw: 'Draw', away: m.away.short + ' win' };
+    card.append(h('div', { class: 'scroll' }, h('table', { class: 'mini' },
+      h('thead', null, h('tr', null, h('th', null, 'Result'), h('th', null, 'Market'), h('th', null, 'Kalshi yes'), h('th', null, 'Kalshi no'))),
+      h('tbody', null, OUTCOMES.map((k) => h('tr', null, h('td', null, label[k]), h('td', null, pct(fair[k], 1)), cell(find(k, 'yes')), cell(find(k, 'no'))))))));
+    card.append(h('p', { class: 'small' }, '“No” on a team wins if it draws or loses. Under each price: what is left after the fee, in cents per contract.'));
+    return card;
+  }
+
+  function renderSoccerHow() {
+    const B = state.board;
+    const sec = (title, ...kids) => h('section', { class: 'panel' }, h('h2', { class: 'h2' }, title), kids);
+    const p = (...kids) => h('p', null, kids);
+    return [
+      sec('What this page is', h('div', { class: 'prose' },
+        p('The football pages have a model that was tested on past seasons. This one does not: nothing in this project has been tested on European cup matches, so it shows the market instead of a prediction.'),
+        p('For every Champions League, Europa League and Conference League match it puts two things side by side: what the sportsbook thinks, and what Kalshi charges.'))),
+      sec('From odds to a chance', h('div', { class: 'prose' },
+        p('A sportsbook’s three prices (home, draw, away) add up to more than 100%: the extra is its margin. Taking it out leaves the market’s chance of each result. ',
+          'The margin sits mostly on the long shots, so it is removed with Shin’s method instead of an even split, which would overstate the underdog.'))),
+      sec('Yes, No and the draw', h('div', { class: 'prose' },
+        p('On Kalshi each result is its own yes/no contract that pays $1. “Yes” on a team wins only if it wins inside 90 minutes plus stoppage time. ',
+          b('“No” on a team wins if it draws or loses'), ', so it is the same as backing the other team and the draw together.'),
+        p('That does not make “No” safer. “No” on a 14% underdog costs about 86¢ to win 14¢: it has to come in 86 times out of 100 just to break even, and the market says it does exactly that often.'))),
+      sec('What “left after the fee” means', h('div', { class: 'prose' },
+        p('A contract is worth its chance: a result the market gives 42% is worth 42¢. The number under each price is that value, minus the price, minus Kalshi’s fee (about ' +
+          (B.fee.taker_rate * 100).toFixed(0) + '% × price × (1 − price) per contract, so 1.7¢ at 50¢ and almost nothing near 0 or 100).'),
+        p('When it is positive, Kalshi is charging less than the sportsbook implies. That is a disagreement between two markets, and either one can be the one that is wrong. Lineups come out an hour before kickoff and move both.'))),
+    ];
   }
 
   // -------------------------------------------------------------------- boot
-  const VIEWS = { picks: renderPicks, parlay: renderParlay, record: renderRecord, how: renderHow };
-  // "#nfl-record" names the league and the section; a bare "#record" keeps the last league used.
+  const VIEWS = { picks: renderPicks, players: renderPlayers, parlay: renderParlay, record: renderRecord, how: renderHow };
+  const BOARD_VIEWS = { picks: renderSoccer, how: renderSoccerHow };
+  const viewsOf = (sport) => (SPORTS[sport].kind === 'board' ? BOARD_VIEWS : VIEWS);
+  const hasTab = (sport, name) => SPORTS[sport].tabs.some(([view]) => view === name);
+  // "#nfl-players" names the section and the tab; a bare "#record" keeps the last section used.
   function route() {
     const raw = (location.hash || '').replace(/^#/, '');
     const [head, ...rest] = raw.split('-');
     const named = SPORTS[head] ? head : null;
     const name = named ? rest.join('-') : raw;
-    const saved = store.get('sport', 'cfb');
-    return { sport: named || (SPORTS[saved] ? saved : 'cfb'), view: VIEWS[name] ? name : 'picks' };
+    const saved = store.get('sport', DEFAULT_SPORT);
+    const sport = named || (SPORTS[saved] ? saved : DEFAULT_SPORT);
+    return { sport, view: hasTab(sport, name) ? name : 'picks' };
   }
 
-  // Header, league switch and tabs follow the league and section in the URL.
+  // Header, section switch and tabs follow the section and tab in the URL.
   function chrome(name) {
-    const sp = S(), P = state.picks;
+    const sp = S(), P = state.picks, B = state.board;
+    document.documentElement.setAttribute('data-sport', state.sport);
     document.title = sp.title;
     document.getElementById('hdr-title').textContent = sp.title;
     document.querySelectorAll('.sports a').forEach((a) => {
-      a.setAttribute('href', '#' + a.dataset.sport + '-' + name);
-      if (a.dataset.sport === state.sport) a.setAttribute('aria-current', 'true');
+      const other = a.dataset.sport;
+      a.setAttribute('href', '#' + other + '-' + (hasTab(other, name) ? name : 'picks'));
+      if (other === state.sport) a.setAttribute('aria-current', 'true');
       else a.removeAttribute('aria-current');
     });
-    document.querySelectorAll('.tabs a').forEach((a) => {
-      a.setAttribute('href', '#' + state.sport + '-' + a.dataset.view);
-      if (a.dataset.view === name) a.setAttribute('aria-current', 'page');
-      else a.removeAttribute('aria-current');
-    });
+    document.querySelector('.tabs-inner').replaceChildren(...sp.tabs.map(([tab, text]) =>
+      h('a', { href: '#' + state.sport + '-' + tab, 'data-view': tab, 'aria-current': tab === name ? 'page' : null }, text,
+        tab === 'parlay' ? h('span', { class: 'count', id: 'parlay-count', hidden: true }) : null)));
     const week = document.getElementById('hdr-week'), meta = document.getElementById('hdr-meta'), foot = document.getElementById('foot-gen');
+    const note = document.getElementById('foot-note');
+    note.textContent = sp.kind === 'board'
+      ? 'These are the betting market’s numbers, not a prediction. No result is a sure thing.'
+      : 'These are statistical projections and they miss often. No pick is a sure thing: the team model knows nothing about weather or motivation.';
+    if (sp.kind === 'board') {
+      week.textContent = 'Champions · Europa · Conference';
+      foot.textContent = B ? 'Odds: DraftKings through ESPN’s public API. Prices: Kalshi’s public market data.' : '';
+      meta.textContent = B ? 'Updated ' + stamp(B.generated_at) + ' · ' + plural(B.matches.filter(upcoming).length, 'match', 'matches') + ' to play'
+        : state.error ? 'No data' : 'Loading…';
+      return;
+    }
     if (!P) {
       week.textContent = sp.name;
       meta.textContent = state.error ? 'No data' : 'Loading…';
@@ -1125,26 +1555,27 @@
     week.textContent = P.week_label + ' · ' + P.season;
     const n = allGames().length, mine = mineCount();
     meta.textContent = 'Updated ' + stamp(P.generated) + ' · ' + plural(n, 'game') + (mine ? ', ' + mine + ' tracked' : '');
-    foot.textContent = 'Scores and lines: ESPN’s public API. Model: ' + P.model.label + '.';
+    foot.textContent = 'Scores, lines and player numbers: ESPN’s public API. ' + (state.players ? 'Player prices: Kalshi. ' : '') + 'Model: ' + P.model.label + '.';
   }
 
   function render() {
     hideTip();
     const name = route().view;
     chrome(name);
+    const sp = S(), ready = sp.kind === 'board' ? state.board : state.picks;
     if (state.error) {
-      view.replaceChildren(h('section', { class: 'callout' }, h('b', { class: 't' }, 'The picks could not be loaded'),
-        h('p', null, state.error), h('p', null, 'Generate the data with ' + S().command + ' and open the site through a web server (python -m http.server -d site), not as a local file.')));
+      view.replaceChildren(h('section', { class: 'callout' }, h('b', { class: 't' }, 'This section could not be loaded'),
+        h('p', null, state.error), h('p', null, 'Generate the data with ' + sp.command + ' and open the site through a web server (python -m http.server -d site), not as a local file.')));
       updateParlayCount();
       return;
     }
-    if (!state.picks) {
-      view.replaceChildren(h('p', { class: 'loading' }, 'Loading the ' + S().name + ' picks…'));
+    if (!ready) {
+      view.replaceChildren(h('p', { class: 'loading' }, 'Loading ' + sp.name + '…'));
       updateParlayCount();
       return;
     }
     pendingCharts = [];
-    view.replaceChildren(...VIEWS[name]());
+    view.replaceChildren(...viewsOf(state.sport)[name]());
     flushCharts();
     updateParlayCount();
     if (refocus) {
@@ -1154,13 +1585,15 @@
     }
   }
 
-  // Point the page at one league: its data (if already loaded) and its own parlay ticket.
+  // Point the page at one section: its data (if already loaded) and its own parlay ticket.
   function activate(sport) {
     const changed = sport !== state.sport;
     state.sport = sport;
     const data = DATA[sport] || {};
     state.picks = data.picks || null;
     state.backtest = data.backtest || null;
+    state.players = data.players || null;
+    state.board = data.board || null;
     state.error = data.error || null;
     state.legs = store.get(legsKey(), {});
     if (state.picks) {   // a ticket only keeps legs whose game is still on the board
@@ -1173,18 +1606,25 @@
       state.showAllPlays = false;
       state.parlayMarket = 'ml';
       state.slipOpen = false;
+      state.playersGame = null;
+      state.playerOpen = null;
     }
   }
 
   async function loadSport(sport) {
     if (DATA[sport]) return;
+    const spec = SPORTS[sport], got = {};
     try {
-      const [picks, backtest] = await Promise.all(SPORTS[sport].files.map(async (url) => {
-        const resp = await fetch(url, { cache: 'no-store' });
-        if (!resp.ok) throw new Error(url + ' answered HTTP ' + resp.status);
-        return resp.json();
+      await Promise.all(Object.entries(spec.files).map(async ([key, url]) => {
+        try {
+          const resp = await fetch(url, { cache: 'no-store' });
+          if (!resp.ok) throw new Error(url + ' answered HTTP ' + resp.status);
+          got[key] = await resp.json();
+        } catch (err) {
+          if (!(spec.optional || []).includes(key)) throw err;   // an optional file only hides its tab's content
+        }
       }));
-      DATA[sport] = { picks, backtest };
+      DATA[sport] = got;
     } catch (err) {
       DATA[sport] = { error: String((err && err.message) || err) };
     }

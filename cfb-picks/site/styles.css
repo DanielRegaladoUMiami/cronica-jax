@@ -1,5 +1,6 @@
-/* Layout: a "field" band on top with the league switch, sticky tabs, then one
-   column of cards (two columns on wide screens). Numbers use tabular figures. */
+/* Layout: a "field" band on top with the section switch, sticky tabs, then one
+   column of cards (two columns on wide screens). Numbers use tabular figures.
+   Each section has its own band: a college field, an NFL night game, a soccer pitch. */
 :root {
   --bg: #eef1ec;
   --surface: #ffffff;
@@ -13,6 +14,14 @@
   --field-2: #174a2f;
   --field-ink: #f3f7f1;
   --chalk: rgba(255, 255, 255, 0.5);
+  --tab: #1d5b3a;
+  --nfl-1: #15294c;
+  --nfl-2: #0e1c38;
+  --nfl-tab: #15294c;
+  --pitch-1: #1f6d3b;
+  --pitch-2: #175830;
+  --pitch-tab: #1f6d3b;
+  --stripe: rgba(255, 255, 255, 0.055);
   --play-bg: #0f6b33;
   --play-fg: #ffffff;
   --play-soft: #e3f2e7;
@@ -45,6 +54,14 @@
     --field-2: #123623;
     --field-ink: #eef4ec;
     --chalk: rgba(255, 255, 255, 0.34);
+    --tab: #5fce85;
+    --nfl-1: #1b3665;
+    --nfl-2: #13284d;
+    --nfl-tab: #8fb2ea;
+    --pitch-1: #1b5c33;
+    --pitch-2: #144827;
+    --pitch-tab: #5fce85;
+    --stripe: rgba(255, 255, 255, 0.04);
     --play-bg: #2faa58;
     --play-fg: #06140b;
     --play-soft: #16301f;
@@ -74,6 +91,14 @@
   --field-2: #123623;
   --field-ink: #eef4ec;
   --chalk: rgba(255, 255, 255, 0.34);
+  --tab: #5fce85;
+  --nfl-1: #1b3665;
+  --nfl-2: #13284d;
+  --nfl-tab: #8fb2ea;
+  --pitch-1: #1b5c33;
+  --pitch-2: #144827;
+  --pitch-tab: #5fce85;
+  --stripe: rgba(255, 255, 255, 0.04);
   --play-bg: #2faa58;
   --play-fg: #06140b;
   --play-soft: #16301f;
@@ -89,6 +114,11 @@
   --shadow: none;
   color-scheme: dark;
 }
+
+/* The section in the URL picks the band. These come after the theme blocks on purpose:
+   they only point at tokens, and each token already has a light and a dark value. */
+:root[data-sport="nfl"] { --field: var(--nfl-1); --field-2: var(--nfl-2); --tab: var(--nfl-tab); }
+:root[data-sport="soccer"] { --field: var(--pitch-1); --field-2: var(--pitch-2); --tab: var(--pitch-tab); }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -147,6 +177,9 @@ h1 { font: 700 34px/1 var(--display); letter-spacing: 0.01em; text-transform: up
     repeating-linear-gradient(90deg, var(--chalk) 0 2px, transparent 2px 60px) 0 100% / 100% 9px no-repeat,
     repeating-linear-gradient(90deg, var(--chalk) 0 1px, transparent 1px 12px) 0 100% / 100% 4px no-repeat;
 }
+/* A pitch has mowing stripes and a touchline instead of yard marks. */
+:root[data-sport="soccer"] .field { background: repeating-linear-gradient(90deg, var(--stripe) 0 56px, transparent 56px 112px), linear-gradient(180deg, var(--field), var(--field-2)); }
+:root[data-sport="soccer"] .hashmarks { background: linear-gradient(var(--chalk), var(--chalk)) 0 100% / 100% 2px no-repeat; }
 
 .tabs {
   position: sticky;
@@ -168,7 +201,7 @@ h1 { font: 700 34px/1 var(--display); letter-spacing: 0.01em; text-transform: up
   color: var(--muted);
   border-bottom: 3px solid transparent;
 }
-.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--field); }
+.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--tab); }
 .count { font: 700 12px/1 var(--body); letter-spacing: 0; background: var(--ink); color: var(--surface); border-radius: 999px; padding: 3px 6px; }
 
 main { padding-block: 16px 28px; display: flex; flex-direction: column; gap: 18px; min-height: 50vh; }
@@ -258,12 +291,14 @@ main:focus { outline: none; }
 .playrow .edge { font: 700 21px/1 var(--display); text-align: right; white-space: nowrap; }
 .playrow .edge small { display: block; font: 500 11px/1.3 var(--body); color: var(--muted); letter-spacing: 0; }
 .playrow .ctx { grid-column: 2 / 4; font-size: 12.5px; color: var(--ink-2); }
+.playrow .edge.pos { color: var(--good-ink); }
 .more { align-self: flex-start; }
 
 /* ------------------------------------------------------------------- cards */
 .day { display: flex; align-items: baseline; gap: 10px; padding-top: 4px; }
 .day .small { margin-left: auto; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr)); gap: 12px; align-items: start; }
+.cards.wide { grid-template-columns: repeat(auto-fill, minmax(min(100%, 500px), 1fr)); }
 .game { gap: 12px; scroll-margin-top: 64px; }
 .game.flash { outline: 3px solid var(--focus); outline-offset: 2px; }
 .game-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -282,6 +317,7 @@ main:focus { outline: none; }
 .wpbar { display: flex; gap: 2px; height: 6px; }
 .wpbar i { display: block; height: 100%; background: var(--track); border-radius: 3px; min-width: 2px; }
 .wpbar i.fav { background: var(--ink); }
+.wpbar.three i.draw { background: var(--muted); }
 .cap { display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; color: var(--muted); margin-top: -6px; }
 
 .lines { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 13px; color: var(--ink-2); }
@@ -302,6 +338,12 @@ main:focus { outline: none; }
 .mkt.is-play > summary .mkt-pick { color: var(--good-ink); }
 .mkt-body { padding: 2px 0 12px; font-size: 13.5px; color: var(--ink-2); display: flex; flex-direction: column; gap: 8px; }
 .mkt-body ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+.mkt.pl .mkt-sub span { white-space: nowrap; }
+.mkt.flash { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.ladder > summary { padding: 4px 0; text-decoration: underline; text-underline-offset: 3px; }
+.ladder[open] > summary { margin-bottom: 6px; }
+.pick { flex: 1 1 240px; min-width: 0; }
+.pick select { width: 100%; max-width: 460px; min-height: 42px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .why { background: var(--surface-2); border-radius: 8px; padding: 10px 12px; }
 .why.play { background: var(--play-soft); }
 .why.avoid { background: var(--avoid-soft); }
@@ -327,6 +369,7 @@ th { font: 600 12.5px/1.2 var(--display); letter-spacing: 0.08em; text-transform
 th:first-child, td:first-child { text-align: left; padding-left: 0; }
 td:last-child, th:last-child { padding-right: 0; }
 td.wrapcell { white-space: normal; min-width: 120px; }
+.mini td.wrapcell { min-width: 96px; }
 tr.hl td { background: var(--surface-2); }
 tbody tr:last-child td { border-bottom: 0; }
 .scroll { overflow-x: auto; }

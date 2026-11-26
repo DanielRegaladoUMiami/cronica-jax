@@ -1,7 +1,7 @@
 {
  "sport": "cfb",
  "league": "College football",
- "generated": "2026-11-22T17:42:16+00:00",
+ "generated": "2026-11-26T01:44:36+00:00",
  "season": 2026,
  "big_margin": 14.0,
  "selected": "srs",
@@ -19,38 +19,38 @@
    "label": "Baseline (points vs opponent win %)",
    "selected": false,
    "current": {
-    "n": 695,
-    "correct": 464,
-    "wrong": 231,
+    "n": 697,
+    "correct": 465,
+    "wrong": 232,
     "ties": 0,
-    "accuracy": 0.6676,
+    "accuracy": 0.6671,
     "accuracy_big": 0.7972,
     "n_big": 217,
     "big_margin": 14.0,
-    "mae_margin": 14.4593,
-    "rmse_margin": 18.5143,
-    "bias_margin": 1.115,
-    "mae_total": 12.8635,
-    "rmse_total": 16.002,
-    "bias_total": 1.2622,
-    "brier": 0.2198
+    "mae_margin": 14.4475,
+    "rmse_margin": 18.497,
+    "bias_margin": 1.1414,
+    "mae_total": 12.8562,
+    "rmse_total": 15.9938,
+    "bias_total": 1.2804,
+    "brier": 0.22
    },
    "current_with_fcs": {
-    "n": 822,
-    "correct": 585,
-    "wrong": 237,
+    "n": 824,
+    "correct": 586,
+    "wrong": 238,
     "ties": 0,
-    "accuracy": 0.7117,
+    "accuracy": 0.7112,
     "accuracy_big": 0.8397,
     "n_big": 287,
     "big_margin": 14.0,
-    "mae_margin": 16.1714,
-    "rmse_margin": 21.0147,
-    "bias_margin": -2.137,
-    "mae_total": 12.7869,
-    "rmse_total": 15.8647,
-    "bias_total": 0.5984,
-    "brier": 0.2045
+    "mae_margin": 16.1572,
+    "rmse_margin": 20.9961,
+    "bias_margin": -2.1068,
+    "mae_total": 12.7809,
+    "rmse_total": 15.858,
+    "bias_total": 0.6154,
+    "brier": 0.2047
    },
    "history": {
     "n": 3174,
@@ -75,38 +75,38 @@
    "label": "SRS (schedule-adjusted margin)",
    "selected": true,
    "current": {
-    "n": 695,
-    "correct": 491,
-    "wrong": 204,
+    "n": 697,
+    "correct": 492,
+    "wrong": 205,
     "ties": 0,
-    "accuracy": 0.7065,
+    "accuracy": 0.7059,
     "accuracy_big": 0.9038,
     "n_big": 208,
     "big_margin": 14.0,
-    "mae_margin": 12.7707,
-    "rmse_margin": 16.0755,
-    "bias_margin": 0.6129,
-    "mae_total": 12.8284,
-    "rmse_total": 15.964,
-    "bias_total": 0.3529,
-    "brier": 0.1889
+    "mae_margin": 12.7565,
+    "rmse_margin": 16.0596,
+    "bias_margin": 0.6335,
+    "mae_total": 12.825,
+    "rmse_total": 15.9581,
+    "bias_total": 0.3729,
+    "brier": 0.1892
    },
    "current_with_fcs": {
-    "n": 822,
-    "correct": 612,
-    "wrong": 210,
+    "n": 824,
+    "correct": 613,
+    "wrong": 211,
     "ties": 0,
-    "accuracy": 0.7445,
+    "accuracy": 0.7439,
     "accuracy_big": 0.9238,
     "n_big": 328,
     "big_margin": 14.0,
-    "mae_margin": 13.2759,
-    "rmse_margin": 16.7045,
-    "bias_margin": -0.382,
-    "mae_total": 12.6888,
-    "rmse_total": 15.7654,
-    "bias_total": 0.1254,
-    "brier": 0.1662
+    "mae_margin": 13.2626,
+    "rmse_margin": 16.6901,
+    "bias_margin": -0.3621,
+    "mae_total": 12.6862,
+    "rmse_total": 15.7608,
+    "bias_total": 0.1428,
+    "brier": 0.1665
    },
    "history": {
     "n": 3174,
@@ -131,38 +131,38 @@
    "label": "Elo with margin of victory",
    "selected": false,
    "current": {
-    "n": 695,
-    "correct": 483,
-    "wrong": 212,
+    "n": 697,
+    "correct": 484,
+    "wrong": 213,
     "ties": 0,
-    "accuracy": 0.695,
+    "accuracy": 0.6944,
     "accuracy_big": 0.8342,
     "n_big": 193,
     "big_margin": 14.0,
-    "mae_margin": 13.1076,
-    "rmse_margin": 16.5564,
-    "bias_margin": -1.1498,
+    "mae_margin": 13.0893,
+    "rmse_margin": 16.5383,
+    "bias_margin": -1.1272,
     "mae_total": null,
     "rmse_total": null,
     "bias_total": null,
-    "brier": 0.1941
+    "brier": 0.1944
    },
    "current_with_fcs": {
-    "n": 822,
-    "correct": 604,
-    "wrong": 218,
+    "n": 824,
+    "correct": 605,
+    "wrong": 219,
     "ties": 0,
-    "accuracy": 0.7348,
+    "accuracy": 0.7342,
     "accuracy_big": 0.8835,
     "n_big": 309,
     "big_margin": 14.0,
-    "mae_margin": 13.6734,
-    "rmse_margin": 17.2635,
-    "bias_margin": -2.4729,
+    "mae_margin": 13.6566,
+    "rmse_margin": 17.2472,
+    "bias_margin": -2.4506,
     "mae_total": null,
     "rmse_total": null,
     "bias_total": null,
-    "brier": 0.1706
+    "brier": 0.1709
    },
    "history": {
     "n": 3174,
@@ -184,14 +184,14 @@
   }
  ],
  "market": {
-  "n": 695,
-  "correct": 518,
-  "wrong": 177,
-  "mae_margin": 11.7,
-  "accuracy": 0.7453,
-  "mae_total": 12.2482,
-  "model_mae_margin": 12.7707,
-  "model_mae_total": 12.8284
+  "n": 697,
+  "correct": 519,
+  "wrong": 178,
+  "mae_margin": 11.6808,
+  "accuracy": 0.7446,
+  "mae_total": 12.2489,
+  "model_mae_margin": 12.7565,
+  "model_mae_total": 12.825
  },
  "weeks": [
   {
@@ -445,6 +445,27 @@
     "units": -9.4094,
     "cumulative": -15.4674
    }
+  },
+  {
+   "week": 13,
+   "n": 2,
+   "correct": 1,
+   "wrong": 1,
+   "accuracy": 0.5,
+   "mae_margin": 7.8132,
+   "mae_total": 11.6274,
+   "plays": 1,
+   "won": 1,
+   "lost": 0,
+   "units": 0.9259,
+   "cumulative": -39.3768,
+   "ml": {
+    "plays": 0,
+    "won": 0,
+    "lost": 0,
+    "units": 0.0,
+    "cumulative": -15.4674
+   }
   }
  ],
  "calibration": {
@@ -476,18 +497,18 @@
    {
     "from": 0.65,
     "to": 0.7,
-    "n": 78,
-    "predicted": 0.6733,
-    "observed": 0.641,
-    "std_error": 0.0543
+    "n": 79,
+    "predicted": 0.6737,
+    "observed": 0.6329,
+    "std_error": 0.0542
    },
    {
     "from": 0.7,
     "to": 0.75,
-    "n": 74,
-    "predicted": 0.724,
-    "observed": 0.7027,
-    "std_error": 0.0531
+    "n": 75,
+    "predicted": 0.7237,
+    "observed": 0.7067,
+    "std_error": 0.0526
    },
    {
     "from": 0.75,
@@ -501,7 +522,7 @@
     "from": 0.8,
     "to": 0.85,
     "n": 68,
-    "predicted": 0.8262,
+    "predicted": 0.8263,
     "observed": 0.8382,
     "std_error": 0.0447
    },
@@ -509,7 +530,7 @@
     "from": 0.85,
     "to": 0.9,
     "n": 62,
-    "predicted": 0.8759,
+    "predicted": 0.876,
     "observed": 0.9194,
     "std_error": 0.0346
    },
@@ -551,7 +572,7 @@
     "from": 0.6,
     "to": 0.65,
     "n": 376,
-    "predicted": 0.6248,
+    "predicted": 0.6249,
     "observed": 0.609,
     "std_error": 0.0252
    },
@@ -575,7 +596,7 @@
     "from": 0.75,
     "to": 0.8,
     "n": 317,
-    "predicted": 0.7764,
+    "predicted": 0.7765,
     "observed": 0.7382,
     "std_error": 0.0247
    },
@@ -583,7 +604,7 @@
     "from": 0.8,
     "to": 0.85,
     "n": 261,
-    "predicted": 0.8251,
+    "predicted": 0.8252,
     "observed": 0.8352,
     "std_error": 0.023
    },
@@ -615,9 +636,9 @@
   "mean_error": 0.0209
  },
  "sigma": {
-  "margin": 15.8091,
-  "total": 16.0203,
-  "n": 3626
+  "margin": 15.8061,
+  "total": 16.0191,
+  "n": 3628
  },
  "bets": {
   "current": {
@@ -633,24 +654,24 @@
      "roi_error": 0.1087
     },
     "AVOID": {
-     "n": 234,
+     "n": 235,
      "won": 91,
-     "lost": 143,
+     "lost": 144,
      "push": 0,
-     "win_pct": 0.3889,
-     "units": -65.9189,
-     "roi": -0.2817,
-     "roi_error": 0.0728
+     "win_pct": 0.3872,
+     "units": -66.9189,
+     "roi": -0.2848,
+     "roi_error": 0.0725
     },
     "PASS": {
-     "n": 325,
-     "won": 176,
+     "n": 326,
+     "won": 177,
      "lost": 149,
      "push": 0,
-     "win_pct": 0.5415,
-     "units": 5.6997,
-     "roi": 0.0175,
-     "roi_error": 0.0845
+     "win_pct": 0.5429,
+     "units": 6.0873,
+     "roi": 0.0187,
+     "roi_error": 0.0843
     }
    },
    "spread": {
@@ -665,36 +686,36 @@
      "roi_error": 0.0793
     },
     "AVOID": {
-     "n": 311,
+     "n": 312,
      "won": 129,
-     "lost": 178,
+     "lost": 179,
      "push": 4,
-     "win_pct": 0.4202,
-     "units": -61.2178,
-     "roi": -0.1968,
-     "roi_error": 0.0531
+     "win_pct": 0.4188,
+     "units": -62.2178,
+     "roi": -0.1994,
+     "roi_error": 0.053
     },
     "PASS": {
-     "n": 241,
+     "n": 242,
      "won": 119,
-     "lost": 120,
+     "lost": 121,
      "push": 2,
-     "win_pct": 0.4979,
-     "units": -12.0815,
-     "roi": -0.0501,
-     "roi_error": 0.0613
+     "win_pct": 0.4958,
+     "units": -13.0815,
+     "roi": -0.0541,
+     "roi_error": 0.0612
     }
    },
    "total": {
     "PLAY": {
-     "n": 187,
-     "won": 90,
+     "n": 188,
+     "won": 91,
      "lost": 97,
      "push": 0,
-     "win_pct": 0.4813,
-     "units": -14.2536,
-     "roi": -0.0762,
-     "roi_error": 0.0704
+     "win_pct": 0.484,
+     "units": -13.3276,
+     "roi": -0.0709,
+     "roi_error": 0.0703
     },
     "AVOID": {
      "n": 169,
@@ -707,46 +728,46 @@
      "roi_error": 0.0735
     },
     "PASS": {
-     "n": 339,
+     "n": 340,
      "won": 157,
-     "lost": 182,
+     "lost": 183,
      "push": 0,
-     "win_pct": 0.4631,
-     "units": -38.7069,
-     "roi": -0.1142,
-     "roi_error": 0.0519
+     "win_pct": 0.4618,
+     "units": -39.7069,
+     "roi": -0.1168,
+     "roi_error": 0.0518
     }
    },
    "all": {
     "PLAY": {
-     "n": 451,
-     "won": 205,
+     "n": 452,
+     "won": 206,
      "lost": 242,
      "push": 4,
-     "win_pct": 0.4586,
-     "units": -40.3028,
-     "roi": -0.0894,
+     "win_pct": 0.4598,
+     "units": -39.3768,
+     "roi": -0.0871,
      "roi_error": 0.0482
     },
     "AVOID": {
-     "n": 714,
+     "n": 716,
      "won": 297,
-     "lost": 413,
+     "lost": 415,
      "push": 4,
-     "win_pct": 0.4183,
-     "units": -148.8835,
-     "roi": -0.2085,
-     "roi_error": 0.0375
+     "win_pct": 0.4171,
+     "units": -150.8835,
+     "roi": -0.2107,
+     "roi_error": 0.0374
     },
     "PASS": {
-     "n": 905,
-     "won": 452,
-     "lost": 451,
+     "n": 908,
+     "won": 453,
+     "lost": 453,
      "push": 2,
-     "win_pct": 0.5006,
-     "units": -45.0887,
-     "roi": -0.0498,
-     "roi_error": 0.0396
+     "win_pct": 0.5,
+     "units": -46.7011,
+     "roi": -0.0514,
+     "roi_error": 0.0395
     }
    }
   },
@@ -763,23 +784,23 @@
      "roi_error": 0.0661
     },
     "AVOID": {
-     "n": 789,
+     "n": 790,
      "won": 262,
-     "lost": 527,
+     "lost": 528,
      "push": 0,
-     "win_pct": 0.3321,
-     "units": -17.5166,
-     "roi": -0.0222,
-     "roi_error": 0.0853
+     "win_pct": 0.3316,
+     "units": -18.5166,
+     "roi": -0.0234,
+     "roi_error": 0.0852
     },
     "PASS": {
-     "n": 959,
-     "won": 461,
+     "n": 960,
+     "won": 462,
      "lost": 498,
      "push": 0,
-     "win_pct": 0.4807,
-     "units": -76.2644,
-     "roi": -0.0795,
+     "win_pct": 0.4813,
+     "units": -75.8769,
+     "roi": -0.079,
      "roi_error": 0.0473
     }
    },
@@ -795,35 +816,35 @@
      "roi_error": 0.0404
     },
     "AVOID": {
-     "n": 948,
+     "n": 949,
      "won": 421,
-     "lost": 512,
+     "lost": 513,
      "push": 15,
-     "win_pct": 0.4512,
-     "units": -130.2154,
-     "roi": -0.1374,
+     "win_pct": 0.4507,
+     "units": -131.2154,
+     "roi": -0.1383,
      "roi_error": 0.0306
     },
     "PASS": {
-     "n": 740,
+     "n": 741,
      "won": 352,
-     "lost": 379,
+     "lost": 380,
      "push": 9,
-     "win_pct": 0.4815,
-     "units": -59.2432,
-     "roi": -0.0801,
-     "roi_error": 0.0349
+     "win_pct": 0.4809,
+     "units": -60.2432,
+     "roi": -0.0813,
+     "roi_error": 0.0348
     }
    },
    "total": {
     "PLAY": {
-     "n": 803,
-     "won": 399,
+     "n": 804,
+     "won": 400,
      "lost": 401,
      "push": 3,
-     "win_pct": 0.4988,
-     "units": -38.0063,
-     "roi": -0.0473,
+     "win_pct": 0.4994,
+     "units": -37.0803,
+     "roi": -0.0461,
      "roi_error": 0.0337
     },
     "AVOID": {
@@ -837,45 +858,45 @@
      "roi_error": 0.0391
     },
     "PASS": {
-     "n": 849,
+     "n": 850,
      "won": 398,
-     "lost": 443,
+     "lost": 444,
      "push": 8,
-     "win_pct": 0.4732,
-     "units": -82.1577,
-     "roi": -0.0968,
-     "roi_error": 0.0326
+     "win_pct": 0.4727,
+     "units": -83.1577,
+     "roi": -0.0978,
+     "roi_error": 0.0325
     }
    },
    "all": {
     "PLAY": {
-     "n": 1817,
-     "won": 832,
+     "n": 1818,
+     "won": 833,
      "lost": 974,
      "push": 11,
-     "win_pct": 0.4607,
-     "units": -105.2435,
-     "roi": -0.0579,
-     "roi_error": 0.0256
+     "win_pct": 0.461,
+     "units": -104.3176,
+     "roi": -0.0574,
+     "roi_error": 0.0255
     },
     "AVOID": {
-     "n": 2326,
+     "n": 2328,
      "won": 976,
-     "lost": 1327,
+     "lost": 1329,
      "push": 23,
-     "win_pct": 0.4238,
-     "units": -169.1079,
-     "roi": -0.0727,
+     "win_pct": 0.4234,
+     "units": -171.1079,
+     "roi": -0.0735,
      "roi_error": 0.033
     },
     "PASS": {
-     "n": 2548,
-     "won": 1211,
-     "lost": 1320,
+     "n": 2551,
+     "won": 1212,
+     "lost": 1322,
      "push": 17,
-     "win_pct": 0.4785,
-     "units": -217.6654,
-     "roi": -0.0854,
+     "win_pct": 0.4783,
+     "units": -219.2778,
+     "roi": -0.086,
      "roi_error": 0.0232
     }
    }
